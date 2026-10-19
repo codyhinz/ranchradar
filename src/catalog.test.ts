@@ -1,4 +1,4 @@
-import { catalog, guessLocale, normalize, searchForms } from './catalog';
+import { guessLocale, normalize, searchForms } from './catalog';
 
 describe('normalize', () => {
   it('folds accents, width and hiragana', () => {
@@ -9,20 +9,31 @@ describe('normalize', () => {
 });
 
 describe('searchForms', () => {
-  it('finds a Pokémon by its name in any language', () => {
-    expect(searchForms('garch')[0]?.id).toBe('garchomp');
-    expect(searchForms('Knakrack')[0]?.id).toBe('garchomp');
-    expect(searchForms('がぶりあす')[0]?.id).toBe('garchomp');
+  it('matches names that start with the query, like a normal search', () => {
+    const ids = searchForms('z', 'en').map((f) => f.id);
+    expect(ids).not.toContain('eelektross'); // German name Elezeko must not leak into English search
+    expect(searchForms('garch', 'en')[0]?.id).toBe('garchomp');
   });
 
-  it('matches words inside names and puts prefix matches first', () => {
-    const ids = searchForms('alola').map((f) => f.id);
-    expect(ids).toEqual(expect.arrayContaining(['ninetales-alola', 'raichu-alola']));
+  it('searches only the chosen language', () => {
+    expect(searchForms('Knakrack', 'en')).toEqual([]);
+    expect(searchForms('Knakrack', 'de')[0]?.id).toBe('garchomp');
+    expect(searchForms('がぶりあす', 'ja')[0]?.id).toBe('garchomp');
   });
 
-  it('only offers forms legal in the current regulation', () => {
-    expect(catalog.every((f) => f.id && f.names.en)).toBe(true);
-    expect(searchForms('')).toEqual([]);
+  it('finds words inside names, and mid-word matches only from 3 letters', () => {
+    expect(searchForms('nine', 'en').map((f) => f.id)).toEqual(expect.arrayContaining(['ninetales', 'ninetales-alola']));
+    expect(searchForms('ne', 'en').map((f) => f.id)).not.toContain('ninetales');
+    expect(searchForms('chomp', 'en').map((f) => f.id)).toContain('garchomp');
+  });
+
+  it('lists names that start with the query before word matches', () => {
+    const ids = searchForms('nine', 'en').map((f) => f.id);
+    expect(ids.indexOf('ninetales')).toBeLessThan(ids.indexOf('ninetales-alola'));
+  });
+
+  it('returns nothing for an empty query', () => {
+    expect(searchForms('  ', 'en')).toEqual([]);
   });
 });
 

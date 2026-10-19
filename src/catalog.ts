@@ -15,8 +15,6 @@ export interface CatalogForm {
   dexNumber: number;
   types: string[];
   names: Partial<Record<NameLocale, string>>;
-  /** Every name, normalized, for matching. */
-  searchKeys: string[];
 }
 
 const names = formNames as Record<string, Partial<Record<NameLocale, string>>>;
@@ -36,7 +34,6 @@ export const catalog: CatalogForm[] = forms
     dexNumber: f.dex_number,
     types: f.types,
     names: names[f.id] ?? {},
-    searchKeys: [f.id.replace(/-/g, ' '), ...Object.values(names[f.id] ?? {})].map(normalize),
   }));
 
 export const catalogById = new Map(catalog.map((f) => [f.id, f]));
@@ -62,17 +59,35 @@ export function normalize(text: string): string {
     .trim();
 }
 
-/** Prefix matches first, then matches anywhere; dex order within each group. */
-export function searchForms(query: string, pool: CatalogForm[] = catalog): CatalogForm[] {
+/** Normalized display names per locale, built once per locale on first search. */
+const keyCache = new Map<NameLocale, Map<string, string>>();
+function searchKey(form: CatalogForm, locale: NameLocale): string {
+  let keys = keyCache.get(locale);
+  if (!keys) { keys = new Map(); keyCache.set(locale, keys); }
+  let key = keys.get(form.id);
+  if (key === undefined) { key = normalize(displayName(form.id, locale)); keys.set(form.id, key); }
+  return key;
+}
+
+/**
+ * Searches the name shown in the chosen language only, like a normal search box:
+ * names starting with the query first ("z" → Zoroark), then names with a word starting
+ * with it ("nine" → Alolan Ninetales). Matches inside a word only kick in from 3 letters.
+ */
+export function searchForms(query: string, locale: NameLocale, pool: CatalogForm[] = catalog): CatalogForm[] {
   const q = normalize(query);
   if (!q) return [];
-  const prefix: CatalogForm[] = [];
-  const anywhere: CatalogForm[] = [];
+  const starts: CatalogForm[] = [];
+  const wordStarts: CatalogForm[] = [];
+  const inside: CatalogForm[] = [];
   for (const form of pool) {
-    if (form.searchKeys.some((k) => k.startsWith(q) || k.split(' ').some((w) => w.startsWith(q)))) prefix.push(form);
-    else if (form.searchKeys.some((k) => k.includes(q))) anywhere.push(form);
+    const key = searchKey(form, locale);
+    if (key.startsWith(q)) starts.push(form);
+    else if (key.split(' ').some((word) => word.startsWith(q))) wordStarts.push(form);
+    else if (q.length >= 3 && key.includes(q)) inside.push(form);
   }
-  return [...prefix, ...anywhere];
+  const byName = (a: CatalogForm, b: CatalogForm) => searchKey(a, locale).localeCompare(searchKey(b, locale), locale);
+  return [...starts.sort(byName), ...wordStarts.sort(byName), ...inside.sort(byName)];
 }
 
 export function guessLocale(languages: readonly string[]): NameLocale {

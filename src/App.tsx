@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { displayName, searchForms } from './catalog';
-import { useNameLocale } from './app/preferences';
+import { useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AddSheet } from './components/AddSheet';
 import { FormSheet } from './components/FormSheet';
@@ -18,6 +18,8 @@ export function App() {
   const store = useRosterStore();
   const entries = useRosterEntries(store);
   const [locale, setLocale] = useNameLocale();
+  const [theme, setTheme] = useTheme();
+  const [rosterView, setRosterView] = useRosterView();
   const [query, setQuery] = useState('');
   const [addingFormId, setAddingFormId] = useState<string | null>(null);
   const [openFormId, setOpenFormId] = useState<string | null>(null);
@@ -26,7 +28,7 @@ export function App() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   const summaries = useMemo(() => summarizeByForm(entries ?? []), [entries]);
-  const results = useMemo(() => searchForms(query).slice(0, 60), [query]);
+  const results = useMemo(() => searchForms(query, locale).slice(0, 60), [query, locale]);
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
   const say = (text: string, onUndo?: () => void) => setToast({ id: Date.now(), text, onUndo });
@@ -43,6 +45,14 @@ export function App() {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
+
+  const goHome = () => {
+    setQuery('');
+    setAddingFormId(null);
+    setOpenFormId(null);
+    setSettingsOpen(false);
+    window.scrollTo({ top: 0 });
+  };
 
   const guard = async (action: () => Promise<void>) => {
     try { await action(); }
@@ -63,7 +73,7 @@ export function App() {
 
   return (
     <div className="app">
-      <Header onOpenSettings={() => setSettingsOpen(true)} />
+      <Header onOpenSettings={() => setSettingsOpen(true)} onHome={goHome} />
 
       <div className="search-bar">
         <label htmlFor="search" className="visually-hidden">{t('search.label')}</label>
@@ -91,6 +101,11 @@ export function App() {
           <p className="loading">{t('loading')}</p>
         ) : query.trim() ? (
           results.length ? (
+            <>
+            <div className="results-head">
+              <span>{results.length === 1 ? t('results.one') : t('results.count', { count: results.length })}</span>
+              <button type="button" className="link-button" onClick={goHome}>{t('results.back')}</button>
+            </div>
             <ul className="rows results">
               {results.map((form) => (
                 <ResultRow
@@ -104,11 +119,15 @@ export function App() {
                 />
               ))}
             </ul>
+            </>
           ) : (
-            <p className="no-results">{t('search.none', { query: query.trim() })}</p>
+            <div className="no-results">
+              <p>{t('search.none', { query: query.trim() })}</p>
+              <button type="button" className="link-button" onClick={goHome}>{t('results.back')}</button>
+            </div>
           )
         ) : (
-          <RosterList summaries={[...summaries.values()]} locale={locale} onOpen={setOpenFormId} />
+          <RosterList summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} />
         )}
       </main>
 
@@ -139,7 +158,7 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} onClose={() => setSettingsOpen(false)} />
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />

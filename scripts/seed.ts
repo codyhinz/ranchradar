@@ -37,6 +37,17 @@ const POKEAPI_LANGUAGES: Record<Locale, number[]> = {
 const SPRITES_COMMIT = 'bfb75391935310368065096fa08c51e8970bc43e';
 const SPRITES_URL = `https://raw.githubusercontent.com/PokeAPI/sprites/${SPRITES_COMMIT}/sprites/pokemon`;
 const SPRITES_DIR = join(DATA_DIR, '..', 'public', 'sprites');
+/** Where our ids (Showdown naming) differ from PokeAPI's form identifiers. */
+const POKEAPI_ALIASES: Record<string, string> = {
+  'basculegion-f': 'basculegion-female',
+  'indeedee-f': 'indeedee-female',
+  'meowstic-f': 'meowstic-female',
+  'tauros-paldea-combat': 'tauros-paldea-combat-breed',
+  'tauros-paldea-blaze': 'tauros-paldea-blaze-breed',
+  'tauros-paldea-aqua': 'tauros-paldea-aqua-breed',
+};
+const pokeapiIdentifier = (id: string) => POKEAPI_ALIASES[id] ?? id;
+
 /** Sprites the app shows outside the roster (header and empty state). */
 const BRAND_SPRITES = ['torkoal'];
 
@@ -46,7 +57,7 @@ async function downloadSprites(ids: string[], pokemonIdByForm: Map<string, strin
   for (const id of ids) {
     const target = join(SPRITES_DIR, `${id}.png`);
     if (existsSync(target)) continue;
-    const pokemonId = pokemonIdByForm.get(id);
+    const pokemonId = pokemonIdByForm.get(pokeapiIdentifier(id)) ?? pokemonIdByForm.get(id);
     const response = pokemonId ? await fetch(`${SPRITES_URL}/${pokemonId}.png`) : undefined;
     if (!response?.ok) { missing.push(id); continue; }
     writeFileSync(target, Buffer.from(await response.arrayBuffer()));
@@ -172,7 +183,7 @@ async function main() {
   const formNames: NameMap = {};
   for (const form of forms) {
     const speciesName = pickLocales(speciesNameById.get(String(form.dex_number)) ?? new Map());
-    const pokeapiFormId = formIdByIdentifier.get(form.id);
+    const pokeapiFormId = formIdByIdentifier.get(pokeapiIdentifier(form.id));
     const full = pickLocales(fullFormNames.get(pokeapiFormId ?? '') ?? new Map());
     const label = pickLocales(formLabels.get(pokeapiFormId ?? '') ?? new Map());
     const names: Partial<Record<Locale, string>> = {};

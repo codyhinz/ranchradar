@@ -114,6 +114,44 @@
     "sprite_key": "ninetales-alola"
   },
   {
+    "id": "wigglytuff",
+    "species_id": "wigglytuff",
+    "dex_number": 40,
+    "types": [
+      "normal",
+      "fairy"
+    ],
+    "sprite_key": "wigglytuff"
+  },
+  {
+    "id": "vileplume",
+    "species_id": "vileplume",
+    "dex_number": 45,
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "sprite_key": "vileplume"
+  },
+  {
+    "id": "persian",
+    "species_id": "persian",
+    "dex_number": 53,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "persian"
+  },
+  {
+    "id": "persian-alola",
+    "species_id": "persian",
+    "dex_number": 53,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "persian-alola"
+  },
+  {
     "id": "arcanine",
     "species_id": "arcanine",
     "dex_number": 59,
@@ -142,6 +180,15 @@
     "sprite_key": "alakazam"
   },
   {
+    "id": "machamp",
+    "species_id": "machamp",
+    "dex_number": 68,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "machamp"
+  },
+  {
     "id": "victreebel",
     "species_id": "victreebel",
     "dex_number": 71,
@@ -160,6 +207,26 @@
       "psychic"
     ],
     "sprite_key": "slowbro"
+  },
+  {
+    "id": "slowbro-galar",
+    "species_id": "slowbro",
+    "dex_number": 80,
+    "types": [
+      "poison",
+      "psychic"
+    ],
+    "sprite_key": "slowbro-galar"
+  },
+  {
+    "id": "farfetchd",
+    "species_id": "farfetchd",
+    "dex_number": 83,
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "sprite_key": "farfetchd"
   },
   {
     "id": "gengar",
@@ -191,6 +258,16 @@
     "sprite_key": "starmie"
   },
   {
+    "id": "mr-mime",
+    "species_id": "mr-mime",
+    "dex_number": 122,
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "sprite_key": "mr-mime"
+  },
+  {
     "id": "pinsir",
     "species_id": "pinsir",
     "dex_number": 127,
@@ -198,6 +275,44 @@
       "bug"
     ],
     "sprite_key": "pinsir"
+  },
+  {
+    "id": "tauros",
+    "species_id": "tauros",
+    "dex_number": 128,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "tauros"
+  },
+  {
+    "id": "tauros-paldea-aqua",
+    "species_id": "tauros",
+    "dex_number": 128,
+    "types": [
+      "fighting",
+      "water"
+    ],
+    "sprite_key": "tauros-paldea-aqua"
+  },
+  {
+    "id": "tauros-paldea-blaze",
+    "species_id": "tauros",
+    "dex_number": 128,
+    "types": [
+      "fighting",
+      "fire"
+    ],
+    "sprite_key": "tauros-paldea-blaze"
+  },
+  {
+    "id": "tauros-paldea-combat",
+    "species_id": "tauros",
+    "dex_number": 128,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "tauros-paldea-combat"
   },
   {
     "id": "gyarados",
@@ -210,6 +325,42 @@
     "sprite_key": "gyarados"
   },
   {
+    "id": "ditto",
+    "species_id": "ditto",
+    "dex_number": 132,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "ditto"
+  },
+  {
+    "id": "vaporeon",
+    "species_id": "vaporeon",
+    "dex_number": 134,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "vaporeon"
+  },
+  {
+    "id": "jolteon",
+    "species_id": "jolteon",
+    "dex_number": 135,
+    "types": [
+      "electric"
+    ],
+    "sprite_key": "jolteon"
+  },
+  {
+    "id": "flareon",
+    "species_id": "flareon",
+    "dex_number": 136,
+    "types": [
+      "fire"
+    ],
+    "sprite_key": "flareon"
+  },
+  {
     "id": "aerodactyl",
     "species_id": "aerodactyl",
     "dex_number": 142,
@@ -218,6 +369,15 @@
       "flying"
     ],
     "sprite_key": "aerodactyl"
+  },
+  {
+    "id": "snorlax",
+    "species_id": "snorlax",
+    "dex_number": 143,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "snorlax"
   },
   {
     "id": "dragonite",
@@ -239,6 +399,25 @@
     "sprite_key": "meganium"
   },
   {
+    "id": "typhlosion",
+    "species_id": "typhlosion",
+    "dex_number": 157,
+    "types": [
+      "fire"
+    ],
+    "sprite_key": "typhlosion"
+  },
+  {
+    "id": "typhlosion-hisui",
+    "species_id": "typhlosion",
+    "dex_number": 157,
+    "types": [
+      "fire",
+      "ghost"
+    ],
+    "sprite_key": "typhlosion-hisui"
+  },
+  {
     "id": "feraligatr",
     "species_id": "feraligatr",
     "dex_number": 160,
@@ -246,6 +425,102 @@
       "water"
     ],
     "sprite_key": "feraligatr"
+  },
+  {
+    "id": "ampharos",
+    "species_id": "ampharos",
+    "dex_number": 181,
+    "types": [
+      "electric"
+    ],
+    "sprite_key": "ampharos"
+  },
+  {
+    "id": "azumarill",
+    "species_id": "azumarill",
+    "dex_number": 184,
+    "types": [
+      "water",
+      "fairy"
+    ],
+    "sprite_key": "azumarill"
+  },
+  {
+    "id": "politoed",
+    "species_id": "politoed",
+    "dex_number": 186,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "politoed"
+  },
+  {
+    "id": "espeon",
+    "species_id": "espeon",
+    "dex_number": 196,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "espeon"
+  },
+  {
+    "id": "umbreon",
+    "species_id": "umbreon",
+    "dex_number": 197,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "umbreon"
+  },
+  {
+    "id": "slowking",
+    "species_id": "slowking",
+    "dex_number": 199,
+    "types": [
+      "water",
+      "psychic"
+    ],
+    "sprite_key": "slowking"
+  },
+  {
+    "id": "slowking-galar",
+    "species_id": "slowking",
+    "dex_number": 199,
+    "types": [
+      "poison",
+      "psychic"
+    ],
+    "sprite_key": "slowking-galar"
+  },
+  {
+    "id": "forretress",
+    "species_id": "forretress",
+    "dex_number": 205,
+    "types": [
+      "bug",
+      "steel"
+    ],
+    "sprite_key": "forretress"
+  },
+  {
+    "id": "steelix",
+    "species_id": "steelix",
+    "dex_number": 208,
+    "types": [
+      "steel",
+      "ground"
+    ],
+    "sprite_key": "steelix"
+  },
+  {
+    "id": "qwilfish",
+    "species_id": "qwilfish",
+    "dex_number": 211,
+    "types": [
+      "water",
+      "poison"
+    ],
+    "sprite_key": "qwilfish"
   },
   {
     "id": "scizor",
@@ -258,6 +533,16 @@
     "sprite_key": "scizor"
   },
   {
+    "id": "heracross",
+    "species_id": "heracross",
+    "dex_number": 214,
+    "types": [
+      "bug",
+      "fighting"
+    ],
+    "sprite_key": "heracross"
+  },
+  {
     "id": "skarmory",
     "species_id": "skarmory",
     "dex_number": 227,
@@ -266,6 +551,16 @@
       "flying"
     ],
     "sprite_key": "skarmory"
+  },
+  {
+    "id": "houndoom",
+    "species_id": "houndoom",
+    "dex_number": 229,
+    "types": [
+      "dark",
+      "fire"
+    ],
+    "sprite_key": "houndoom"
   },
   {
     "id": "tyranitar",
@@ -307,6 +602,16 @@
     "sprite_key": "swampert"
   },
   {
+    "id": "pelipper",
+    "species_id": "pelipper",
+    "dex_number": 279,
+    "types": [
+      "water",
+      "flying"
+    ],
+    "sprite_key": "pelipper"
+  },
+  {
     "id": "gardevoir",
     "species_id": "gardevoir",
     "dex_number": 282,
@@ -315,6 +620,16 @@
       "fairy"
     ],
     "sprite_key": "gardevoir"
+  },
+  {
+    "id": "sableye",
+    "species_id": "sableye",
+    "dex_number": 302,
+    "types": [
+      "dark",
+      "ghost"
+    ],
+    "sprite_key": "sableye"
   },
   {
     "id": "mawile",
@@ -337,6 +652,16 @@
     "sprite_key": "aggron"
   },
   {
+    "id": "medicham",
+    "species_id": "medicham",
+    "dex_number": 308,
+    "types": [
+      "fighting",
+      "psychic"
+    ],
+    "sprite_key": "medicham"
+  },
+  {
     "id": "manectric",
     "species_id": "manectric",
     "dex_number": 310,
@@ -344,6 +669,25 @@
       "electric"
     ],
     "sprite_key": "manectric"
+  },
+  {
+    "id": "swalot",
+    "species_id": "swalot",
+    "dex_number": 317,
+    "types": [
+      "poison"
+    ],
+    "sprite_key": "swalot"
+  },
+  {
+    "id": "sharpedo",
+    "species_id": "sharpedo",
+    "dex_number": 319,
+    "types": [
+      "water",
+      "dark"
+    ],
+    "sprite_key": "sharpedo"
   },
   {
     "id": "camerupt",
@@ -356,6 +700,61 @@
     "sprite_key": "camerupt"
   },
   {
+    "id": "torkoal",
+    "species_id": "torkoal",
+    "dex_number": 324,
+    "types": [
+      "fire"
+    ],
+    "sprite_key": "torkoal"
+  },
+  {
+    "id": "altaria",
+    "species_id": "altaria",
+    "dex_number": 334,
+    "types": [
+      "dragon",
+      "flying"
+    ],
+    "sprite_key": "altaria"
+  },
+  {
+    "id": "milotic",
+    "species_id": "milotic",
+    "dex_number": 350,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "milotic"
+  },
+  {
+    "id": "castform",
+    "species_id": "castform",
+    "dex_number": 351,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "castform"
+  },
+  {
+    "id": "banette",
+    "species_id": "banette",
+    "dex_number": 354,
+    "types": [
+      "ghost"
+    ],
+    "sprite_key": "banette"
+  },
+  {
+    "id": "chimecho",
+    "species_id": "chimecho",
+    "dex_number": 358,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "chimecho"
+  },
+  {
     "id": "absol",
     "species_id": "absol",
     "dex_number": 359,
@@ -363,6 +762,15 @@
       "dark"
     ],
     "sprite_key": "absol"
+  },
+  {
+    "id": "glalie",
+    "species_id": "glalie",
+    "dex_number": 362,
+    "types": [
+      "ice"
+    ],
+    "sprite_key": "glalie"
   },
   {
     "id": "salamence",
@@ -385,6 +793,36 @@
     "sprite_key": "metagross"
   },
   {
+    "id": "torterra",
+    "species_id": "torterra",
+    "dex_number": 389,
+    "types": [
+      "grass",
+      "ground"
+    ],
+    "sprite_key": "torterra"
+  },
+  {
+    "id": "infernape",
+    "species_id": "infernape",
+    "dex_number": 392,
+    "types": [
+      "fire",
+      "fighting"
+    ],
+    "sprite_key": "infernape"
+  },
+  {
+    "id": "empoleon",
+    "species_id": "empoleon",
+    "dex_number": 395,
+    "types": [
+      "water",
+      "steel"
+    ],
+    "sprite_key": "empoleon"
+  },
+  {
     "id": "staraptor",
     "species_id": "staraptor",
     "dex_number": 398,
@@ -395,6 +833,54 @@
     "sprite_key": "staraptor"
   },
   {
+    "id": "luxray",
+    "species_id": "luxray",
+    "dex_number": 405,
+    "types": [
+      "electric"
+    ],
+    "sprite_key": "luxray"
+  },
+  {
+    "id": "roserade",
+    "species_id": "roserade",
+    "dex_number": 407,
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "sprite_key": "roserade"
+  },
+  {
+    "id": "rampardos",
+    "species_id": "rampardos",
+    "dex_number": 409,
+    "types": [
+      "rock"
+    ],
+    "sprite_key": "rampardos"
+  },
+  {
+    "id": "bastiodon",
+    "species_id": "bastiodon",
+    "dex_number": 411,
+    "types": [
+      "rock",
+      "steel"
+    ],
+    "sprite_key": "bastiodon"
+  },
+  {
+    "id": "drifblim",
+    "species_id": "drifblim",
+    "dex_number": 426,
+    "types": [
+      "ghost",
+      "flying"
+    ],
+    "sprite_key": "drifblim"
+  },
+  {
     "id": "lopunny",
     "species_id": "lopunny",
     "dex_number": 428,
@@ -402,6 +888,16 @@
       "normal"
     ],
     "sprite_key": "lopunny"
+  },
+  {
+    "id": "spiritomb",
+    "species_id": "spiritomb",
+    "dex_number": 442,
+    "types": [
+      "ghost",
+      "dark"
+    ],
+    "sprite_key": "spiritomb"
   },
   {
     "id": "garchomp",
@@ -424,6 +920,93 @@
     "sprite_key": "lucario"
   },
   {
+    "id": "hippowdon",
+    "species_id": "hippowdon",
+    "dex_number": 450,
+    "types": [
+      "ground"
+    ],
+    "sprite_key": "hippowdon"
+  },
+  {
+    "id": "toxicroak",
+    "species_id": "toxicroak",
+    "dex_number": 454,
+    "types": [
+      "poison",
+      "fighting"
+    ],
+    "sprite_key": "toxicroak"
+  },
+  {
+    "id": "abomasnow",
+    "species_id": "abomasnow",
+    "dex_number": 460,
+    "types": [
+      "grass",
+      "ice"
+    ],
+    "sprite_key": "abomasnow"
+  },
+  {
+    "id": "weavile",
+    "species_id": "weavile",
+    "dex_number": 461,
+    "types": [
+      "dark",
+      "ice"
+    ],
+    "sprite_key": "weavile"
+  },
+  {
+    "id": "rhyperior",
+    "species_id": "rhyperior",
+    "dex_number": 464,
+    "types": [
+      "ground",
+      "rock"
+    ],
+    "sprite_key": "rhyperior"
+  },
+  {
+    "id": "leafeon",
+    "species_id": "leafeon",
+    "dex_number": 470,
+    "types": [
+      "grass"
+    ],
+    "sprite_key": "leafeon"
+  },
+  {
+    "id": "glaceon",
+    "species_id": "glaceon",
+    "dex_number": 471,
+    "types": [
+      "ice"
+    ],
+    "sprite_key": "glaceon"
+  },
+  {
+    "id": "gliscor",
+    "species_id": "gliscor",
+    "dex_number": 472,
+    "types": [
+      "ground",
+      "flying"
+    ],
+    "sprite_key": "gliscor"
+  },
+  {
+    "id": "mamoswine",
+    "species_id": "mamoswine",
+    "dex_number": 473,
+    "types": [
+      "ice",
+      "ground"
+    ],
+    "sprite_key": "mamoswine"
+  },
+  {
     "id": "gallade",
     "species_id": "gallade",
     "dex_number": 475,
@@ -444,6 +1027,159 @@
     "sprite_key": "froslass"
   },
   {
+    "id": "rotom",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "ghost"
+    ],
+    "sprite_key": "rotom"
+  },
+  {
+    "id": "rotom-fan",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "flying"
+    ],
+    "sprite_key": "rotom-fan"
+  },
+  {
+    "id": "rotom-frost",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "ice"
+    ],
+    "sprite_key": "rotom-frost"
+  },
+  {
+    "id": "rotom-heat",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "fire"
+    ],
+    "sprite_key": "rotom-heat"
+  },
+  {
+    "id": "rotom-mow",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "grass"
+    ],
+    "sprite_key": "rotom-mow"
+  },
+  {
+    "id": "rotom-wash",
+    "species_id": "rotom",
+    "dex_number": 479,
+    "types": [
+      "electric",
+      "water"
+    ],
+    "sprite_key": "rotom-wash"
+  },
+  {
+    "id": "serperior",
+    "species_id": "serperior",
+    "dex_number": 497,
+    "types": [
+      "grass"
+    ],
+    "sprite_key": "serperior"
+  },
+  {
+    "id": "emboar",
+    "species_id": "emboar",
+    "dex_number": 500,
+    "types": [
+      "fire",
+      "fighting"
+    ],
+    "sprite_key": "emboar"
+  },
+  {
+    "id": "samurott",
+    "species_id": "samurott",
+    "dex_number": 503,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "samurott"
+  },
+  {
+    "id": "samurott-hisui",
+    "species_id": "samurott",
+    "dex_number": 503,
+    "types": [
+      "water",
+      "dark"
+    ],
+    "sprite_key": "samurott-hisui"
+  },
+  {
+    "id": "watchog",
+    "species_id": "watchog",
+    "dex_number": 505,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "watchog"
+  },
+  {
+    "id": "liepard",
+    "species_id": "liepard",
+    "dex_number": 510,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "liepard"
+  },
+  {
+    "id": "musharna",
+    "species_id": "musharna",
+    "dex_number": 518,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "musharna"
+  },
+  {
+    "id": "excadrill",
+    "species_id": "excadrill",
+    "dex_number": 530,
+    "types": [
+      "ground",
+      "steel"
+    ],
+    "sprite_key": "excadrill"
+  },
+  {
+    "id": "audino",
+    "species_id": "audino",
+    "dex_number": 531,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "audino"
+  },
+  {
+    "id": "conkeldurr",
+    "species_id": "conkeldurr",
+    "dex_number": 534,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "conkeldurr"
+  },
+  {
     "id": "scolipede",
     "species_id": "scolipede",
     "dex_number": 545,
@@ -454,6 +1190,26 @@
     "sprite_key": "scolipede"
   },
   {
+    "id": "whimsicott",
+    "species_id": "whimsicott",
+    "dex_number": 547,
+    "types": [
+      "grass",
+      "fairy"
+    ],
+    "sprite_key": "whimsicott"
+  },
+  {
+    "id": "krookodile",
+    "species_id": "krookodile",
+    "dex_number": 553,
+    "types": [
+      "ground",
+      "dark"
+    ],
+    "sprite_key": "krookodile"
+  },
+  {
     "id": "scrafty",
     "species_id": "scrafty",
     "dex_number": 560,
@@ -462,6 +1218,71 @@
       "fighting"
     ],
     "sprite_key": "scrafty"
+  },
+  {
+    "id": "cofagrigus",
+    "species_id": "cofagrigus",
+    "dex_number": 563,
+    "types": [
+      "ghost"
+    ],
+    "sprite_key": "cofagrigus"
+  },
+  {
+    "id": "garbodor",
+    "species_id": "garbodor",
+    "dex_number": 569,
+    "types": [
+      "poison"
+    ],
+    "sprite_key": "garbodor"
+  },
+  {
+    "id": "zoroark",
+    "species_id": "zoroark",
+    "dex_number": 571,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "zoroark"
+  },
+  {
+    "id": "zoroark-hisui",
+    "species_id": "zoroark",
+    "dex_number": 571,
+    "types": [
+      "normal",
+      "ghost"
+    ],
+    "sprite_key": "zoroark-hisui"
+  },
+  {
+    "id": "reuniclus",
+    "species_id": "reuniclus",
+    "dex_number": 579,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "reuniclus"
+  },
+  {
+    "id": "vanilluxe",
+    "species_id": "vanilluxe",
+    "dex_number": 584,
+    "types": [
+      "ice"
+    ],
+    "sprite_key": "vanilluxe"
+  },
+  {
+    "id": "emolga",
+    "species_id": "emolga",
+    "dex_number": 587,
+    "types": [
+      "electric",
+      "flying"
+    ],
+    "sprite_key": "emolga"
   },
   {
     "id": "eelektross",
@@ -483,6 +1304,44 @@
     "sprite_key": "chandelure"
   },
   {
+    "id": "beartic",
+    "species_id": "beartic",
+    "dex_number": 614,
+    "types": [
+      "ice"
+    ],
+    "sprite_key": "beartic"
+  },
+  {
+    "id": "stunfisk",
+    "species_id": "stunfisk",
+    "dex_number": 618,
+    "types": [
+      "ground",
+      "electric"
+    ],
+    "sprite_key": "stunfisk"
+  },
+  {
+    "id": "stunfisk-galar",
+    "species_id": "stunfisk",
+    "dex_number": 618,
+    "types": [
+      "ground",
+      "steel"
+    ],
+    "sprite_key": "stunfisk-galar"
+  },
+  {
+    "id": "druddigon",
+    "species_id": "druddigon",
+    "dex_number": 621,
+    "types": [
+      "dragon"
+    ],
+    "sprite_key": "druddigon"
+  },
+  {
     "id": "golurk",
     "species_id": "golurk",
     "dex_number": 623,
@@ -491,6 +1350,45 @@
       "ghost"
     ],
     "sprite_key": "golurk"
+  },
+  {
+    "id": "bouffalant",
+    "species_id": "bouffalant",
+    "dex_number": 626,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "bouffalant"
+  },
+  {
+    "id": "braviary",
+    "species_id": "braviary",
+    "dex_number": 628,
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "sprite_key": "braviary"
+  },
+  {
+    "id": "hydreigon",
+    "species_id": "hydreigon",
+    "dex_number": 635,
+    "types": [
+      "dark",
+      "dragon"
+    ],
+    "sprite_key": "hydreigon"
+  },
+  {
+    "id": "volcarona",
+    "species_id": "volcarona",
+    "dex_number": 637,
+    "types": [
+      "bug",
+      "fire"
+    ],
+    "sprite_key": "volcarona"
   },
   {
     "id": "chesnaught",
@@ -523,6 +1421,36 @@
     "sprite_key": "greninja"
   },
   {
+    "id": "diggersby",
+    "species_id": "diggersby",
+    "dex_number": 660,
+    "types": [
+      "normal",
+      "ground"
+    ],
+    "sprite_key": "diggersby"
+  },
+  {
+    "id": "talonflame",
+    "species_id": "talonflame",
+    "dex_number": 663,
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "sprite_key": "talonflame"
+  },
+  {
+    "id": "vivillon",
+    "species_id": "vivillon",
+    "dex_number": 666,
+    "types": [
+      "bug",
+      "flying"
+    ],
+    "sprite_key": "vivillon"
+  },
+  {
     "id": "pyroar",
     "species_id": "pyroar",
     "dex_number": 668,
@@ -533,6 +1461,15 @@
     "sprite_key": "pyroar"
   },
   {
+    "id": "floette",
+    "species_id": "floette",
+    "dex_number": 670,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "floette"
+  },
+  {
     "id": "floette-eternal",
     "species_id": "floette",
     "dex_number": 670,
@@ -540,6 +1477,89 @@
       "fairy"
     ],
     "sprite_key": "floette-eternal"
+  },
+  {
+    "id": "florges",
+    "species_id": "florges",
+    "dex_number": 671,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "florges"
+  },
+  {
+    "id": "gogoat",
+    "species_id": "gogoat",
+    "dex_number": 673,
+    "types": [
+      "grass"
+    ],
+    "sprite_key": "gogoat"
+  },
+  {
+    "id": "pangoro",
+    "species_id": "pangoro",
+    "dex_number": 675,
+    "types": [
+      "fighting",
+      "dark"
+    ],
+    "sprite_key": "pangoro"
+  },
+  {
+    "id": "furfrou",
+    "species_id": "furfrou",
+    "dex_number": 676,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "furfrou"
+  },
+  {
+    "id": "meowstic",
+    "species_id": "meowstic",
+    "dex_number": 678,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "meowstic"
+  },
+  {
+    "id": "meowstic-f",
+    "species_id": "meowstic",
+    "dex_number": 678,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "meowstic-f"
+  },
+  {
+    "id": "aegislash",
+    "species_id": "aegislash",
+    "dex_number": 681,
+    "types": [
+      "steel",
+      "ghost"
+    ],
+    "sprite_key": "aegislash"
+  },
+  {
+    "id": "aromatisse",
+    "species_id": "aromatisse",
+    "dex_number": 683,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "aromatisse"
+  },
+  {
+    "id": "slurpuff",
+    "species_id": "slurpuff",
+    "dex_number": 685,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "slurpuff"
   },
   {
     "id": "malamar",
@@ -572,6 +1592,54 @@
     "sprite_key": "dragalge"
   },
   {
+    "id": "clawitzer",
+    "species_id": "clawitzer",
+    "dex_number": 693,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "clawitzer"
+  },
+  {
+    "id": "heliolisk",
+    "species_id": "heliolisk",
+    "dex_number": 695,
+    "types": [
+      "electric",
+      "normal"
+    ],
+    "sprite_key": "heliolisk"
+  },
+  {
+    "id": "tyrantrum",
+    "species_id": "tyrantrum",
+    "dex_number": 697,
+    "types": [
+      "rock",
+      "dragon"
+    ],
+    "sprite_key": "tyrantrum"
+  },
+  {
+    "id": "aurorus",
+    "species_id": "aurorus",
+    "dex_number": 699,
+    "types": [
+      "rock",
+      "ice"
+    ],
+    "sprite_key": "aurorus"
+  },
+  {
+    "id": "sylveon",
+    "species_id": "sylveon",
+    "dex_number": 700,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "sylveon"
+  },
+  {
     "id": "hawlucha",
     "species_id": "hawlucha",
     "dex_number": 701,
@@ -580,6 +1648,174 @@
       "flying"
     ],
     "sprite_key": "hawlucha"
+  },
+  {
+    "id": "dedenne",
+    "species_id": "dedenne",
+    "dex_number": 702,
+    "types": [
+      "electric",
+      "fairy"
+    ],
+    "sprite_key": "dedenne"
+  },
+  {
+    "id": "goodra",
+    "species_id": "goodra",
+    "dex_number": 706,
+    "types": [
+      "dragon"
+    ],
+    "sprite_key": "goodra"
+  },
+  {
+    "id": "goodra-hisui",
+    "species_id": "goodra",
+    "dex_number": 706,
+    "types": [
+      "steel",
+      "dragon"
+    ],
+    "sprite_key": "goodra-hisui"
+  },
+  {
+    "id": "klefki",
+    "species_id": "klefki",
+    "dex_number": 707,
+    "types": [
+      "steel",
+      "fairy"
+    ],
+    "sprite_key": "klefki"
+  },
+  {
+    "id": "trevenant",
+    "species_id": "trevenant",
+    "dex_number": 709,
+    "types": [
+      "ghost",
+      "grass"
+    ],
+    "sprite_key": "trevenant"
+  },
+  {
+    "id": "gourgeist",
+    "species_id": "gourgeist",
+    "dex_number": 711,
+    "types": [
+      "ghost",
+      "grass"
+    ],
+    "sprite_key": "gourgeist"
+  },
+  {
+    "id": "gourgeist-large",
+    "species_id": "gourgeist",
+    "dex_number": 711,
+    "types": [
+      "ghost",
+      "grass"
+    ],
+    "sprite_key": "gourgeist-large"
+  },
+  {
+    "id": "gourgeist-small",
+    "species_id": "gourgeist",
+    "dex_number": 711,
+    "types": [
+      "ghost",
+      "grass"
+    ],
+    "sprite_key": "gourgeist-small"
+  },
+  {
+    "id": "gourgeist-super",
+    "species_id": "gourgeist",
+    "dex_number": 711,
+    "types": [
+      "ghost",
+      "grass"
+    ],
+    "sprite_key": "gourgeist-super"
+  },
+  {
+    "id": "avalugg",
+    "species_id": "avalugg",
+    "dex_number": 713,
+    "types": [
+      "ice"
+    ],
+    "sprite_key": "avalugg"
+  },
+  {
+    "id": "avalugg-hisui",
+    "species_id": "avalugg",
+    "dex_number": 713,
+    "types": [
+      "ice",
+      "rock"
+    ],
+    "sprite_key": "avalugg-hisui"
+  },
+  {
+    "id": "noivern",
+    "species_id": "noivern",
+    "dex_number": 715,
+    "types": [
+      "flying",
+      "dragon"
+    ],
+    "sprite_key": "noivern"
+  },
+  {
+    "id": "decidueye",
+    "species_id": "decidueye",
+    "dex_number": 724,
+    "types": [
+      "grass",
+      "ghost"
+    ],
+    "sprite_key": "decidueye"
+  },
+  {
+    "id": "decidueye-hisui",
+    "species_id": "decidueye",
+    "dex_number": 724,
+    "types": [
+      "grass",
+      "fighting"
+    ],
+    "sprite_key": "decidueye-hisui"
+  },
+  {
+    "id": "incineroar",
+    "species_id": "incineroar",
+    "dex_number": 727,
+    "types": [
+      "fire",
+      "dark"
+    ],
+    "sprite_key": "incineroar"
+  },
+  {
+    "id": "primarina",
+    "species_id": "primarina",
+    "dex_number": 730,
+    "types": [
+      "water",
+      "fairy"
+    ],
+    "sprite_key": "primarina"
+  },
+  {
+    "id": "toucannon",
+    "species_id": "toucannon",
+    "dex_number": 733,
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "sprite_key": "toucannon"
   },
   {
     "id": "crabominable",
@@ -592,6 +1828,109 @@
     "sprite_key": "crabominable"
   },
   {
+    "id": "lycanroc",
+    "species_id": "lycanroc",
+    "dex_number": 745,
+    "types": [
+      "rock"
+    ],
+    "sprite_key": "lycanroc"
+  },
+  {
+    "id": "lycanroc-dusk",
+    "species_id": "lycanroc",
+    "dex_number": 745,
+    "types": [
+      "rock"
+    ],
+    "sprite_key": "lycanroc-dusk"
+  },
+  {
+    "id": "lycanroc-midnight",
+    "species_id": "lycanroc",
+    "dex_number": 745,
+    "types": [
+      "rock"
+    ],
+    "sprite_key": "lycanroc-midnight"
+  },
+  {
+    "id": "toxapex",
+    "species_id": "toxapex",
+    "dex_number": 748,
+    "types": [
+      "poison",
+      "water"
+    ],
+    "sprite_key": "toxapex"
+  },
+  {
+    "id": "mudsdale",
+    "species_id": "mudsdale",
+    "dex_number": 750,
+    "types": [
+      "ground"
+    ],
+    "sprite_key": "mudsdale"
+  },
+  {
+    "id": "araquanid",
+    "species_id": "araquanid",
+    "dex_number": 752,
+    "types": [
+      "water",
+      "bug"
+    ],
+    "sprite_key": "araquanid"
+  },
+  {
+    "id": "salazzle",
+    "species_id": "salazzle",
+    "dex_number": 758,
+    "types": [
+      "poison",
+      "fire"
+    ],
+    "sprite_key": "salazzle"
+  },
+  {
+    "id": "tsareena",
+    "species_id": "tsareena",
+    "dex_number": 763,
+    "types": [
+      "grass"
+    ],
+    "sprite_key": "tsareena"
+  },
+  {
+    "id": "comfey",
+    "species_id": "comfey",
+    "dex_number": 764,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "comfey"
+  },
+  {
+    "id": "oranguru",
+    "species_id": "oranguru",
+    "dex_number": 765,
+    "types": [
+      "normal",
+      "psychic"
+    ],
+    "sprite_key": "oranguru"
+  },
+  {
+    "id": "passimian",
+    "species_id": "passimian",
+    "dex_number": 766,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "passimian"
+  },
+  {
     "id": "golisopod",
     "species_id": "golisopod",
     "dex_number": 768,
@@ -600,6 +1939,16 @@
       "water"
     ],
     "sprite_key": "golisopod"
+  },
+  {
+    "id": "mimikyu",
+    "species_id": "mimikyu",
+    "dex_number": 778,
+    "types": [
+      "ghost",
+      "fairy"
+    ],
+    "sprite_key": "mimikyu"
   },
   {
     "id": "drampa",
@@ -612,6 +1961,16 @@
     "sprite_key": "drampa"
   },
   {
+    "id": "kommo-o",
+    "species_id": "kommo-o",
+    "dex_number": 784,
+    "types": [
+      "dragon",
+      "fighting"
+    ],
+    "sprite_key": "kommo-o"
+  },
+  {
     "id": "rillaboom",
     "species_id": "rillaboom",
     "dex_number": 812,
@@ -621,6 +1980,158 @@
     "sprite_key": "rillaboom"
   },
   {
+    "id": "cinderace",
+    "species_id": "cinderace",
+    "dex_number": 815,
+    "types": [
+      "fire"
+    ],
+    "sprite_key": "cinderace"
+  },
+  {
+    "id": "inteleon",
+    "species_id": "inteleon",
+    "dex_number": 818,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "inteleon"
+  },
+  {
+    "id": "corviknight",
+    "species_id": "corviknight",
+    "dex_number": 823,
+    "types": [
+      "flying",
+      "steel"
+    ],
+    "sprite_key": "corviknight"
+  },
+  {
+    "id": "thievul",
+    "species_id": "thievul",
+    "dex_number": 828,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "thievul"
+  },
+  {
+    "id": "flapple",
+    "species_id": "flapple",
+    "dex_number": 841,
+    "types": [
+      "grass",
+      "dragon"
+    ],
+    "sprite_key": "flapple"
+  },
+  {
+    "id": "sandaconda",
+    "species_id": "sandaconda",
+    "dex_number": 844,
+    "types": [
+      "ground"
+    ],
+    "sprite_key": "sandaconda"
+  },
+  {
+    "id": "toxtricity",
+    "species_id": "toxtricity",
+    "dex_number": 849,
+    "types": [
+      "electric",
+      "poison"
+    ],
+    "sprite_key": "toxtricity"
+  },
+  {
+    "id": "toxtricity-low-key",
+    "species_id": "toxtricity",
+    "dex_number": 849,
+    "types": [
+      "electric",
+      "poison"
+    ],
+    "sprite_key": "toxtricity-low-key"
+  },
+  {
+    "id": "grapploct",
+    "species_id": "grapploct",
+    "dex_number": 853,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "grapploct"
+  },
+  {
+    "id": "polteageist",
+    "species_id": "polteageist",
+    "dex_number": 855,
+    "types": [
+      "ghost"
+    ],
+    "sprite_key": "polteageist"
+  },
+  {
+    "id": "hatterene",
+    "species_id": "hatterene",
+    "dex_number": 858,
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "sprite_key": "hatterene"
+  },
+  {
+    "id": "grimmsnarl",
+    "species_id": "grimmsnarl",
+    "dex_number": 861,
+    "types": [
+      "dark",
+      "fairy"
+    ],
+    "sprite_key": "grimmsnarl"
+  },
+  {
+    "id": "perrserker",
+    "species_id": "perrserker",
+    "dex_number": 863,
+    "types": [
+      "steel"
+    ],
+    "sprite_key": "perrserker"
+  },
+  {
+    "id": "mr-rime",
+    "species_id": "mr-rime",
+    "dex_number": 866,
+    "types": [
+      "ice",
+      "psychic"
+    ],
+    "sprite_key": "mr-rime"
+  },
+  {
+    "id": "runerigus",
+    "species_id": "runerigus",
+    "dex_number": 867,
+    "types": [
+      "ground",
+      "ghost"
+    ],
+    "sprite_key": "runerigus"
+  },
+  {
+    "id": "alcremie",
+    "species_id": "alcremie",
+    "dex_number": 869,
+    "types": [
+      "fairy"
+    ],
+    "sprite_key": "alcremie"
+  },
+  {
     "id": "falinks",
     "species_id": "falinks",
     "dex_number": 870,
@@ -628,6 +2139,191 @@
       "fighting"
     ],
     "sprite_key": "falinks"
+  },
+  {
+    "id": "pincurchin",
+    "species_id": "pincurchin",
+    "dex_number": 871,
+    "types": [
+      "electric"
+    ],
+    "sprite_key": "pincurchin"
+  },
+  {
+    "id": "indeedee",
+    "species_id": "indeedee",
+    "dex_number": 876,
+    "types": [
+      "psychic",
+      "normal"
+    ],
+    "sprite_key": "indeedee"
+  },
+  {
+    "id": "indeedee-f",
+    "species_id": "indeedee",
+    "dex_number": 876,
+    "types": [
+      "psychic",
+      "normal"
+    ],
+    "sprite_key": "indeedee-f"
+  },
+  {
+    "id": "morpeko",
+    "species_id": "morpeko",
+    "dex_number": 877,
+    "types": [
+      "electric",
+      "dark"
+    ],
+    "sprite_key": "morpeko"
+  },
+  {
+    "id": "dragapult",
+    "species_id": "dragapult",
+    "dex_number": 887,
+    "types": [
+      "dragon",
+      "ghost"
+    ],
+    "sprite_key": "dragapult"
+  },
+  {
+    "id": "wyrdeer",
+    "species_id": "wyrdeer",
+    "dex_number": 899,
+    "types": [
+      "normal",
+      "psychic"
+    ],
+    "sprite_key": "wyrdeer"
+  },
+  {
+    "id": "kleavor",
+    "species_id": "kleavor",
+    "dex_number": 900,
+    "types": [
+      "bug",
+      "rock"
+    ],
+    "sprite_key": "kleavor"
+  },
+  {
+    "id": "basculegion",
+    "species_id": "basculegion",
+    "dex_number": 902,
+    "types": [
+      "water",
+      "ghost"
+    ],
+    "sprite_key": "basculegion"
+  },
+  {
+    "id": "basculegion-f",
+    "species_id": "basculegion",
+    "dex_number": 902,
+    "types": [
+      "water",
+      "ghost"
+    ],
+    "sprite_key": "basculegion-f"
+  },
+  {
+    "id": "sneasler",
+    "species_id": "sneasler",
+    "dex_number": 903,
+    "types": [
+      "fighting",
+      "poison"
+    ],
+    "sprite_key": "sneasler"
+  },
+  {
+    "id": "overqwil",
+    "species_id": "overqwil",
+    "dex_number": 904,
+    "types": [
+      "dark",
+      "poison"
+    ],
+    "sprite_key": "overqwil"
+  },
+  {
+    "id": "meowscarada",
+    "species_id": "meowscarada",
+    "dex_number": 908,
+    "types": [
+      "grass",
+      "dark"
+    ],
+    "sprite_key": "meowscarada"
+  },
+  {
+    "id": "skeledirge",
+    "species_id": "skeledirge",
+    "dex_number": 911,
+    "types": [
+      "fire",
+      "ghost"
+    ],
+    "sprite_key": "skeledirge"
+  },
+  {
+    "id": "maushold",
+    "species_id": "maushold",
+    "dex_number": 925,
+    "types": [
+      "normal"
+    ],
+    "sprite_key": "maushold"
+  },
+  {
+    "id": "arboliva",
+    "species_id": "arboliva",
+    "dex_number": 930,
+    "types": [
+      "grass",
+      "normal"
+    ],
+    "sprite_key": "arboliva"
+  },
+  {
+    "id": "garganacl",
+    "species_id": "garganacl",
+    "dex_number": 934,
+    "types": [
+      "rock"
+    ],
+    "sprite_key": "garganacl"
+  },
+  {
+    "id": "ceruledge",
+    "species_id": "ceruledge",
+    "dex_number": 937,
+    "types": [
+      "fire",
+      "ghost"
+    ],
+    "sprite_key": "ceruledge"
+  },
+  {
+    "id": "bellibolt",
+    "species_id": "bellibolt",
+    "dex_number": 939,
+    "types": [
+      "electric"
+    ],
+    "sprite_key": "bellibolt"
+  },
+  {
+    "id": "mabosstiff",
+    "species_id": "mabosstiff",
+    "dex_number": 943,
+    "types": [
+      "dark"
+    ],
+    "sprite_key": "mabosstiff"
   },
   {
     "id": "scovillain",
@@ -640,6 +2336,43 @@
     "sprite_key": "scovillain"
   },
   {
+    "id": "espathra",
+    "species_id": "espathra",
+    "dex_number": 956,
+    "types": [
+      "psychic"
+    ],
+    "sprite_key": "espathra"
+  },
+  {
+    "id": "tinkaton",
+    "species_id": "tinkaton",
+    "dex_number": 959,
+    "types": [
+      "fairy",
+      "steel"
+    ],
+    "sprite_key": "tinkaton"
+  },
+  {
+    "id": "palafin",
+    "species_id": "palafin",
+    "dex_number": 964,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "palafin"
+  },
+  {
+    "id": "orthworm",
+    "species_id": "orthworm",
+    "dex_number": 968,
+    "types": [
+      "steel"
+    ],
+    "sprite_key": "orthworm"
+  },
+  {
     "id": "glimmora",
     "species_id": "glimmora",
     "dex_number": 970,
@@ -650,6 +2383,25 @@
     "sprite_key": "glimmora"
   },
   {
+    "id": "houndstone",
+    "species_id": "houndstone",
+    "dex_number": 972,
+    "types": [
+      "ghost"
+    ],
+    "sprite_key": "houndstone"
+  },
+  {
+    "id": "farigiraf",
+    "species_id": "farigiraf",
+    "dex_number": 981,
+    "types": [
+      "normal",
+      "psychic"
+    ],
+    "sprite_key": "farigiraf"
+  },
+  {
     "id": "baxcalibur",
     "species_id": "baxcalibur",
     "dex_number": 998,
@@ -658,5 +2410,55 @@
       "ice"
     ],
     "sprite_key": "baxcalibur"
+  },
+  {
+    "id": "gholdengo",
+    "species_id": "gholdengo",
+    "dex_number": 1000,
+    "types": [
+      "steel",
+      "ghost"
+    ],
+    "sprite_key": "gholdengo"
+  },
+  {
+    "id": "sinistcha",
+    "species_id": "sinistcha",
+    "dex_number": 1013,
+    "types": [
+      "grass",
+      "ghost"
+    ],
+    "sprite_key": "sinistcha"
+  },
+  {
+    "id": "sinistcha-masterpiece",
+    "species_id": "sinistcha",
+    "dex_number": 1013,
+    "types": [
+      "grass",
+      "ghost"
+    ],
+    "sprite_key": "sinistcha-masterpiece"
+  },
+  {
+    "id": "archaludon",
+    "species_id": "archaludon",
+    "dex_number": 1018,
+    "types": [
+      "steel",
+      "dragon"
+    ],
+    "sprite_key": "archaludon"
+  },
+  {
+    "id": "hydrapple",
+    "species_id": "hydrapple",
+    "dex_number": 1019,
+    "types": [
+      "grass",
+      "dragon"
+    ],
+    "sprite_key": "hydrapple"
   }
 ]
