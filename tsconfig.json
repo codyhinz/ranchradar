@@ -11,11 +11,13 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "node"
     ],
     "jsx": "react-jsx"
   },
   "include": [
-    "src"
+    "src",
+    "scripts"
   ]
 }
