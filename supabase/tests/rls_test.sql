@@ -1,6 +1,5 @@
 -- RLS + sync behaviour tests. Run after migrations. Fails loudly on any violation.
 \set ON_ERROR_STOP on
-grant select, insert, update, delete on all tables in schema public to anon, authenticated;
 
 insert into regulations values ('M-C','Regulation Set M-C','2026-09-09 02:00Z','2026-12-02 01:59Z');
 insert into forms values ('garchomp','garchomp',445,'{dragon,ground}','445'),
@@ -62,6 +61,11 @@ end $$;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 do $$ begin
   assert (select notes from roster_entries) is null, 'B modified A''s row';
+  begin
+    delete from roster_entries;
+    raise exception 'client hard-deleted a roster row';
+  exception when insufficient_privilege then null;
+  end;
   begin
     perform * from private.discord_webhook_secrets;
     raise exception 'client read webhook secrets';

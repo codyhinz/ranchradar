@@ -368,6 +368,32 @@ create policy own_delete on public.discord_webhooks for delete to authenticated
   using (user_id = (select auth.uid()));
 
 -- ---------------------------------------------------------------------------
+-- Privileges (tables are not auto-exposed; each role gets exactly what it needs)
+-- ---------------------------------------------------------------------------
+
+grant usage on schema public to anon, authenticated, service_role;
+
+-- Reference data: read-only for everyone
+grant select on public.regulations, public.forms, public.form_names, public.items,
+  public.item_names, public.regulation_forms, public.regulation_items,
+  public.regulation_megas, public.natures, public.news_items, public.current_regulation
+  to anon, authenticated;
+
+-- Synced user tables: no DELETE (deletes are soft; hard deletes are server-only)
+grant select, insert, update on public.roster_entries, public.home_forms,
+  public.owned_items, public.teams, public.team_slots to authenticated;
+
+grant select, update on public.profiles to authenticated;
+grant select, insert, update, delete on public.push_subscriptions, public.reminders to authenticated;
+grant select, update, delete on public.discord_webhooks to authenticated;
+
+-- Server functions and jobs (service role bypasses RLS but still needs privileges)
+grant all on all tables in schema public to service_role;
+grant usage on schema private to service_role;
+grant all on all tables in schema private to service_role;
+grant usage on schema app to service_role;
+
+-- ---------------------------------------------------------------------------
 -- Maintenance
 -- ---------------------------------------------------------------------------
 
@@ -387,3 +413,4 @@ end $$;
 
 revoke all on function app.purge_soft_deleted() from public;
 revoke all on all tables in schema private from public;
+grant execute on function app.purge_soft_deleted() to service_role;
