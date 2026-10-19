@@ -1,0 +1,54 @@
+import type { CatalogForm, NameLocale } from '../catalog';
+import { displayName } from '../catalog';
+import { describeOwnership, type FormOwnership } from '../data/ownership';
+import type { RosterStatus } from '../data/types';
+import { t } from '../i18n';
+import { Sprite } from './Sprite';
+import { TypeTags } from './TypeTags';
+
+interface ResultRowProps {
+  form: CatalogForm;
+  ownership: FormOwnership | undefined;
+  locale: NameLocale;
+  onQuickAdd: (status: RosterStatus) => void;
+  onAddWithDetails: () => void;
+  onOpen: () => void;
+}
+
+export function ownershipState(o: FormOwnership | undefined): 'none' | 'trial' | 'permanent' {
+  if (!o || o.total === 0) return 'none';
+  return o.permanent > 0 ? 'permanent' : 'trial';
+}
+
+/** A search result: who it is, whether you own it, and the three add buttons. */
+export function ResultRow({ form, ownership, locale, onQuickAdd, onAddWithDetails, onOpen }: ResultRowProps) {
+  const name = displayName(form.id, locale);
+  const state = ownershipState(ownership);
+  return (
+    <li className="row" data-own={state}>
+      <button type="button" className="row-main" onClick={onOpen} disabled={state === 'none'}>
+        <Sprite id={form.id} />
+        <span className="row-text">
+          <span className="row-name">{name}</span>
+          <span className="row-meta">
+            <span className="own-label">{state === 'none' ? t('own.none') : describeOwnership(ownership)}</span>
+            <TypeTags types={form.types} />
+          </span>
+        </span>
+      </button>
+      <span className="row-actions">
+        <button type="button" className="add add-permanent" onClick={() => onQuickAdd('permanent')} aria-label={t('add.permanent', { name })}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+          <span className="add-label">{t('status.permanent')}</span>
+        </button>
+        <button type="button" className="add add-trial" onClick={() => onQuickAdd('trial')} aria-label={t('add.trial', { name })}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10M7 21h10M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9s8 4 8 9" /></svg>
+          <span className="add-label">{t('status.trial')}</span>
+        </button>
+        <button type="button" className="add add-more" onClick={onAddWithDetails} aria-label={t('add.details', { name })}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6" /><circle cx="12" cy="12" r="1.6" /><circle cx="19" cy="12" r="1.6" /></svg>
+        </button>
+      </span>
+    </li>
+  );
+}

@@ -1,0 +1,55 @@
+// Every piece of interface text goes through t(), so more languages can ship later
+// by adding a dictionary. Pokémon and item names come from the data files instead.
+const en = {
+  'app.tagline': 'Check today’s recruits against your roster.',
+  'search.label': 'Search Pokémon',
+  'search.placeholder': 'Search any Pokémon, in any language',
+  'search.clear': 'Clear search',
+  'search.none': 'No legal Pokémon match “{query}”. Check the spelling, or try another language’s name.',
+  'roster.heading': 'Your roster',
+  'roster.count': '{count} Pokémon',
+  'roster.empty.title': 'Your ranch is empty',
+  'roster.empty.body': 'Search for a Pokémon above and tap + to add it.',
+  'own.none': 'Not owned',
+  'add.permanent': 'Add {name} as permanent',
+  'add.trial': 'Add {name} as trial',
+  'add.details': 'Add {name} with details',
+  'add.title': 'Add {name}',
+  'add.submit': 'Add to roster',
+  'added.permanent': 'Added {name} as permanent',
+  'added.trial': 'Added {name} as trial',
+  'undo': 'Undo',
+  'cancel': 'Cancel',
+  'close': 'Close',
+  'status.label': 'Status',
+  'status.permanent': 'Permanent',
+  'status.trial': 'Trial',
+  'nature.label': 'Nature',
+  'nature.none': 'Not set',
+  'notes.label': 'Notes',
+  'notes.placeholder': 'Moves, item, anything to remember',
+  'entry.trialExpires': 'Trial, expires {date}',
+  'entry.trialExpired': 'Trial, expired {date}',
+  'entry.permanent': 'Permanent',
+  'entry.save': 'Save changes',
+  'entry.saved': 'Saved changes',
+  'entry.delete': 'Remove from roster',
+  'entry.deleted': 'Removed {name}',
+  'form.entries': 'Your {name}',
+  'form.addAnother': 'Add another',
+  'settings.open': 'Settings',
+  'settings.title': 'Settings',
+  'settings.language': 'Pokémon names in',
+  'settings.disclaimer': 'RanchRadar is a fan project, not affiliated with Nintendo, Game Freak, Creatures, or The Pokémon Company.',
+  'update.available': 'A new version of RanchRadar is ready.',
+  'update.reload': 'Refresh',
+  'offline.ready': 'RanchRadar now works offline.',
+  'error.generic': 'That didn’t save: {message}',
+  'loading': 'Loading your roster…',
+} as const;
+
+export type MessageKey = keyof typeof en;
+
+export function t(key: MessageKey, vars: Record<string, string | number> = {}): string {
+  return en[key].replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? `{${name}}`));
+}

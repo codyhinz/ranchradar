@@ -9,7 +9,7 @@
  * New ids are appended to data/id-registry.json, which validation uses to stop renames.
  * Run it after editing a regulation file, then commit the regulation file and the output together.
  */
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Dex, type Species } from '@pkmn/dex';
 import {
@@ -32,6 +32,27 @@ const POKEAPI_CSV = `https://raw.githubusercontent.com/PokeAPI/pokeapi/${POKEAPI
 const POKEAPI_LANGUAGES: Record<Locale, number[]> = {
   en: [9], ja: [1, 11], ko: [3], 'zh-Hant': [4], 'zh-Hans': [12], fr: [5], de: [6], es: [7], it: [8],
 };
+
+/** Official sprites, self-hosted from PokeAPI's sprite repository (pinned). */
+const SPRITES_COMMIT = 'bfb75391935310368065096fa08c51e8970bc43e';
+const SPRITES_URL = `https://raw.githubusercontent.com/PokeAPI/sprites/${SPRITES_COMMIT}/sprites/pokemon`;
+const SPRITES_DIR = join(DATA_DIR, '..', 'public', 'sprites');
+/** Sprites the app shows outside the roster (header and empty state). */
+const BRAND_SPRITES = ['torkoal'];
+
+async function downloadSprites(ids: string[], pokemonIdByForm: Map<string, string>): Promise<string[]> {
+  mkdirSync(SPRITES_DIR, { recursive: true });
+  const missing: string[] = [];
+  for (const id of ids) {
+    const target = join(SPRITES_DIR, `${id}.png`);
+    if (existsSync(target)) continue;
+    const pokemonId = pokemonIdByForm.get(id);
+    const response = pokemonId ? await fetch(`${SPRITES_URL}/${pokemonId}.png`) : undefined;
+    if (!response?.ok) { missing.push(id); continue; }
+    writeFileSync(target, Buffer.from(await response.arrayBuffer()));
+  }
+  return missing;
+}
 
 async function fetchCsv(file: string): Promise<string[][]> {
   const response = await fetch(`${POKEAPI_CSV}/${file}`);
@@ -142,6 +163,7 @@ async function main() {
   ]);
   const speciesNameById = groupNames(speciesNames, 0, 2);
   const formIdByIdentifier = new Map(pokemonForms.map((row) => [row[1]!, row[0]!]));
+  const pokemonIdByForm = new Map(pokemonForms.map((row) => [row[1]!, row[3]!]));
   const fullFormNames = groupNames(formNameRows, 0, 3);
   const formLabels = groupNames(formNameRows, 0, 2);
   const itemIdByIdentifier = new Map(itemRows.map((row) => [row[1]!, row[0]!]));
@@ -190,9 +212,17 @@ async function main() {
     items: grow(registry.items, items.map((i) => i.id)),
   });
 
+  // Base forms PokeAPI files under a gendered or default identifier fall back to the dex number.
+  for (const form of forms) {
+    if (form.id === form.species_id && !pokemonIdByForm.has(form.id)) pokemonIdByForm.set(form.id, String(form.dex_number));
+  }
+  console.log('Downloading sprites…');
+  const missingSprites = await downloadSprites([...forms.map((f) => f.id), ...BRAND_SPRITES], pokemonIdByForm);
+
   const missingLocales = forms.filter((f) => Object.keys(formNames[f.id]!).length < LOCALES.length).length;
   console.log(`✓ ${forms.length} forms, ${items.length} items from ${regulations.length} regulation file(s)`);
   if (missingLocales) console.log(`  ${missingLocales} form(s) are missing some translations (English is used instead)`);
+  if (missingSprites.length) console.log(`  No sprite yet for: ${missingSprites.join(', ')} (the app shows a placeholder)`);
 }
 
 main().catch((error: unknown) => {

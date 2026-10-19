@@ -12,9 +12,12 @@
     "skipLibCheck": true,
     "types": [
       "vitest/globals",
-      "node"
+      "node",
+      "vite-plugin-pwa/react",
+      "vite/client"
     ],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "resolveJsonModule": true
   },
   "include": [
     "src",
