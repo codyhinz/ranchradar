@@ -28,7 +28,13 @@ export function App() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  const summaries = useMemo(() => summarizeByForm(entries ?? []), [entries]);
+  // Ticks every minute so trial countdowns and expiries stay current while the app is open.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = window.setInterval(() => setNow(new Date()), 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+  const summaries = useMemo(() => summarizeByForm(entries ?? [], now), [entries, now]);
   const results = useMemo(() => searchForms(query, locale).slice(0, 60), [query, locale]);
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
@@ -129,7 +135,7 @@ export function App() {
             </div>
           )
         ) : (
-          <RosterList summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} />
+          <RosterList now={now} summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} />
         )}
       </main>
 

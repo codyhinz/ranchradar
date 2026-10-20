@@ -203,7 +203,7 @@ body::before {
 .tile { display: flex; }
 .tile button {
   position: relative; width: 100%; height: 100%; /* equal heights even when a name wraps */
-  display: grid; grid-template-rows: auto 1fr; align-items: start; justify-items: center; gap: 0.15rem;
+  display: grid; grid-template-rows: auto 1fr auto; align-items: start; justify-items: center; gap: 0.15rem;
   padding: 0.4rem 0.25rem 0.55rem; border-radius: 12px; cursor: pointer;
   background: var(--surface); border: 2px solid var(--rail); border-bottom-width: 5px;
 }
@@ -225,6 +225,18 @@ body::before {
   min-height: 44px; padding: 0 0.25rem; border: 0; background: transparent; cursor: pointer;
   color: var(--coal); font-weight: 600; text-decoration: underline 2px var(--ember); text-underline-offset: 0.2em;
 }
+
+/* Trial countdown: how long until a trial Pokémon leaves */
+.trial-timer {
+  display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.05rem 0.5rem 0.05rem 0.35rem;
+  border-radius: 999px; border: 1.5px solid var(--hay); color: var(--hay-ink);
+  background: color-mix(in srgb, var(--hay) 35%, var(--surface));
+  font-size: 0.75rem; font-weight: 700; white-space: nowrap; line-height: 1.5;
+}
+:root[data-theme='dark'] .trial-timer, .trial-timer { color: var(--coal); }
+.trial-timer svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+.trial-timer[data-urgent='true'] { border-color: var(--danger); color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, var(--surface)); }
+.tile .trial-timer { margin-top: 0.15rem; }
 
 /* Rows */
 .rows { list-style: none; margin: 0; padding: 0; }

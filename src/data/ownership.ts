@@ -7,6 +7,8 @@ export interface FormOwnership {
   trial: number;
   /** Trials past their expiry: still in the box, but can't be used in battle. */
   expiredTrials: number;
+  /** Soonest expiry among trials that are still active, or null if none are. */
+  nextTrialExpiresAt: string | null;
 }
 
 /** Groups live entries by form, e.g. Garchomp → 2 owned (1 permanent, 1 trial). */
@@ -16,7 +18,7 @@ export function summarizeByForm(entries: RosterEntry[], at: Date = new Date()): 
     if (entry.deleted_at) continue;
     let summary = byForm.get(entry.form_id);
     if (!summary) {
-      summary = { form_id: entry.form_id, total: 0, permanent: 0, trial: 0, expiredTrials: 0 };
+      summary = { form_id: entry.form_id, total: 0, permanent: 0, trial: 0, expiredTrials: 0, nextTrialExpiresAt: null };
       byForm.set(entry.form_id, summary);
     }
     summary.total++;
@@ -26,6 +28,8 @@ export function summarizeByForm(entries: RosterEntry[], at: Date = new Date()): 
       summary.trial++;
       if (entry.trial_expires_at && new Date(entry.trial_expires_at) <= at) {
         summary.expiredTrials++;
+      } else if (entry.trial_expires_at && (!summary.nextTrialExpiresAt || entry.trial_expires_at < summary.nextTrialExpiresAt)) {
+        summary.nextTrialExpiresAt = entry.trial_expires_at;
       }
     }
   }

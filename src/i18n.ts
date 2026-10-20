@@ -74,12 +74,14 @@ const en = {
   'update.reload': 'Refresh',
   'error.generic': 'That didn’t save: {message}',
   'loading': 'Loading your roster…',
+  'trial.days': '{count}d left', 'trial.hours': '{count}h left', 'trial.soon': '<1h left', 'trial.expired': 'Expired', 'trial.leftLong': 'Trial ends in {time}',
 };
 
 export type MessageKey = keyof typeof en;
 type Messages = Partial<Record<MessageKey, string>>;
 
 const ja: Messages = {
+  'trial.days': '残り{count}日', 'trial.hours': '残り{count}時間', 'trial.soon': '残り1時間未満', 'trial.expired': '期限切れ', 'trial.leftLong': 'お試し終了まで{time}',
   'app.tagline': '今日のスカウト候補を手持ちと照らし合わせよう。',
   'home': 'RanchRadar、ロースターに戻る',
   'search.label': 'ポケモンを検索', 'search.placeholder': 'ポケモンを検索', 'search.clear': '検索をクリア',
@@ -111,6 +113,7 @@ const ja: Messages = {
 };
 
 const ko: Messages = {
+  'trial.days': '{count}일 남음', 'trial.hours': '{count}시간 남음', 'trial.soon': '1시간 미만', 'trial.expired': '만료됨', 'trial.leftLong': '체험 종료까지 {time}',
   'app.tagline': '오늘의 영입 후보를 내 로스터와 비교해 보세요.',
   'home': 'RanchRadar, 로스터로 돌아가기',
   'search.label': '포켓몬 검색', 'search.placeholder': '포켓몬 검색', 'search.clear': '검색 지우기',
@@ -142,6 +145,7 @@ const ko: Messages = {
 };
 
 const zhHant: Messages = {
+  'trial.days': '剩 {count} 天', 'trial.hours': '剩 {count} 小時', 'trial.soon': '不到 1 小時', 'trial.expired': '已過期', 'trial.leftLong': '試用結束：{time}',
   'app.tagline': '把今天的招募對象和你的陣容比對一下。',
   'home': 'RanchRadar，回到你的陣容',
   'search.label': '搜尋寶可夢', 'search.placeholder': '搜尋寶可夢', 'search.clear': '清除搜尋',
@@ -173,6 +177,7 @@ const zhHant: Messages = {
 };
 
 const zhHans: Messages = {
+  'trial.days': '剩 {count} 天', 'trial.hours': '剩 {count} 小时', 'trial.soon': '不到 1 小时', 'trial.expired': '已过期', 'trial.leftLong': '试用结束：{time}',
   'app.tagline': '把今天的招募对象和你的阵容对比一下。',
   'home': 'RanchRadar，返回你的阵容',
   'search.label': '搜索宝可梦', 'search.placeholder': '搜索宝可梦', 'search.clear': '清除搜索',
@@ -204,6 +209,7 @@ const zhHans: Messages = {
 };
 
 const fr: Messages = {
+  'trial.days': '{count} j restants', 'trial.hours': '{count} h restantes', 'trial.soon': '< 1 h', 'trial.expired': 'Expiré', 'trial.leftLong': 'Fin de l’essai : {time}',
   'app.tagline': 'Comparez les recrues du jour à votre équipe.',
   'home': 'RanchRadar, retour à votre équipe',
   'search.label': 'Rechercher un Pokémon', 'search.placeholder': 'Rechercher un Pokémon', 'search.clear': 'Effacer la recherche',
@@ -235,6 +241,7 @@ const fr: Messages = {
 };
 
 const de: Messages = {
+  'trial.days': 'noch {count} T.', 'trial.hours': 'noch {count} Std.', 'trial.soon': '< 1 Std.', 'trial.expired': 'Abgelaufen', 'trial.leftLong': 'Probe endet: {time}',
   'app.tagline': 'Vergleiche die heutigen Rekruten mit deinem Team.',
   'home': 'RanchRadar, zurück zu deinem Team',
   'search.label': 'Pokémon suchen', 'search.placeholder': 'Pokémon suchen', 'search.clear': 'Suche löschen',
@@ -266,6 +273,7 @@ const de: Messages = {
 };
 
 const es: Messages = {
+  'trial.days': 'quedan {count} d', 'trial.hours': 'quedan {count} h', 'trial.soon': '< 1 h', 'trial.expired': 'Caducado', 'trial.leftLong': 'Fin de la prueba: {time}',
   'app.tagline': 'Compara los reclutas de hoy con tu equipo.',
   'home': 'RanchRadar, volver a tu equipo',
   'search.label': 'Buscar Pokémon', 'search.placeholder': 'Buscar Pokémon', 'search.clear': 'Borrar búsqueda',
@@ -297,6 +305,7 @@ const es: Messages = {
 };
 
 const it: Messages = {
+  'trial.days': '{count} g rimasti', 'trial.hours': '{count} h rimaste', 'trial.soon': '< 1 h', 'trial.expired': 'Scaduto', 'trial.leftLong': 'Fine prova: {time}',
   'app.tagline': 'Confronta le reclute di oggi con la tua squadra.',
   'home': 'RanchRadar, torna alla tua squadra',
   'search.label': 'Cerca Pokémon', 'search.placeholder': 'Cerca Pokémon', 'search.clear': 'Cancella ricerca',
@@ -346,6 +355,16 @@ export function uiLocale(): NameLocale {
 export function t(key: MessageKey, vars: Record<string, string | number> = {}): string {
   const template = dictionaries[current][key] ?? en[key];
   return template.replace(/\{(\w+)\}/g, (_, name: string) => String(vars[name] ?? `{${name}}`));
+}
+
+/** Time left on a trial, e.g. "3d left", "5h left", "<1h left"; null when there's no active trial. */
+export function trialTimeLeft(expiresAt: string | null, now: Date = new Date()): string | null {
+  if (!expiresAt) return null;
+  const hours = Math.floor((Date.parse(expiresAt) - now.getTime()) / 3_600_000);
+  if (Date.parse(expiresAt) <= now.getTime()) return t('trial.expired');
+  if (hours >= 48) return t('trial.days', { count: Math.floor(hours / 24) });
+  if (hours >= 1) return t('trial.hours', { count: hours });
+  return t('trial.soon');
 }
 
 /** "2 owned (1 perm, 1 trial)" in the current language. */

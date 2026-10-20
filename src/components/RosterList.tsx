@@ -2,13 +2,14 @@ import type React from 'react';
 import type { RosterView } from '../app/preferences';
 import { catalogById, displayName, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
-import { ownershipText, t } from '../i18n';
+import { ownershipText, t, trialTimeLeft, uiLocale } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
 import { TypeTags } from './TypeTags';
 
 interface RosterListProps {
   summaries: FormOwnership[];
+  now: Date;
   locale: NameLocale;
   view: RosterView;
   onViewChange: (view: RosterView) => void;
@@ -16,7 +17,7 @@ interface RosterListProps {
 }
 
 /** Everything you own, as a dense sprite grid (see it all at once) or a detailed list. */
-export function RosterList({ summaries, locale, view, onViewChange, onOpen }: RosterListProps) {
+export function RosterList({ summaries, now, locale, view, onViewChange, onOpen }: RosterListProps) {
   if (summaries.length === 0) {
     return (
       <div className="empty">
@@ -26,9 +27,15 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
       </div>
     );
   }
-  const sorted = [...summaries].sort(
-    (a, b) => (catalogById.get(a.form_id)?.dexNumber ?? 9999) - (catalogById.get(b.form_id)?.dexNumber ?? 9999),
-  );
+  // Alphabetical by the name shown in the current language (50音順 in Japanese, and so on).
+  const collator = new Intl.Collator(uiLocale());
+  const sorted = [...summaries].sort((a, b) => collator.compare(displayName(a.form_id, locale), displayName(b.form_id, locale)));
+  const timer = (summary: FormOwnership) => {
+    const left = trialTimeLeft(summary.nextTrialExpiresAt, now);
+    if (!left) return null;
+    const urgent = Date.parse(summary.nextTrialExpiresAt!) - now.getTime() < 24 * 3_600_000;
+    return { left, urgent, label: t('trial.leftLong', { time: left }) };
+  };
   const total = summaries.reduce((sum, s) => sum + s.total, 0);
   return (
     <section aria-labelledby="roster-heading">
@@ -63,6 +70,11 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
                 <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${ownershipText(summary)}`}>
                   <Sprite id={summary.form_id} size={64} />
                   <span className="tile-name">{name}</span>
+                  {timer(summary) && (
+                    <span className="trial-timer" data-urgent={timer(summary)!.urgent} title={timer(summary)!.label}>
+                      <TimerIcon />{timer(summary)!.left}
+                    </span>
+                  )}
                   {summary.total > 1 && <span key={summary.total} className="tile-count" aria-label={t('roster.copies', { count: summary.total })}>×{summary.total}</span>}
                   <span className="visually-hidden">{ownershipText(summary)}</span>
                 </button>
@@ -85,6 +97,11 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
                         <OwnIcon state={ownershipState(summary) === 'permanent' ? 'permanent' : 'trial'} />
                         {ownershipText(summary)}
                       </span>
+                      {timer(summary) && (
+                        <span className="trial-timer" data-urgent={timer(summary)!.urgent} title={timer(summary)!.label}>
+                          <TimerIcon />{timer(summary)!.left}
+                        </span>
+                      )}
                       {form && <TypeTags types={form.types} />}
                     </span>
                   </span>
@@ -96,4 +113,8 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
       )}
     </section>
   );
+}
+
+function TimerIcon() {
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2.5M9 2h6" /></svg>;
 }
