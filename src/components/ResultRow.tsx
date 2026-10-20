@@ -32,7 +32,10 @@ export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAd
         <span className="row-text">
           <span className="row-name">{name}</span>
           <span className="row-meta">
-            <span className="own-label" key={describeOwnership(ownership)}>{state === 'none' ? t('own.none') : describeOwnership(ownership)}</span>
+            <span className="own-label" data-own={state} key={describeOwnership(ownership)}>
+              {state !== 'none' && <OwnIcon state={state} />}
+              {state === 'none' ? t('own.none') : describeOwnership(ownership)}
+            </span>
             <TypeTags types={form.types} />
           </span>
         </span>
@@ -51,5 +54,14 @@ export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAd
         </button>
       </span>
     </li>
+  );
+}
+
+/** Check for owned permanently, hourglass for trial-only. */
+export function OwnIcon({ state }: { state: 'trial' | 'permanent' }) {
+  return state === 'permanent' ? (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+  ) : (
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10M7 21h10M8 3c0 5 8 6 8 9s-8 4-8 9M16 3c0 5-8 6-8 9s8 4 8 9" /></svg>
   );
 }

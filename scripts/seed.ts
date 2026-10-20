@@ -189,17 +189,41 @@ async function main() {
     const full = pickLocales(fullFormNames.get(pokeapiFormId ?? '') ?? new Map());
     const label = pickLocales(formLabels.get(pokeapiFormId ?? '') ?? new Map());
     const names: Partial<Record<Locale, string>> = {};
+    const isBaseForm = form.id === form.species_id;
+    // English qualifier for forms PokeAPI hasn't translated, e.g. "Hisuian Arcanine" → "Hisuian".
+    const enName = full.en ?? speciesBySlug.get(form.id)!.name;
+    const enQualifier = (label.en ?? enName.replace(speciesName.en ?? '', '').trim()).replace(/\s*\((.+)\)/, ', $1');
     for (const locale of LOCALES) {
-      const isBaseForm = form.id === form.species_id;
-      const name =
-        full[locale] ??
-        (isBaseForm ? speciesName[locale] : speciesName[locale] && label[locale]
-          ? `${speciesName[locale]} (${label[locale]})`
-          : undefined);
+      const species = speciesName[locale];
+      let name = full[locale];
+      if (!name && species) {
+        if (isBaseForm) name = species;
+        else if (label[locale]) name = `${species} (${label[locale]})`;
+        // No translation of the form yet: keep the local species name so search stays in-language.
+        else name = enQualifier ? `${species} (${enQualifier})` : species;
+      }
       if (name) names[locale] = name;
     }
-    names.en ??= speciesBySlug.get(form.id)!.name; // Showdown name as the last resort
+    names.en ??= enName;
     formNames[form.id] = names;
+  }
+
+  // Forms of one species that end up with the same name in a language (PokeAPI often skips the
+  // breed or variety) get the Showdown forme appended, e.g. ケンタロス (パルデアのすがた) Aqua.
+  for (const locale of LOCALES) {
+    const seen = new Map<string, string[]>();
+    for (const form of forms) {
+      const name = formNames[form.id]?.[locale];
+      if (name) seen.set(name, [...(seen.get(name) ?? []), form.id]);
+    }
+    for (const ids of seen.values()) {
+      if (ids.length < 2) continue;
+      for (const id of ids) {
+        const forme = speciesBySlug.get(id)!.forme;
+        const tag = forme ? forme.split('-').pop() : '';
+        if (tag) formNames[id]![locale] = `${formNames[id]![locale]} ${tag}`;
+      }
+    }
   }
 
   const itemNames: NameMap = {};

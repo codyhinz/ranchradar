@@ -189,8 +189,13 @@
   "arcanine-hisui": {
     "en": "Hisuian Arcanine",
     "ja": "ウインディ (ヒスイのすがた)",
+    "ko": "윈디 (Hisuian Form)",
+    "zh-Hant": "風速狗 (Hisuian Form)",
+    "zh-Hans": "风速狗 (Hisuian Form)",
     "fr": "Arcanin de Hisui",
-    "de": "Hisui Arkani"
+    "de": "Hisui Arkani",
+    "es": "Arcanine (Hisuian Form)",
+    "it": "Arcanine (Hisuian Form)"
   },
   "alakazam": {
     "en": "Alakazam",
@@ -326,18 +331,36 @@
   },
   "tauros-paldea-aqua": {
     "en": "Paldean Tauros (Aqua Breed)",
-    "ja": "ケンタロス (パルデアのすがた)",
-    "fr": "Tauros de Paldéa Race Aquatique"
+    "ja": "ケンタロス (パルデアのすがた) Aqua",
+    "ko": "켄타로스 (Paldean Form, Aqua Breed)",
+    "zh-Hant": "肯泰羅 (Paldean Form, Aqua Breed)",
+    "zh-Hans": "肯泰罗 (Paldean Form, Aqua Breed)",
+    "fr": "Tauros de Paldéa Race Aquatique",
+    "de": "Tauros (Paldean Form, Aqua Breed)",
+    "es": "Tauros (Paldean Form, Aqua Breed)",
+    "it": "Tauros (Paldean Form, Aqua Breed)"
   },
   "tauros-paldea-blaze": {
     "en": "Paldean Tauros (Blaze Breed)",
-    "ja": "ケンタロス (パルデアのすがた)",
-    "fr": "Tauros de Paldéa Race Flamboyante"
+    "ja": "ケンタロス (パルデアのすがた) Blaze",
+    "ko": "켄타로스 (Paldean Form, Blaze Breed)",
+    "zh-Hant": "肯泰羅 (Paldean Form, Blaze Breed)",
+    "zh-Hans": "肯泰罗 (Paldean Form, Blaze Breed)",
+    "fr": "Tauros de Paldéa Race Flamboyante",
+    "de": "Tauros (Paldean Form, Blaze Breed)",
+    "es": "Tauros (Paldean Form, Blaze Breed)",
+    "it": "Tauros (Paldean Form, Blaze Breed)"
   },
   "tauros-paldea-combat": {
     "en": "Paldean Tauros (Combat Breed)",
-    "ja": "ケンタロス (パルデアのすがた)",
-    "fr": "Tauros de Paldéa Race Combative"
+    "ja": "ケンタロス (パルデアのすがた) Combat",
+    "ko": "켄타로스 (Paldean Form, Combat Breed)",
+    "zh-Hant": "肯泰羅 (Paldean Form, Combat Breed)",
+    "zh-Hans": "肯泰罗 (Paldean Form, Combat Breed)",
+    "fr": "Tauros de Paldéa Race Combative",
+    "de": "Tauros (Paldean Form, Combat Breed)",
+    "es": "Tauros (Paldean Form, Combat Breed)",
+    "it": "Tauros (Paldean Form, Combat Breed)"
   },
   "gyarados": {
     "en": "Gyarados",
@@ -452,8 +475,13 @@
   "typhlosion-hisui": {
     "en": "Hisuian Typhlosion",
     "ja": "バクフーン (ヒスイのすがた)",
+    "ko": "블레이범 (Hisuian Form)",
+    "zh-Hant": "火爆獸 (Hisuian Form)",
+    "zh-Hans": "火暴兽 (Hisuian Form)",
     "fr": "Typhlosion de Hisui",
-    "de": "Hisui Tornupto"
+    "de": "Hisui Tornupto",
+    "es": "Typhlosion (Hisuian Form)",
+    "it": "Typhlosion (Hisuian Form)"
   },
   "feraligatr": {
     "en": "Feraligatr",
@@ -1250,8 +1278,13 @@
   "samurott-hisui": {
     "en": "Hisuian Samurott",
     "ja": "ダイケンキ (ヒスイのすがた)",
+    "ko": "대검귀 (Hisuian Form)",
+    "zh-Hant": "大劍鬼 (Hisuian Form)",
+    "zh-Hans": "大剑鬼 (Hisuian Form)",
     "fr": "Clamiral de Hisui",
-    "de": "Hisui Admurai"
+    "de": "Hisui Admurai",
+    "es": "Samurott (Hisuian Form)",
+    "it": "Samurott (Hisuian Form)"
   },
   "watchog": {
     "en": "Watchog",
@@ -1399,8 +1432,13 @@
   "zoroark-hisui": {
     "en": "Hisuian Zoroark",
     "ja": "ゾロアーク (ヒスイのすがた)",
+    "ko": "조로아크 (Hisuian Form)",
+    "zh-Hant": "索羅亞克 (Hisuian Form)",
+    "zh-Hans": "索罗亚克 (Hisuian Form)",
     "fr": "Zoroark de Hisui",
-    "de": "Hisui Zoroark"
+    "de": "Hisui Zoroark",
+    "es": "Zoroark (Hisuian Form)",
+    "it": "Zoroark (Hisuian Form)"
   },
   "reuniclus": {
     "en": "Reuniclus",
@@ -1648,6 +1686,8 @@
     "en": "Eternal Floette",
     "ja": "フラエッテ (えいえんのはな)",
     "ko": "플라엣테 (영원의 꽃)",
+    "zh-Hant": "花葉蒂 (Eternal Flower)",
+    "zh-Hans": "花叶蒂 (Eternal Flower)",
     "fr": "Floette Éternel",
     "de": "Floette (Ewigblütler)",
     "es": "Floette (Flor Eterna)",
@@ -1876,8 +1916,13 @@
   "goodra-hisui": {
     "en": "Hisuian Goodra",
     "ja": "ヌメルゴン (ヒスイのすがた)",
+    "ko": "미끄래곤 (Hisuian Form)",
+    "zh-Hant": "黏美龍 (Hisuian Form)",
+    "zh-Hans": "黏美龙 (Hisuian Form)",
     "fr": "Muplodocus de Hisui",
-    "de": "Hisui Viscogon"
+    "de": "Hisui Viscogon",
+    "es": "Goodra (Hisuian Form)",
+    "it": "Goodra (Hisuian Form)"
   },
   "klefki": {
     "en": "Klefki",
@@ -1959,8 +2004,13 @@
   "avalugg-hisui": {
     "en": "Hisuian Avalugg",
     "ja": "クレベース (ヒスイのすがた)",
+    "ko": "크레베이스 (Hisuian Form)",
+    "zh-Hant": "冰岩怪 (Hisuian Form)",
+    "zh-Hans": "冰岩怪 (Hisuian Form)",
     "fr": "Séracrawl de Hisui",
-    "de": "Hisui Arktilas"
+    "de": "Hisui Arktilas",
+    "es": "Avalugg (Hisuian Form)",
+    "it": "Avalugg (Hisuian Form)"
   },
   "noivern": {
     "en": "Noivern",
@@ -1987,8 +2037,13 @@
   "decidueye-hisui": {
     "en": "Hisuian Decidueye",
     "ja": "ジュナイパー (ヒスイのすがた)",
+    "ko": "모크나이퍼 (Hisuian Form)",
+    "zh-Hant": "狙射樹梟 (Hisuian Form)",
+    "zh-Hans": "狙射树枭 (Hisuian Form)",
     "fr": "Archéduc de Hisui",
-    "de": "Hisui Silvarro"
+    "de": "Hisui Silvarro",
+    "es": "Decidueye (Hisuian Form)",
+    "it": "Decidueye (Hisuian Form)"
   },
   "incineroar": {
     "en": "Incineroar",
@@ -2488,8 +2543,13 @@
   "basculegion-f": {
     "en": "Female Basculegion",
     "ja": "イダイトウ (メスのすがた)",
+    "ko": "대쓰여너 (Female)",
+    "zh-Hant": "幽尾玄魚 (Female)",
+    "zh-Hans": "幽尾玄鱼 (Female)",
     "fr": "Paragruel Femelle",
-    "de": "Barschuft ♀"
+    "de": "Barschuft ♀",
+    "es": "Basculegion (Female)",
+    "it": "Basculegion (Female)"
   },
   "sneasler": {
     "en": "Sneasler",

@@ -198,7 +198,7 @@ body::before {
 /* Grid: the whole ranch on one screen */
 .tiles {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 0.5rem;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.65rem;
 }
 .tile { display: flex; }
 .tile button {
@@ -211,7 +211,8 @@ body::before {
 .tile[data-own='trial'] button { border-bottom-color: var(--hay); }
 .tile button { box-shadow: var(--lift); transition: transform 120ms ease, box-shadow 120ms ease; }
 .tile button:hover { border-color: var(--wood); transform: translateY(-2px); }
-.tile-name { font-size: 0.78rem; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
+.tile .sprite { width: 96px; height: 96px; }
+.tile-name { font-size: 0.85rem; font-weight: 600; line-height: 1.2; text-align: center; overflow-wrap: anywhere; }
 .tile-count {
   position: absolute; top: 4px; right: 4px; min-width: 1.6rem; padding: 0 0.35rem;
   border-radius: 999px; background: var(--coal); color: var(--smoke);
@@ -262,10 +263,33 @@ body::before {
 .row-text { min-width: 0; display: grid; gap: 0.1rem; }
 .row-name { font: 600 var(--step-1) / 1.2 var(--font-sign); overflow-wrap: anywhere; }
 .row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; font-size: var(--step--1); color: var(--muted); }
-.row[data-own='permanent'] .own-label,
-.row[data-own='trial'] .own-label { color: var(--coal); font-weight: 600; }
+/* owned: the status color fills a chip and tints the whole card, not just the edge */
+.own-label[data-own='permanent'], .own-label[data-own='trial'] {
+  display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.55rem 0.1rem 0.4rem;
+  border-radius: 999px; font-weight: 700; white-space: nowrap;
+}
+.own-label[data-own='permanent'] { background: var(--ember-strong); color: #fff; }
+.own-label[data-own='trial'] { background: var(--hay); color: var(--hay-ink); }
+.own-label svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+.results > .row[data-own='permanent'], .rows > .row[data-own='permanent'] .row-main {
+  background: color-mix(in srgb, var(--ember) 13%, var(--surface));
+}
+.results > .row[data-own='trial'], .rows > .row[data-own='trial'] .row-main {
+  background: color-mix(in srgb, var(--hay) 18%, var(--surface));
+}
+.results > .row[data-own='permanent'] { border-color: color-mix(in srgb, var(--ember) 55%, transparent); }
+.results > .row[data-own='trial'] { border-color: color-mix(in srgb, var(--hay) 70%, transparent); }
+.tile[data-own='permanent'] button { background: color-mix(in srgb, var(--ember) 10%, var(--surface)); }
+.tile[data-own='trial'] button { background: color-mix(in srgb, var(--hay) 14%, var(--surface)); }
 
 .sprite { image-rendering: pixelated; flex: none; }
+.row-main .sprite { width: 72px; height: 72px; }
+.copy-sprite .sprite { width: 72px; height: 72px; }
+@media (max-width: 30rem) {
+  .tiles { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+  .tile .sprite { width: 80px; height: 80px; }
+  .row-main .sprite { width: 60px; height: 60px; }
+}
 .sprite-missing { display: inline-block; border-radius: 50%; background: var(--rail); }
 
 /* Types: text plus a colored dot */
@@ -312,6 +336,7 @@ body::before {
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   background: var(--surface); color: var(--coal); box-shadow: var(--shadow);
 }
+.sheet { overflow-y: auto; overscroll-behavior: contain; }
 .sheet::backdrop { background: rgb(31 27 25 / 0.55); }
 @media (min-width: 40rem) { .sheet { margin: auto; border-radius: var(--radius-sheet); } }
 .sheet-body { padding: 1rem 1.25rem calc(1.25rem + env(safe-area-inset-bottom, 0px)); }
@@ -384,7 +409,7 @@ body::before {
 .copy[data-badge='expired'] { --copy-color: var(--danger); }
 .copy-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.75rem; }
 .copy-sprite {
-  flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 12px;
+  flex: none; display: grid; place-items: center; width: 80px; height: 80px; border-radius: 12px;
   background: radial-gradient(circle, color-mix(in srgb, var(--copy-color) 22%, transparent), transparent 70%);
 }
 .copy-info { flex: 1; min-width: 0; display: grid; gap: 0.25rem; justify-items: start; }
@@ -405,7 +430,13 @@ body::before {
 }
 .copy-edit[aria-expanded='true'] { background: var(--coal); color: var(--smoke); border-color: var(--coal); }
 .copy-edit svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.copy-form { padding: 0.25rem 0.75rem 0.85rem; border-top: 1px solid var(--rail); }
+.copy-form { padding: 0.75rem 0.75rem 0.85rem; border-top: 1px solid var(--rail); }
+/* edit drawer grows open: grid rows animate from 0fr to 1fr */
+.copy-drawer { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 260ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease; }
+.copy-drawer[data-open='true'] { grid-template-rows: 1fr; opacity: 1; }
+.copy-drawer-inner { overflow: hidden; min-height: 0; }
+.copy-edit svg { transition: transform 200ms ease; }
+.copy-edit[aria-expanded='true'] svg { transform: rotate(-12deg) scale(1.1); }
 .entries { list-style: none; margin: 0.5rem 0 0; padding: 0; }
 .entry { position: relative; padding: 1rem 0; }
 .entry-status { margin: 0 0 0.75rem; font-weight: 600; }
@@ -458,8 +489,8 @@ body::before {
 .row-main:active:not(:disabled) { transform: scale(0.99); }
 
 /* ownership changes announce themselves */
-.own-label { display: inline-block; animation: flash 600ms ease-out; }
-.row:not([data-own='none']) .own-label { animation: pop 320ms ease-out, flash 600ms ease-out; }
+.own-label[data-own='none'] { display: inline-block; }
+.own-label[data-own='permanent'], .own-label[data-own='trial'] { animation: pop 320ms ease-out; }
 .row::before { transition: background-color 200ms ease, border-color 200ms ease; }
 .tile-count { animation: pop 320ms ease-out; }
 
@@ -468,7 +499,7 @@ body::before {
 .sheet[open]::backdrop { animation: fade-in 220ms ease-out; }
 .sheet.is-closing { animation: sheet-out 200ms ease-in forwards; }
 .sheet.is-closing::backdrop { animation: fade-out 200ms ease-in forwards; }
-.copy-form { animation: rise 180ms ease-out; }
+
 
 .toast, .update { animation: toast-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
 .no-results, .empty { animation: rise 220ms ease-out; }

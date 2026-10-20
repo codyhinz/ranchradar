@@ -59,13 +59,21 @@ export function normalize(text: string): string {
     .trim();
 }
 
+const NON_LATIN = new Set<NameLocale>(['ja', 'ko', 'zh-Hant', 'zh-Hans']);
+
 /** Normalized display names per locale, built once per locale on first search. */
 const keyCache = new Map<NameLocale, Map<string, string>>();
 function searchKey(form: CatalogForm, locale: NameLocale): string {
   let keys = keyCache.get(locale);
   if (!keys) { keys = new Map(); keyCache.set(locale, keys); }
   let key = keys.get(form.id);
-  if (key === undefined) { key = normalize(displayName(form.id, locale)); keys.set(form.id, key); }
+  if (key === undefined) {
+    key = normalize(displayName(form.id, locale));
+    // In Japanese, Korean and Chinese, Latin-letter tags ("Aqua", "Hisuian Form") are only there to tell
+    // forms apart on screen; leave them out of matching so typing "b" never finds a Latin word.
+    if (NON_LATIN.has(locale)) key = key.replace(/[a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+    keys.set(form.id, key);
+  }
   return key;
 }
 

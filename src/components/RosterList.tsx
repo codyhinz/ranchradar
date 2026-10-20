@@ -3,7 +3,7 @@ import type { RosterView } from '../app/preferences';
 import { catalogById, displayName, type NameLocale } from '../catalog';
 import { describeOwnership, type FormOwnership } from '../data/ownership';
 import { t } from '../i18n';
-import { ownershipState } from './ResultRow';
+import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
 import { TypeTags } from './TypeTags';
 
@@ -81,7 +81,10 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
                   <span className="row-text">
                     <span className="row-name">{displayName(summary.form_id, locale)}</span>
                     <span className="row-meta">
-                      <span className="own-label">{describeOwnership(summary)}</span>
+                      <span className="own-label" data-own={ownershipState(summary)}>
+                        <OwnIcon state={ownershipState(summary) === 'permanent' ? 'permanent' : 'trial'} />
+                        {describeOwnership(summary)}
+                      </span>
                       {form && <TypeTags types={form.types} />}
                     </span>
                   </span>

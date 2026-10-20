@@ -15,6 +15,12 @@ describe('searchForms', () => {
     expect(searchForms('garch', 'en')[0]?.id).toBe('garchomp');
   });
 
+  it('never matches Latin letters in Japanese mode', () => {
+    expect(searchForms('b', 'ja')).toEqual([]);
+    expect(searchForms('a', 'ja')).toEqual([]);
+    expect(searchForms('けんたろす', 'ja').map((f) => f.id)).toEqual(expect.arrayContaining(['tauros-paldea-aqua']));
+  });
+
   it('searches only the chosen language', () => {
     expect(searchForms('Knakrack', 'en')).toEqual([]);
     expect(searchForms('Knakrack', 'de')[0]?.id).toBe('garchomp');

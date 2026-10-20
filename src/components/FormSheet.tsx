@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { NATURES } from '../data/types';
 import type { RosterEntry, RosterPatch } from '../data/types';
 import { t } from '../i18n';
@@ -84,6 +84,9 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
   onRemove: () => void;
 }) {
   const badge = badgeOf(entry);
+  // React 18's types don't know `inert` yet, so set it directly: collapsed fields can't be tabbed into.
+  const drawerRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { drawerRef.current?.toggleAttribute('inert', !editing); }, [editing]);
   const initial: EntryDraft = { status: entry.status, nature: entry.nature, notes: entry.notes ?? '' };
   const [draft, setDraft] = useState(initial);
   const dirty = draft.status !== initial.status || draft.nature !== initial.nature || draft.notes !== initial.notes;
@@ -114,15 +117,18 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></svg>
         </button>
       </div>
-      {editing && (
-        <form onSubmit={submit} className="copy-form">
-          <EntryFields draft={draft} onChange={setDraft} idPrefix={entry.id} />
-          <div className="sheet-actions">
-            <button type="button" className="button button-danger" onClick={onRemove}>{t('entry.delete')}</button>
-            <button type="submit" className="button button-primary" disabled={!dirty}>{t('entry.save')}</button>
-          </div>
-        </form>
-      )}
+      {/* Always rendered so it can grow open smoothly; inert while collapsed. */}
+      <div className="copy-drawer" data-open={editing} ref={drawerRef}>
+        <div className="copy-drawer-inner">
+          <form onSubmit={submit} className="copy-form">
+            <EntryFields draft={draft} onChange={setDraft} idPrefix={entry.id} />
+            <div className="sheet-actions">
+              <button type="button" className="button button-danger" onClick={onRemove}>{t('entry.delete')}</button>
+              <button type="submit" className="button button-primary" disabled={!dirty}>{t('entry.save')}</button>
+            </div>
+          </form>
+        </div>
+      </div>
     </li>
   );
 }
