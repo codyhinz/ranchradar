@@ -133,7 +133,9 @@ async function main() {
     const item = itemsBySlug.get(id);
     if (!item) { problems.push(`Unknown item id "${id}"`); continue; }
     const mega = item.megaStone ? Object.entries(item.megaStone)[0] : undefined;
-    if (mega) formIds.add(slug(mega[0])); // a Mega Stone's base form must exist as a form
+    // Reference data only: the stone's base form gets a record so the stone can point at it.
+    // It is not added to any regulation's box list.
+    if (mega) formIds.add(slug(mega[0]));
     items.push({
       id,
       category: mega ? 'mega_stone' : item.isBerry ? 'berry' : 'held',

@@ -59,7 +59,8 @@ export function validateData(dataDir: string = DATA_DIR): ValidationResult {
       } else if (item && item.category !== 'mega_stone') {
         errors.push(`${where}: "${stone}" is listed under megas but isn't a Mega Stone`);
       } else if (item?.mega_base_form && !reg.forms.includes(item.mega_base_form)) {
-        errors.push(`${where}: Mega "${stone}" needs its base form "${item.mega_base_form}" in this regulation's forms`);
+        // Megas are tracked separately from the box list, so this is a heads-up, not a failure.
+        warnings.push(`${where}: Mega "${stone}" is allowed but "${item.mega_base_form}" isn't in this regulation's forms`);
       }
     }
 

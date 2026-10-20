@@ -55,12 +55,13 @@ describe('validateData', () => {
     expect(validateData(dir).errors.join()).toMatch(/vulpix-alola/);
   });
 
-  it('requires a Mega Stone in items and its base form in forms', () => {
+  it('requires an allowed Mega Stone in items, and only warns when its base Pokémon is not in the box list', () => {
     const noStone = setup({ regulations: [{ ...baseRegulation, items: ['focus-sash'] }] });
     expect(validateData(noStone).errors.join()).toMatch(/stone isn't in this regulation's items/);
 
     const noBase = setup({ regulations: [{ ...baseRegulation, forms: ['ninetales-alola'], expected_forms: 1 }] });
-    expect(validateData(noBase).errors.join()).toMatch(/needs its base form "garchomp"/);
+    expect(validateData(noBase).errors).toEqual([]);
+    expect(validateData(noBase).warnings.join()).toMatch(/"garchomp" isn't in this regulation's forms/);
   });
 
   it('flags ids that were never seeded', () => {
