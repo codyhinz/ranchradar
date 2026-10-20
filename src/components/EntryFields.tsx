@@ -1,4 +1,5 @@
-import { NATURES, type Nature, type RosterStatus } from '../data/types';
+import type { Nature, RosterStatus } from '../data/types';
+import { NaturePicker } from './NaturePicker';
 import { t } from '../i18n';
 
 export interface EntryDraft {
@@ -29,18 +30,7 @@ export function EntryFields({ draft, onChange, idPrefix }: {
           </label>
         ))}
       </fieldset>
-      <label className="field">
-        <span>{t('nature.label')}</span>
-        <select
-          value={draft.nature ?? ''}
-          onChange={(event) => onChange({ ...draft, nature: (event.target.value || null) as Nature | null })}
-        >
-          <option value="">{t('nature.none')}</option>
-          {NATURES.map((nature) => (
-            <option key={nature} value={nature}>{nature[0]!.toUpperCase() + nature.slice(1)}</option>
-          ))}
-        </select>
-      </label>
+      <NaturePicker value={draft.nature} onChange={(nature) => onChange({ ...draft, nature })} />
       <label className="field">
         <span>{t('notes.label')}</span>
         <textarea

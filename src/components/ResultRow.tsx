@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { CatalogForm, NameLocale } from '../catalog';
 import { displayName } from '../catalog';
 import { describeOwnership, type FormOwnership } from '../data/ownership';
@@ -21,17 +22,17 @@ export function ownershipState(o: FormOwnership | undefined): 'none' | 'trial' |
 }
 
 /** A search result: who it is, whether you own it, and the three add buttons. */
-export function ResultRow({ form, ownership, locale, onQuickAdd, onAddWithDetails, onOpen }: ResultRowProps) {
+export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAddWithDetails, onOpen }: ResultRowProps & { index?: number }) {
   const name = displayName(form.id, locale);
   const state = ownershipState(ownership);
   return (
-    <li className="row" data-own={state}>
+    <li className="row enter" data-own={state} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
       <button type="button" className="row-main" onClick={onOpen} disabled={state === 'none'}>
         <Sprite id={form.id} />
         <span className="row-text">
           <span className="row-name">{name}</span>
           <span className="row-meta">
-            <span className="own-label">{state === 'none' ? t('own.none') : describeOwnership(ownership)}</span>
+            <span className="own-label" key={describeOwnership(ownership)}>{state === 'none' ? t('own.none') : describeOwnership(ownership)}</span>
             <TypeTags types={form.types} />
           </span>
         </span>

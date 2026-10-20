@@ -107,9 +107,10 @@ export function App() {
               <button type="button" className="link-button" onClick={goHome}>{t('results.back')}</button>
             </div>
             <ul className="rows results">
-              {results.map((form) => (
+              {results.map((form, index) => (
                 <ResultRow
                   key={form.id}
+                  index={index}
                   form={form}
                   locale={locale}
                   ownership={summaries.get(form.id)}
@@ -145,6 +146,7 @@ export function App() {
 
       {openFormId && openEntries.length > 0 && (
         <FormSheet
+          formId={openFormId}
           name={name(openFormId)}
           entries={openEntries}
           onClose={() => setOpenFormId(null)}

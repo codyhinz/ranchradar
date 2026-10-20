@@ -1,3 +1,4 @@
+import type React from 'react';
 import type { RosterView } from '../app/preferences';
 import { catalogById, displayName, type NameLocale } from '../catalog';
 import { describeOwnership, type FormOwnership } from '../data/ownership';
@@ -54,15 +55,15 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
       </div>
 
       {view === 'grid' ? (
-        <ul className="tiles">
-          {sorted.map((summary) => {
+        <ul className="tiles" key="grid">
+          {sorted.map((summary, index) => {
             const name = displayName(summary.form_id, locale);
             return (
-              <li key={summary.form_id} className="tile" data-own={ownershipState(summary)}>
+              <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
                 <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${describeOwnership(summary)}`}>
                   <Sprite id={summary.form_id} size={64} />
                   <span className="tile-name">{name}</span>
-                  {summary.total > 1 && <span className="tile-count" aria-label={t('roster.copies', { count: summary.total })}>×{summary.total}</span>}
+                  {summary.total > 1 && <span key={summary.total} className="tile-count" aria-label={t('roster.copies', { count: summary.total })}>×{summary.total}</span>}
                   <span className="visually-hidden">{describeOwnership(summary)}</span>
                 </button>
               </li>
@@ -70,11 +71,11 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
           })}
         </ul>
       ) : (
-        <ul className="rows fence">
-          {sorted.map((summary) => {
+        <ul className="rows fence" key="list">
+          {sorted.map((summary, index) => {
             const form = catalogById.get(summary.form_id);
             return (
-              <li key={summary.form_id} className="row" data-own={ownershipState(summary)}>
+              <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
                 <button type="button" className="row-main" onClick={() => onOpen(summary.form_id)}>
                   <Sprite id={summary.form_id} />
                   <span className="row-text">
