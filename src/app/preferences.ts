@@ -45,3 +45,11 @@ export type RosterView = (typeof ROSTER_VIEWS)[number];
 export function useRosterView() {
   return usePreference<RosterView>('ranchradar:roster-view', ROSTER_VIEWS, () => 'grid');
 }
+
+export const NATURE_SORTS = ['stat', 'az'] as const;
+export type NatureSort = (typeof NATURE_SORTS)[number];
+
+/** How the nature picker orders its list; remembered between visits. */
+export function useNatureSort() {
+  return usePreference<NatureSort>('ranchradar:nature-sort', NATURE_SORTS, () => 'stat');
+}

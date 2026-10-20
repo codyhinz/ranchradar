@@ -1,9 +1,9 @@
 import type React from 'react';
 import type { CatalogForm, NameLocale } from '../catalog';
 import { displayName } from '../catalog';
-import { describeOwnership, type FormOwnership } from '../data/ownership';
+import type { FormOwnership } from '../data/ownership';
 import type { RosterStatus } from '../data/types';
-import { t } from '../i18n';
+import { ownershipText, t } from '../i18n';
 import { Sprite } from './Sprite';
 import { TypeTags } from './TypeTags';
 
@@ -32,9 +32,9 @@ export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAd
         <span className="row-text">
           <span className="row-name">{name}</span>
           <span className="row-meta">
-            <span className="own-label" data-own={state} key={describeOwnership(ownership)}>
+            <span className="own-label" data-own={state} key={ownershipText(ownership)}>
               {state !== 'none' && <OwnIcon state={state} />}
-              {state === 'none' ? t('own.none') : describeOwnership(ownership)}
+              {state === 'none' ? t('own.none') : ownershipText(ownership)}
             </span>
             <TypeTags types={form.types} />
           </span>

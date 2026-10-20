@@ -1,0 +1,232 @@
+{
+  "normal": {
+    "en": "Normal",
+    "ja": "ノーマル",
+    "ko": "노말",
+    "zh-Hant": "一般",
+    "zh-Hans": "一般",
+    "fr": "Normal",
+    "de": "Normal",
+    "es": "Normal",
+    "it": "Normale"
+  },
+  "fighting": {
+    "en": "Fighting",
+    "ja": "かくとう",
+    "ko": "격투",
+    "zh-Hant": "格鬥",
+    "zh-Hans": "格斗",
+    "fr": "Combat",
+    "de": "Kampf",
+    "es": "Lucha",
+    "it": "Lotta"
+  },
+  "flying": {
+    "en": "Flying",
+    "ja": "ひこう",
+    "ko": "비행",
+    "zh-Hant": "飛行",
+    "zh-Hans": "飞行",
+    "fr": "Vol",
+    "de": "Flug",
+    "es": "Volador",
+    "it": "Volante"
+  },
+  "poison": {
+    "en": "Poison",
+    "ja": "どく",
+    "ko": "독",
+    "zh-Hant": "毒",
+    "zh-Hans": "毒",
+    "fr": "Poison",
+    "de": "Gift",
+    "es": "Veneno",
+    "it": "Veleno"
+  },
+  "ground": {
+    "en": "Ground",
+    "ja": "じめん",
+    "ko": "땅",
+    "zh-Hant": "地面",
+    "zh-Hans": "地面",
+    "fr": "Sol",
+    "de": "Boden",
+    "es": "Tierra",
+    "it": "Terra"
+  },
+  "rock": {
+    "en": "Rock",
+    "ja": "いわ",
+    "ko": "바위",
+    "zh-Hant": "岩石",
+    "zh-Hans": "岩石",
+    "fr": "Roche",
+    "de": "Gestein",
+    "es": "Roca",
+    "it": "Roccia"
+  },
+  "bug": {
+    "en": "Bug",
+    "ja": "むし",
+    "ko": "벌레",
+    "zh-Hant": "蟲",
+    "zh-Hans": "虫",
+    "fr": "Insecte",
+    "de": "Käfer",
+    "es": "Bicho",
+    "it": "Coleottero"
+  },
+  "ghost": {
+    "en": "Ghost",
+    "ja": "ゴースト",
+    "ko": "고스트",
+    "zh-Hant": "幽靈",
+    "zh-Hans": "幽灵",
+    "fr": "Spectre",
+    "de": "Geist",
+    "es": "Fantasma",
+    "it": "Spettro"
+  },
+  "steel": {
+    "en": "Steel",
+    "ja": "はがね",
+    "ko": "강철",
+    "zh-Hant": "鋼",
+    "zh-Hans": "钢",
+    "fr": "Acier",
+    "de": "Stahl",
+    "es": "Acero",
+    "it": "Acciaio"
+  },
+  "fire": {
+    "en": "Fire",
+    "ja": "ほのお",
+    "ko": "불꽃",
+    "zh-Hant": "火",
+    "zh-Hans": "火",
+    "fr": "Feu",
+    "de": "Feuer",
+    "es": "Fuego",
+    "it": "Fuoco"
+  },
+  "water": {
+    "en": "Water",
+    "ja": "みず",
+    "ko": "물",
+    "zh-Hant": "水",
+    "zh-Hans": "水",
+    "fr": "Eau",
+    "de": "Wasser",
+    "es": "Agua",
+    "it": "Acqua"
+  },
+  "grass": {
+    "en": "Grass",
+    "ja": "くさ",
+    "ko": "풀",
+    "zh-Hant": "草",
+    "zh-Hans": "草",
+    "fr": "Plante",
+    "de": "Pflanze",
+    "es": "Planta",
+    "it": "Erba"
+  },
+  "electric": {
+    "en": "Electric",
+    "ja": "でんき",
+    "ko": "전기",
+    "zh-Hant": "電",
+    "zh-Hans": "电",
+    "fr": "Électrik",
+    "de": "Elektro",
+    "es": "Eléctrico",
+    "it": "Elettro"
+  },
+  "psychic": {
+    "en": "Psychic",
+    "ja": "エスパー",
+    "ko": "에스퍼",
+    "zh-Hant": "超能力",
+    "zh-Hans": "超能力",
+    "fr": "Psy",
+    "de": "Psycho",
+    "es": "Psíquico",
+    "it": "Psico"
+  },
+  "ice": {
+    "en": "Ice",
+    "ja": "こおり",
+    "ko": "얼음",
+    "zh-Hant": "冰",
+    "zh-Hans": "冰",
+    "fr": "Glace",
+    "de": "Eis",
+    "es": "Hielo",
+    "it": "Ghiaccio"
+  },
+  "dragon": {
+    "en": "Dragon",
+    "ja": "ドラゴン",
+    "ko": "드래곤",
+    "zh-Hant": "龍",
+    "zh-Hans": "龙",
+    "fr": "Dragon",
+    "de": "Drache",
+    "es": "Dragón",
+    "it": "Drago"
+  },
+  "dark": {
+    "en": "Dark",
+    "ja": "あく",
+    "ko": "악",
+    "zh-Hant": "惡",
+    "zh-Hans": "恶",
+    "fr": "Ténèbres",
+    "de": "Unlicht",
+    "es": "Siniestro",
+    "it": "Buio"
+  },
+  "fairy": {
+    "en": "Fairy",
+    "ja": "フェアリー",
+    "ko": "페어리",
+    "zh-Hant": "妖精",
+    "zh-Hans": "妖精",
+    "fr": "Fée",
+    "de": "Fee",
+    "es": "Hada",
+    "it": "Folletto"
+  },
+  "stellar": {
+    "en": "Stellar",
+    "ja": "ステラ",
+    "ko": " 스텔라",
+    "zh-Hant": "星晶",
+    "zh-Hans": "星晶",
+    "fr": "Stellaire",
+    "de": "Stellar",
+    "es": "Astral",
+    "it": "Astrale"
+  },
+  "unknown": {
+    "en": "???",
+    "ja": "？？？",
+    "ko": "???",
+    "zh-Hant": "???",
+    "zh-Hans": "???",
+    "fr": "???",
+    "de": "???",
+    "es": "???",
+    "it": "???"
+  },
+  "shadow": {
+    "en": "Shadow",
+    "ja": "ダーク",
+    "ko": "다크",
+    "zh-Hant": "暗",
+    "zh-Hans": "暗",
+    "fr": "Obscur",
+    "de": "Crypto",
+    "it": "Ombra"
+  }
+}

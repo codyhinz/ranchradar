@@ -167,12 +167,16 @@ async function main() {
 
   // Names from PokeAPI
   console.log('Fetching PokeAPI names…');
-  const [speciesNames, pokemonForms, formNameRows, itemRows, itemNameRows] = await Promise.all([
+  const [speciesNames, pokemonForms, formNameRows, itemRows, itemNameRows, natureRows, natureNameRows, typeRows, typeNameRows] = await Promise.all([
     fetchCsv('pokemon_species_names.csv'), // pokemon_species_id, language_id, name, genus
     fetchCsv('pokemon_forms.csv'),         // id, identifier, ...
     fetchCsv('pokemon_form_names.csv'),    // pokemon_form_id, language_id, form_name, pokemon_name
     fetchCsv('items.csv'),                 // id, identifier, ...
     fetchCsv('item_names.csv'),            // item_id, language_id, name
+    fetchCsv('natures.csv'),               // id, identifier, ...
+    fetchCsv('nature_names.csv'),          // nature_id, language_id, name
+    fetchCsv('types.csv'),                 // id, identifier, ...
+    fetchCsv('type_names.csv'),            // type_id, language_id, name
   ]);
   const speciesNameById = groupNames(speciesNames, 0, 2);
   const formIdByIdentifier = new Map(pokemonForms.map((row) => [row[1]!, row[0]!]));
@@ -233,6 +237,19 @@ async function main() {
     itemNames[item.id] = names;
   }
 
+  // Nature and type names, for the nature picker and type tags
+  const namesById = (rows: string[][], nameRows: string[][]): NameMap => {
+    const grouped = groupNames(nameRows, 0, 2);
+    const out: NameMap = {};
+    for (const row of rows) {
+      const names = pickLocales(grouped.get(row[0]!) ?? new Map());
+      if (Object.keys(names).length) out[row[1]!] = names;
+    }
+    return out;
+  };
+  const natureNames = namesById(natureRows, natureNameRows);
+  const typeNames = namesById(typeRows, typeNameRows);
+
   // Write output and grow the registry (append-only)
   const generatedDir = join(DATA_DIR, 'generated');
   mkdirSync(generatedDir, { recursive: true });
@@ -241,6 +258,8 @@ async function main() {
   write(join(generatedDir, 'items.json'), items);
   write(join(generatedDir, 'form-names.json'), formNames);
   write(join(generatedDir, 'item-names.json'), itemNames);
+  write(join(generatedDir, 'nature-names.json'), natureNames);
+  write(join(generatedDir, 'type-names.json'), typeNames);
 
   const registry = readRegistry();
   const grow = (existing: string[], ids: string[]) => [...new Set([...existing, ...ids])].sort();

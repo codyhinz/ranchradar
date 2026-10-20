@@ -261,12 +261,18 @@ body::before {
 .row-main:hover:not(:disabled) { background: var(--rail); }
 .row-main:disabled { cursor: default; }
 .row-text { min-width: 0; display: grid; gap: 0.1rem; }
+.row { min-width: 0; }
 .row-name { font: 600 var(--step-1) / 1.2 var(--font-sign); overflow-wrap: anywhere; }
 .row-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; font-size: var(--step--1); color: var(--muted); }
 /* owned: the status color fills a chip and tints the whole card, not just the edge */
 .own-label[data-own='permanent'], .own-label[data-own='trial'] {
   display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.1rem 0.55rem 0.1rem 0.4rem;
   border-radius: 999px; font-weight: 700; white-space: nowrap;
+}
+@media (max-width: 30rem) {
+  .row-meta { flex-direction: column; align-items: flex-start; gap: 0.2rem; }
+  .own-label[data-own='permanent'], .own-label[data-own='trial'] { font-size: 0.78rem; }
+  .row-actions { gap: 0.25rem; }
 }
 .own-label[data-own='permanent'] { background: var(--ember-strong); color: #fff; }
 .own-label[data-own='trial'] { background: var(--hay); color: var(--hay-ink); }
@@ -293,8 +299,8 @@ body::before {
 .sprite-missing { display: inline-block; border-radius: 50%; background: var(--rail); }
 
 /* Types: text plus a colored dot */
-.types { display: inline-flex; gap: 0.6rem; }
-.type { display: inline-flex; align-items: center; gap: 0.3rem; text-transform: capitalize; }
+.types { display: inline-flex; flex-wrap: wrap; gap: 0.1rem 0.6rem; }
+.type { display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap; }
 .type::before { content: ""; width: 0.6rem; height: 0.6rem; border-radius: 50%; background: var(--type, var(--muted)); }
 .type[data-type='normal'] { --type: #9fa19f; } .type[data-type='fire'] { --type: #e62829; }
 .type[data-type='water'] { --type: #2980ef; } .type[data-type='grass'] { --type: #3fa129; }
@@ -358,10 +364,20 @@ body::before {
 .picker-button[aria-expanded='true'] .chevron { transform: rotate(180deg); }
 .nature-effect { color: var(--muted); font-size: var(--step--1); }
 .nature-effect b { color: var(--ember-strong); font-weight: 700; }
-.picker-list {
-  list-style: none; margin: -0.35rem 0 0; padding: 0.25rem; max-height: 15rem; overflow-y: auto;
-  border: 2px solid var(--wood); border-top: 0; border-radius: 0 0 10px 10px; background: var(--surface);
-  transform-origin: top; animation: drop-down 160ms ease-out;
+.picker-panel {
+  margin: -0.35rem 0 0; border: 2px solid var(--wood); border-top: 0; border-radius: 0 0 10px 10px;
+  background: var(--surface); transform-origin: top; animation: drop-down 160ms ease-out; overflow: hidden;
+}
+.picker-sort { display: flex; gap: 0.25rem; padding: 0.4rem; border-bottom: 1px solid var(--rail); }
+.picker-sort button {
+  flex: 1; min-height: 36px; border: 1px solid var(--rail); border-radius: 8px; background: transparent;
+  font-weight: 600; font-size: var(--step--1); cursor: pointer;
+}
+.picker-sort button[aria-pressed='true'] { background: var(--coal); color: var(--smoke); border-color: var(--coal); }
+.picker-list { list-style: none; margin: 0; padding: 0.25rem; max-height: 16rem; overflow-y: auto; }
+.picker-group {
+  padding: 0.6rem 0.6rem 0.2rem; font-size: 0.75rem; font-weight: 700; color: var(--wood);
+  letter-spacing: 0.02em; border-top: 1px solid var(--rail); margin-top: 0.25rem;
 }
 .picker-list li {
   display: flex; justify-content: space-between; align-items: center; gap: 1rem;
@@ -459,7 +475,7 @@ body::before {
   background: #2b2724; color: #f1ece8; border: 1px solid rgb(176 122 85 / 0.5);
   box-shadow: var(--shadow); pointer-events: auto;
 }
-.toast-action { border: 0; background: transparent; color: var(--hay); font-weight: 700; min-height: 44px; padding: 0 0.5rem; cursor: pointer; }
+.toast-action { white-space: nowrap; flex: none; border: 0; background: transparent; color: var(--hay); font-weight: 700; min-height: 44px; padding: 0 0.5rem; cursor: pointer; }
 .update {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 21;
   bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); width: calc(100% - 2rem);

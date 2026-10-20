@@ -12,12 +12,13 @@ import { Toast, type ToastMessage } from './components/Toast';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { summarizeByForm } from './data/ownership';
 import type { RosterStatus } from './data/types';
-import { t } from './i18n';
+import { setUiLocale, t } from './i18n';
 
 export function App() {
   const store = useRosterStore();
   const entries = useRosterEntries(store);
   const [locale, setLocale] = useNameLocale();
+  setUiLocale(locale); // interface text follows the same language setting as Pokémon names
   const [theme, setTheme] = useTheme();
   const [rosterView, setRosterView] = useRosterView();
   const [query, setQuery] = useState('');

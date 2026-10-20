@@ -1,8 +1,8 @@
 import type React from 'react';
 import type { RosterView } from '../app/preferences';
 import { catalogById, displayName, type NameLocale } from '../catalog';
-import { describeOwnership, type FormOwnership } from '../data/ownership';
-import { t } from '../i18n';
+import type { FormOwnership } from '../data/ownership';
+import { ownershipText, t } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
 import { TypeTags } from './TypeTags';
@@ -60,11 +60,11 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
             const name = displayName(summary.form_id, locale);
             return (
               <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
-                <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${describeOwnership(summary)}`}>
+                <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${ownershipText(summary)}`}>
                   <Sprite id={summary.form_id} size={64} />
                   <span className="tile-name">{name}</span>
                   {summary.total > 1 && <span key={summary.total} className="tile-count" aria-label={t('roster.copies', { count: summary.total })}>×{summary.total}</span>}
-                  <span className="visually-hidden">{describeOwnership(summary)}</span>
+                  <span className="visually-hidden">{ownershipText(summary)}</span>
                 </button>
               </li>
             );
@@ -83,7 +83,7 @@ export function RosterList({ summaries, locale, view, onViewChange, onOpen }: Ro
                     <span className="row-meta">
                       <span className="own-label" data-own={ownershipState(summary)}>
                         <OwnIcon state={ownershipState(summary) === 'permanent' ? 'permanent' : 'trial'} />
-                        {describeOwnership(summary)}
+                        {ownershipText(summary)}
                       </span>
                       {form && <TypeTags types={form.types} />}
                     </span>

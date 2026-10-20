@@ -1,8 +1,9 @@
 import type React from 'react';
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { NATURES } from '../data/types';
+import { NATURES, type Nature } from '../data/types';
+import { natureName } from './NaturePicker';
 import type { RosterEntry, RosterPatch } from '../data/types';
-import { t } from '../i18n';
+import { t, uiLocale } from '../i18n';
 import { Dialog } from './Dialog';
 import { EntryFields, type EntryDraft } from './EntryFields';
 import { Sprite } from './Sprite';
@@ -17,7 +18,7 @@ interface FormSheetProps {
   onClose: () => void;
 }
 
-const dateFormat = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
+const formatDate = (date: Date) => new Intl.DateTimeFormat(uiLocale(), { month: 'short', day: 'numeric' }).format(date);
 type Badge = 'permanent' | 'trial' | 'expired';
 
 function badgeOf(entry: RosterEntry, now = new Date()): Badge {
@@ -29,7 +30,7 @@ export function statusLine(entry: RosterEntry, now = new Date()): string {
   if (entry.status === 'permanent') return t('entry.permanent');
   if (!entry.trial_expires_at) return t('status.trial');
   const expires = new Date(entry.trial_expires_at);
-  return t(expires <= now ? 'entry.trialExpired' : 'entry.trialExpires', { date: dateFormat.format(expires) });
+  return t(expires <= now ? 'entry.trialExpired' : 'entry.trialExpires', { date: formatDate(expires) });
 }
 
 /** Permanent copies first, then trials soonest-expiring first. */
@@ -70,7 +71,7 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onAddAnothe
 }
 
 function natureLabel(nature: string | null): string {
-  return nature && (NATURES as readonly string[]).includes(nature) ? nature[0]!.toUpperCase() + nature.slice(1) : t('nature.none');
+  return nature && (NATURES as readonly string[]).includes(nature) ? natureName(nature as Nature) : t('nature.none');
 }
 
 function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onRemove }: {
