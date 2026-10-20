@@ -8,7 +8,7 @@ export default defineConfig({
     VitePWA({
       // Ask before swapping in a new build, so a new regulation never lands mid-check.
       registerType: 'prompt',
-      includeAssets: ['icons/apple-touch-icon.png'],
+      includeAssets: ['icons/apple-touch-icon.png', 'favicon.ico', 'favicon-32.png'],
       manifest: {
         name: 'RanchRadar',
         short_name: 'RanchRadar',
@@ -25,7 +25,7 @@ export default defineConfig({
       },
       workbox: {
         // Cache the app, fonts and every sprite so the installed app opens with no signal.
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
         navigateFallback: '/index.html',
       },
     }),
