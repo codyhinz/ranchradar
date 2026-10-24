@@ -25,7 +25,7 @@ export default defineConfig({
       },
       workbox: {
         // Cache the app, fonts and every sprite so the installed app opens with no signal.
-        globPatterns: ['**/*.{js,css,html,woff2,png,svg,ico}'],
+        globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,ico}'],
         navigateFallback: '/index.html',
       },
     }),

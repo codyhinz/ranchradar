@@ -13,7 +13,7 @@ export function Sprite({ id, size = 48, className = '' }: SpriteProps) {
   return (
     <img
       className={`sprite ${className}`}
-      src={`/sprites/${id}.png`}
+      src={`/sprites/${id}.webp`}
       width={size}
       height={size}
       alt=""

@@ -22,7 +22,7 @@ export function AddSheet({ formId, name, onAdd, onClose }: AddSheetProps) {
   return (
     <Dialog title={t('add.title', { name })} onClose={onClose}>
       <form onSubmit={submit}>
-        <div className="sheet-hero"><Sprite id={formId} size={96} /></div>
+        <div className="sheet-hero"><Sprite id={formId} size={88} /></div>
         <EntryFields draft={draft} onChange={setDraft} idPrefix="add" />
         <div className="sheet-actions">
           <button type="button" className="button button-quiet" onClick={onClose}>{t('cancel')}</button>

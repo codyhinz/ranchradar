@@ -11,7 +11,7 @@ export function Header({ onOpenSettings, onHome }: { onOpenSettings: () => void;
             <path d="M30 68c-9-10 9-16 0-28s8-18 2-30" />
             <path d="M40 66c-6-8 7-12 1-21s5-13 1-20" />
           </svg>
-          <Sprite id="torkoal" size={112} className="mascot-sprite" />
+          <Sprite id="torkoal" size={96} className="mascot-sprite" />
         </span>
         <div className="brand-text">
           <h1 className="wordmark">RanchRadar</h1>

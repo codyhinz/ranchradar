@@ -9,6 +9,7 @@
  * New ids are appended to data/id-registry.json, which validation uses to stop renames.
  * Run it after editing a regulation file, then commit the regulation file and the output together.
  */
+import sharp from 'sharp';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Dex, type Species } from '@pkmn/dex';
@@ -51,16 +52,29 @@ const pokeapiIdentifier = (id: string) => POKEAPI_ALIASES[id] ?? id;
 /** Sprites the app shows outside the roster (header and empty state). */
 const BRAND_SPRITES = ['torkoal'];
 
+/** Stored size: sharp on 3x phone screens at the largest size the app shows (the 112px mascot). */
+const SPRITE_PX = 256;
+
+/**
+ * Pokémon HOME renders (512px, smooth 3D like the game itself), shrunk to SPRITE_PX WebP.
+ * Forms without a HOME render fall back to the classic 96px sprite, scaled up with hard edges.
+ */
 async function downloadSprites(ids: string[], pokemonIdByForm: Map<string, string>): Promise<string[]> {
   mkdirSync(SPRITES_DIR, { recursive: true });
   const missing: string[] = [];
   for (const id of ids) {
-    const target = join(SPRITES_DIR, `${id}.png`);
+    const target = join(SPRITES_DIR, `${id}.webp`);
     if (existsSync(target)) continue;
     const pokemonId = pokemonIdByForm.get(pokeapiIdentifier(id)) ?? pokemonIdByForm.get(id);
-    const response = pokemonId ? await fetch(`${SPRITES_URL}/${pokemonId}.png`) : undefined;
-    if (!response?.ok) { missing.push(id); continue; }
-    writeFileSync(target, Buffer.from(await response.arrayBuffer()));
+    if (!pokemonId) { missing.push(id); continue; }
+    const home = await fetch(`${SPRITES_URL}/other/home/${pokemonId}.png`);
+    const source = home.ok ? home : await fetch(`${SPRITES_URL}/${pokemonId}.png`);
+    if (!source.ok) { missing.push(id); continue; }
+    await sharp(Buffer.from(await source.arrayBuffer()))
+      .trim()
+      .resize(SPRITE_PX, SPRITE_PX, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 }, kernel: home.ok ? 'lanczos3' : 'nearest' })
+      .webp({ quality: 82, alphaQuality: 90, effort: 6 })
+      .toFile(target);
   }
   return missing;
 }

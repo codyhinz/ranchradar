@@ -21,7 +21,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
   if (summaries.length === 0) {
     return (
       <div className="empty">
-        <Sprite id="torkoal" size={96} className="empty-sprite" />
+        <Sprite id="torkoal" size={84} className="empty-sprite" />
         <h2>{t('roster.empty.title')}</h2>
         <p>{t('roster.empty.body')}</p>
       </div>
