@@ -56,6 +56,21 @@ export type NameMap = Record<string, Partial<Record<Locale, string>>>;
 export interface IdRegistry {
   forms: string[];
   items: string[];
+  /** Cosmetic variant ids; absent in registries written before variants existed. */
+  variants?: string[];
+}
+
+/** data/variants.json: cosmetic versions of a form, hand-maintained. */
+export interface VariantFile {
+  variants: Record<string, { id: string; pokeapi_form: string; en: string }[]>;
+}
+
+/** data/generated/variants.json: per form, its variants in order with names in every locale. */
+export type VariantRecords = Record<string, { id: string; names: Partial<Record<Locale, string>> }[]>;
+
+export function readVariantFile(dataDir = DATA_DIR): VariantFile {
+  const path = join(dataDir, 'variants.json');
+  return existsSync(path) ? readJson<VariantFile>(path) : { variants: {} };
 }
 
 export function readJson<T>(path: string): T {
@@ -79,6 +94,7 @@ export function readGenerated(dataDir = DATA_DIR) {
     items: load<ItemRecord[]>('items.json', []),
     formNames: load<NameMap>('form-names.json', {}),
     itemNames: load<NameMap>('item-names.json', {}),
+    variants: load<VariantRecords>('variants.json', {}),
   };
 }
 

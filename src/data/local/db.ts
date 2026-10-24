@@ -38,6 +38,15 @@ const migrations: Array<(db: RanchDB, tx: UpgradeTx) => void> = [
     db.createObjectStore('outbox', { keyPath: ['table', 'rowId'] });
     db.createObjectStore('meta', { keyPath: 'key' });
   },
+  // v2: roster entries gain an optional cosmetic variant
+  (_db, tx) => {
+    const store = tx.objectStore('roster_entries');
+    void store.openCursor().then(async function step(cursor): Promise<void> {
+      if (!cursor) return;
+      if (cursor.value.variant === undefined) await cursor.update({ ...cursor.value, variant: null });
+      return step(await cursor.continue());
+    });
+  },
 ];
 
 export const DB_VERSION = migrations.length;

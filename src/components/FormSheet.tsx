@@ -5,8 +5,9 @@ import { natureName } from './NaturePicker';
 import type { RosterEntry, RosterPatch } from '../data/types';
 import { t, uiLocale } from '../i18n';
 import { Dialog } from './Dialog';
-import { EntryFields, type EntryDraft } from './EntryFields';
+import { EntryFields, expiresAfter, newDraft, type EntryDraft } from './EntryFields';
 import { Sprite } from './Sprite';
+import { variantName } from '../catalog';
 
 interface FormSheetProps {
   formId: string;
@@ -88,17 +89,22 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
   // React 18's types don't know `inert` yet, so set it directly: collapsed fields can't be tabbed into.
   const drawerRef = useRef<HTMLDivElement>(null);
   useEffect(() => { drawerRef.current?.toggleAttribute('inert', !editing); }, [editing]);
-  const initial: EntryDraft = { status: entry.status, nature: entry.nature, notes: entry.notes ?? '' };
+  const initial: EntryDraft = newDraft(entry.status, { nature: entry.nature, variant: entry.variant, notes: entry.notes, trialExpiresAt: entry.trial_expires_at });
   const [draft, setDraft] = useState(initial);
-  const dirty = draft.status !== initial.status || draft.nature !== initial.nature || draft.notes !== initial.notes;
+  // Opening the editor starts from the trial's current time left.
+  useEffect(() => { if (editing) setDraft(initial); }, [editing]); // eslint-disable-line react-hooks/exhaustive-deps
+  const dirty = draft.status !== initial.status || draft.nature !== initial.nature || draft.variant !== initial.variant || draft.notes !== initial.notes
+    || (draft.status === 'trial' && draft.trialTouched);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    await onSave({ status: draft.status, nature: draft.nature, notes: draft.notes.trim() || null });
+    const patch: RosterPatch = { status: draft.status, nature: draft.nature, variant: draft.variant, notes: draft.notes.trim() || null };
+    if (draft.status === 'trial' && draft.trialTouched) patch.trial_expires_at = expiresAfter(draft.trialDays, draft.trialHours);
+    await onSave(patch);
   };
   return (
     <li className="copy enter" data-badge={badge} style={{ '--i': index } as React.CSSProperties}>
       <div className="copy-head">
-        <span className="copy-sprite"><Sprite id={formId} size={56} /></span>
+        <span className="copy-sprite"><Sprite id={formId} variant={entry.variant} size={66} /></span>
         <div className="copy-info">
           <span className="copy-label">{label}</span>
           <span className="status-badge" data-badge={badge}>
@@ -110,6 +116,7 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
             {statusLine(entry)}
           </span>
           <span className="copy-meta">
+            {entry.variant && <span className="copy-variant">{variantName(entry.variant, uiLocale())} · </span>}
             {t('nature.label')}: {natureLabel(entry.nature)}
             {entry.notes && <span className="copy-notes">{entry.notes}</span>}
           </span>
@@ -122,7 +129,7 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
       <div className="copy-drawer" data-open={editing} ref={drawerRef}>
         <div className="copy-drawer-inner">
           <form onSubmit={submit} className="copy-form">
-            <EntryFields draft={draft} onChange={setDraft} idPrefix={entry.id} />
+            <EntryFields formId={formId} draft={draft} onChange={setDraft} idPrefix={entry.id} />
             <div className="sheet-actions">
               <button type="button" className="button button-danger" onClick={onRemove}>{t('entry.delete')}</button>
               <button type="submit" className="button button-primary" disabled={!dirty}>{t('entry.save')}</button>

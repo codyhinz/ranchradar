@@ -82,10 +82,25 @@ export function validateData(dataDir: string = DATA_DIR): ValidationResult {
   // Stable ids: nothing ever shipped may disappear
   const missingForms = registry.forms.filter((id) => !formIds.has(id));
   const missingItems = registry.items.filter((id) => !itemsById.has(id));
-  if (missingForms.length || missingItems.length) {
+  const variantIds = new Set(Object.values(generated.variants).flat().map((v) => v.id));
+  const missingVariants = (registry.variants ?? []).filter((id) => !variantIds.has(id));
+  if (missingForms.length || missingItems.length || missingVariants.length) {
     errors.push(
-      `ids were removed or renamed (shipped ids must never change): ${[...missingForms, ...missingItems].join(', ')}`,
+      `ids were removed or renamed (shipped ids must never change): ${[...missingForms, ...missingItems, ...missingVariants].join(', ')}`,
     );
+  }
+
+  // Cosmetic variants: belong to a real form, unique, slug-shaped, named in English
+  const seenVariants = new Set<string>();
+  for (const [formId, list] of Object.entries(generated.variants)) {
+    if (!formIds.has(formId)) errors.push(`variants: form "${formId}" doesn't exist`);
+    if (list.length < 2) errors.push(`variants: "${formId}" needs at least two variants`);
+    for (const variant of list) {
+      if (!SLUG.test(variant.id)) errors.push(`variants: "${variant.id}" isn't a lowercase-dash id`);
+      if (seenVariants.has(variant.id) || formIds.has(variant.id)) errors.push(`variants: "${variant.id}" is used twice`);
+      seenVariants.add(variant.id);
+      if (!variant.names.en) errors.push(`variants: "${variant.id}" has no English name`);
+    }
   }
 
   // Every generated record has English and stays consistent

@@ -1,0 +1,386 @@
+{
+  "alcremie": [
+    {
+      "id": "alcremie-vanilla-cream",
+      "names": {
+        "en": "Vanilla Cream",
+        "ja": "ミルキィバニラ",
+        "ko": "밀키바닐라",
+        "zh-Hant": "奶香香草",
+        "zh-Hans": "奶香香草",
+        "fr": "Lait Vanille",
+        "de": "Vanille-Creme",
+        "es": "Crema de Vainilla",
+        "it": "Lattevaniglia"
+      }
+    },
+    {
+      "id": "alcremie-ruby-cream",
+      "names": {
+        "en": "Ruby Cream",
+        "ja": "ミルキィルビー",
+        "ko": "밀키루비",
+        "zh-Hant": "奶香紅鑽",
+        "zh-Hans": "奶香红钻",
+        "fr": "Lait Ruby",
+        "de": "Ruby-Creme",
+        "es": "Crema Rosa",
+        "it": "Latterosa"
+      }
+    },
+    {
+      "id": "alcremie-matcha-cream",
+      "names": {
+        "en": "Matcha Cream",
+        "ja": "ミルキィまっちゃ",
+        "ko": "밀키말차",
+        "zh-Hant": "奶香抹茶",
+        "zh-Hans": "奶香抹茶",
+        "fr": "Lait Matcha",
+        "de": "Matcha-Creme",
+        "es": "Crema de Té",
+        "it": "Lattematcha"
+      }
+    },
+    {
+      "id": "alcremie-mint-cream",
+      "names": {
+        "en": "Mint Cream",
+        "ja": "ミルキィミント",
+        "ko": "밀키민트",
+        "zh-Hant": "奶香薄荷",
+        "zh-Hans": "奶香薄荷",
+        "fr": "Lait Menthe",
+        "de": "Minz-Creme",
+        "es": "Crema de Menta",
+        "it": "Lattementa"
+      }
+    },
+    {
+      "id": "alcremie-lemon-cream",
+      "names": {
+        "en": "Lemon Cream",
+        "ja": "ミルキィレモン",
+        "ko": "밀키레몬",
+        "zh-Hant": "奶香檸檬",
+        "zh-Hans": "奶香柠檬",
+        "fr": "Lait Citron",
+        "de": "Zitronen-Creme",
+        "es": "Crema de Limón",
+        "it": "Lattelimone"
+      }
+    },
+    {
+      "id": "alcremie-salted-cream",
+      "names": {
+        "en": "Salted Cream",
+        "ja": "ミルキィソルト",
+        "ko": "밀키솔트",
+        "zh-Hant": "奶香雪鹽",
+        "zh-Hans": "奶香雪盐",
+        "fr": "Lait Salé",
+        "de": "Salz-Creme",
+        "es": "Crema Salada",
+        "it": "Lattesale"
+      }
+    },
+    {
+      "id": "alcremie-ruby-swirl",
+      "names": {
+        "en": "Ruby Swirl",
+        "ja": "ルビーミックス",
+        "ko": "루비믹스",
+        "zh-Hant": "紅鑽綜合",
+        "zh-Hans": "红钻综合",
+        "fr": "Mélange Ruby",
+        "de": "Ruby-Mix",
+        "es": "Mezcla Rosa",
+        "it": "Rosamix"
+      }
+    },
+    {
+      "id": "alcremie-caramel-swirl",
+      "names": {
+        "en": "Caramel Swirl",
+        "ja": "キャラメルミックス",
+        "ko": "캐러멜믹스",
+        "zh-Hant": "焦糖綜合",
+        "zh-Hans": "焦糖综合",
+        "fr": "Mélange Caramel",
+        "de": "Karamell-Mix",
+        "es": "Mezcla Caramelo",
+        "it": "Caramelmix"
+      }
+    },
+    {
+      "id": "alcremie-rainbow-swirl",
+      "names": {
+        "en": "Rainbow Swirl",
+        "ja": "トリプルミックス",
+        "ko": "트리플믹스",
+        "zh-Hant": "三色綜合",
+        "zh-Hans": "三色综合",
+        "fr": "Mélange Tricolore",
+        "de": "Trio-Mix",
+        "es": "Tres Sabores",
+        "it": "Triplomix"
+      }
+    }
+  ],
+  "florges": [
+    {
+      "id": "florges-red",
+      "names": {
+        "en": "Red Flower",
+        "ja": "あかいはな",
+        "ko": "빨간 꽃",
+        "fr": "Fleur Rouge",
+        "de": "Rotblütler",
+        "es": "Flor Roja",
+        "it": "Fiore Rosso"
+      }
+    },
+    {
+      "id": "florges-yellow",
+      "names": {
+        "en": "Yellow Flower",
+        "ja": "きいろのはな",
+        "ko": "노란 꽃",
+        "fr": "Fleur Jaune",
+        "de": "Gelbblütler",
+        "es": "Flor Amarilla",
+        "it": "Fiore Giallo"
+      }
+    },
+    {
+      "id": "florges-orange",
+      "names": {
+        "en": "Orange Flower",
+        "ja": "オレンジいろのはな",
+        "ko": "오렌지색 꽃",
+        "fr": "Fleur Orange",
+        "de": "Orangeblütler",
+        "es": "Flor Naranja",
+        "it": "Fiore Arancione"
+      }
+    },
+    {
+      "id": "florges-blue",
+      "names": {
+        "en": "Blue Flower",
+        "ja": "あおいはな",
+        "ko": "파란 꽃",
+        "fr": "Fleur Bleue",
+        "de": "Blaublütler",
+        "es": "Flor Azul",
+        "it": "Fiore Blu"
+      }
+    },
+    {
+      "id": "florges-white",
+      "names": {
+        "en": "White Flower",
+        "ja": "しろいはな",
+        "ko": "하얀 꽃",
+        "fr": "Fleur Blanche",
+        "de": "Weißblütler",
+        "es": "Flor Blanca",
+        "it": "Fiore Bianco"
+      }
+    }
+  ],
+  "furfrou": [
+    {
+      "id": "furfrou-natural",
+      "names": {
+        "en": "Natural Form",
+        "ja": "やせいのすがた",
+        "ko": "야생의 모습",
+        "fr": "Forme Sauvage",
+        "de": "Zottelform",
+        "es": "Forma Salvaje",
+        "it": "Forma Selvatica"
+      }
+    },
+    {
+      "id": "furfrou-heart",
+      "names": {
+        "en": "Heart Trim",
+        "ja": "ハートカット",
+        "ko": "하트컷",
+        "fr": "Coupe Cœur",
+        "de": "Herzchenschnitt",
+        "es": "Corte Corazón",
+        "it": "Taglio Cuore"
+      }
+    },
+    {
+      "id": "furfrou-star",
+      "names": {
+        "en": "Star Trim",
+        "ja": "スターカット",
+        "ko": "스타컷",
+        "fr": "Coupe Étoile",
+        "de": "Sternchenschnitt",
+        "es": "Corte Estrella",
+        "it": "Taglio Stella"
+      }
+    },
+    {
+      "id": "furfrou-diamond",
+      "names": {
+        "en": "Diamond Trim",
+        "ja": "ダイヤカット",
+        "ko": "다이아컷",
+        "fr": "Coupe Diamant",
+        "de": "Diamantenschnitt",
+        "es": "Corte Rombo",
+        "it": "Taglio Diamante"
+      }
+    },
+    {
+      "id": "furfrou-debutante",
+      "names": {
+        "en": "Debutante Trim",
+        "ja": "レディカット",
+        "ko": "레이디컷",
+        "fr": "Coupe Demoiselle",
+        "de": "Fräuleinschnitt",
+        "es": "Corte Señorita",
+        "it": "Taglio Signorina"
+      }
+    },
+    {
+      "id": "furfrou-matron",
+      "names": {
+        "en": "Matron Trim",
+        "ja": "マダムカット",
+        "ko": "마담컷",
+        "fr": "Coupe Madame",
+        "de": "Damenschnitt",
+        "es": "Corte Dama",
+        "it": "Taglio Gentildonna"
+      }
+    },
+    {
+      "id": "furfrou-dandy",
+      "names": {
+        "en": "Dandy Trim",
+        "ja": "ジェントルカット",
+        "ko": "젠틀컷",
+        "fr": "Coupe Monsieur",
+        "de": "Kavaliersschnitt",
+        "es": "Corte Caballero",
+        "it": "Taglio Gentiluomo"
+      }
+    },
+    {
+      "id": "furfrou-la-reine",
+      "names": {
+        "en": "La Reine Trim",
+        "ja": "クイーンカット",
+        "ko": "퀸컷",
+        "fr": "Coupe Reine",
+        "de": "Königinnenschnitt",
+        "es": "Corte Aristocrático",
+        "it": "Taglio Regina"
+      }
+    },
+    {
+      "id": "furfrou-kabuki",
+      "names": {
+        "en": "Kabuki Trim",
+        "ja": "カブキカット",
+        "ko": "가부키컷",
+        "fr": "Coupe Kabuki",
+        "de": "Kabuki-Schnitt",
+        "es": "Corte Kabuki",
+        "it": "Taglio Kabuki"
+      }
+    },
+    {
+      "id": "furfrou-pharaoh",
+      "names": {
+        "en": "Pharaoh Trim",
+        "ja": "キングダムカット",
+        "ko": "킹덤컷",
+        "fr": "Coupe Pharaon",
+        "de": "Herrscherschnitt",
+        "es": "Corte Faraónico",
+        "it": "Taglio Faraone"
+      }
+    }
+  ],
+  "squawkabilly": [
+    {
+      "id": "squawkabilly-green",
+      "names": {
+        "en": "Green Plumage",
+        "ja": "グリーンフェザー",
+        "fr": "Plumage Vert"
+      }
+    },
+    {
+      "id": "squawkabilly-blue",
+      "names": {
+        "en": "Blue Plumage",
+        "ja": "ブルーフェザー",
+        "fr": "Plumage Bleu"
+      }
+    },
+    {
+      "id": "squawkabilly-yellow",
+      "names": {
+        "en": "Yellow Plumage",
+        "ja": "イエローフェザー",
+        "fr": "Plumage Jaune"
+      }
+    },
+    {
+      "id": "squawkabilly-white",
+      "names": {
+        "en": "White Plumage",
+        "ja": "ホワイトフェザー",
+        "fr": "Plumage Blanc"
+      }
+    }
+  ],
+  "polteageist": [
+    {
+      "id": "polteageist-phony",
+      "names": {
+        "en": "Phony Form",
+        "ja": "がんさくフォルム",
+        "fr": "Forme Contrefaçon",
+        "de": "Fälschungsform"
+      }
+    },
+    {
+      "id": "polteageist-antique",
+      "names": {
+        "en": "Antique Form",
+        "ja": "しんさくフォルム",
+        "fr": "Forme Authentique",
+        "de": "Originalform"
+      }
+    }
+  ],
+  "maushold": [
+    {
+      "id": "maushold-family-of-three",
+      "names": {
+        "en": "Family of Three",
+        "ja": "３びきかぞく",
+        "fr": "Famille de Trois"
+      }
+    },
+    {
+      "id": "maushold-family-of-four",
+      "names": {
+        "en": "Family of Four",
+        "ja": "４ひきかぞく",
+        "fr": "Famille de Quatre"
+      }
+    }
+  ]
+}

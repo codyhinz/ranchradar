@@ -2,6 +2,7 @@ import { StorageError, type RosterStore } from '../storage';
 import {
   MAX_NOTES_LENGTH,
   MAX_ROSTER_ENTRIES,
+  MAX_VARIANT_LENGTH,
   NATURES,
   TRIAL_DAYS,
   type NewRosterEntry,
@@ -87,6 +88,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
             ? input.trial_expires_at ?? new Date(timestamp.getTime() + TRIAL_DAYS * DAY_MS).toISOString()
             : null,
         nature: input.nature ?? null,
+        variant: input.variant ?? null,
         spread: null,
         notes: input.notes ?? null,
         source: input.source ?? 'manual',
@@ -137,6 +139,9 @@ function validate(entry: RosterEntry): RosterEntry {
   }
   if (entry.nature !== null && !(NATURES as readonly string[]).includes(entry.nature)) {
     throw new StorageError('invalid', `Unknown nature "${entry.nature}"`);
+  }
+  if (entry.variant !== null && (typeof entry.variant !== 'string' || entry.variant.length > MAX_VARIANT_LENGTH)) {
+    throw new StorageError('invalid', 'Invalid variant');
   }
   if (entry.notes !== null && entry.notes.length > MAX_NOTES_LENGTH) {
     throw new StorageError('invalid', `Notes are limited to ${MAX_NOTES_LENGTH} characters`);

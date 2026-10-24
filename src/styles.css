@@ -535,3 +535,24 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Trial time left: two small number boxes, sized for thumbs */
+.time-left { margin: 0; padding: 0; border: 0; display: grid; gap: 0.35rem; }
+.time-left legend { font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
+.time-left-inputs { display: flex; gap: 0.75rem; }
+.time-unit { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; }
+.time-unit input {
+  width: 4.5rem; min-height: 44px; padding: 0.4rem 0.6rem; text-align: center; font-weight: 700;
+  border: 2px solid var(--rail); border-radius: 10px; background: var(--smoke);
+  font-variant-numeric: tabular-nums;
+}
+.time-unit input:focus-visible { border-color: var(--hay); }
+.time-unit input:disabled { opacity: 0.5; }
+.field-hint { margin: 0; color: var(--muted); font-size: var(--step--1); font-weight: 400; }
+
+/* Variant picker: a small picture of each version beside its name */
+.variant-value, .variant-option { display: inline-flex; align-items: center; gap: 0.5rem; }
+.variant-value .sprite, .variant-option .sprite { width: 32px; height: 32px; margin: -4px 0; }
+.variant-value .sprite { width: 28px; height: 28px; }
+.copy-variant { font-weight: 600; }
+.row-variants { color: var(--muted); font-size: var(--step--1); }

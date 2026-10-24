@@ -17,6 +17,8 @@ import {
   DATA_DIR,
   LOCALES,
   readRegistry,
+  readVariantFile,
+  type VariantRecords,
   readRegulations,
   slug,
   type FormRecord,
@@ -59,6 +61,23 @@ const SPRITE_PX = 256;
  * Pokémon HOME renders (512px, smooth 3D like the game itself), shrunk to SPRITE_PX WebP.
  * Forms without a HOME render fall back to the classic 96px sprite, scaled up with hard edges.
  */
+/** One sprite at an explicit PokeAPI path (e.g. "671-yellow"), HOME render first. */
+async function downloadSpriteAt(target: string, path: string): Promise<boolean> {
+  if (existsSync(target)) return true;
+  // HOME render, then official artwork (also smooth), then the classic pixel sprite.
+  let source = await fetch(`${SPRITES_URL}/other/home/${path}.png`);
+  let smooth = true;
+  if (!source.ok) source = await fetch(`${SPRITES_URL}/other/official-artwork/${path}.png`);
+  if (!source.ok) { source = await fetch(`${SPRITES_URL}/${path}.png`); smooth = false; }
+  if (!source.ok) return false;
+  await sharp(Buffer.from(await source.arrayBuffer()))
+    .trim()
+    .resize(SPRITE_PX, SPRITE_PX, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 }, kernel: smooth ? 'lanczos3' : 'nearest' })
+    .webp({ quality: 82, alphaQuality: 90, effort: 6 })
+    .toFile(target);
+  return true;
+}
+
 async function downloadSprites(ids: string[], pokemonIdByForm: Map<string, string>): Promise<string[]> {
   mkdirSync(SPRITES_DIR, { recursive: true });
   const missing: string[] = [];
@@ -256,6 +275,34 @@ async function main() {
     itemNames[item.id] = names;
   }
 
+  // Cosmetic variants (Alcremie flavors, Florges colors, ...): names and sprites
+  const variantFile = readVariantFile();
+  const formRowByIdentifier = new Map(pokemonForms.map((row) => [row[1]!, row]));
+  const variants: VariantRecords = {};
+  const variantSprites: { id: string; path: string }[] = [];
+  for (const [formId, list] of Object.entries(variantFile.variants)) {
+    if (!forms.some((f) => f.id === formId)) { problems.push(`variants.json: unknown form "${formId}"`); continue; }
+    variants[formId] = list.map((variant) => {
+      const row = formRowByIdentifier.get(variant.pokeapi_form);
+      if (!row) { problems.push(`variants.json: unknown PokeAPI form "${variant.pokeapi_form}"`); return { id: variant.id, names: { en: variant.en } }; }
+      // row: id, identifier, form_identifier, pokemon_id, introduced_in, is_default
+      variantSprites.push({ id: variant.id, path: row[5] === '1' ? row[3]! : `${row[3]}-${row[2]}` });
+      const label = pickLocales(formLabels.get(row[0]!) ?? new Map());
+      const names: Partial<Record<Locale, string>> = {};
+      for (const locale of LOCALES) {
+        // Alcremie's PokeAPI labels include the sweet; the variant is the cream alone.
+        const name = label[locale]?.replace(/\s*(Strawberry Sweet|Fraise en Sucre)$/, '');
+        if (name) names[locale] = name;
+      }
+      names.en = variant.en;
+      return { id: variant.id, names };
+    });
+  }
+  if (problems.length) {
+    console.error(problems.map((p) => `✗ ${p}`).join('\n'));
+    process.exit(1);
+  }
+
   // Nature and type names, for the nature picker and type tags
   const namesById = (rows: string[][], nameRows: string[][]): NameMap => {
     const grouped = groupNames(nameRows, 0, 2);
@@ -285,7 +332,9 @@ async function main() {
   write(join(DATA_DIR, 'id-registry.json'), {
     forms: grow(registry.forms, forms.map((f) => f.id)),
     items: grow(registry.items, items.map((i) => i.id)),
+    variants: grow(registry.variants ?? [], Object.values(variants).flat().map((v) => v.id)),
   });
+  write(join(DATA_DIR, 'generated', 'variants.json'), variants);
 
   // Base forms PokeAPI files under a gendered or default identifier fall back to the dex number.
   for (const form of forms) {
@@ -293,6 +342,10 @@ async function main() {
   }
   console.log('Downloading sprites…');
   const missingSprites = await downloadSprites([...forms.map((f) => f.id), ...BRAND_SPRITES], pokemonIdByForm);
+  mkdirSync(join(SPRITES_DIR, 'variants'), { recursive: true });
+  for (const { id, path } of variantSprites) {
+    if (!(await downloadSpriteAt(join(SPRITES_DIR, 'variants', `${id}.webp`), path))) missingSprites.push(id);
+  }
 
   const missingLocales = forms.filter((f) => Object.keys(formNames[f.id]!).length < LOCALES.length).length;
   console.log(`✓ ${forms.length} forms, ${items.length} items from ${regulations.length} regulation file(s)`);

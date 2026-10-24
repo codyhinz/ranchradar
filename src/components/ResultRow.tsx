@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { CatalogForm, NameLocale } from '../catalog';
-import { displayName } from '../catalog';
+import { displayName, variantName } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import type { RosterStatus } from '../data/types';
 import { ownershipText, t } from '../i18n';
@@ -37,6 +37,9 @@ export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAd
               {state === 'none' ? t('own.none') : ownershipText(ownership)}
             </span>
             <TypeTags types={form.types} />
+            {ownership && ownership.variants.length > 0 && (
+              <span className="row-variants">{ownership.variants.map((v) => variantName(v, locale)).join(', ')}</span>
+            )}
           </span>
         </span>
       </button>

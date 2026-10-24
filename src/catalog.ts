@@ -1,6 +1,7 @@
 import forms from '../data/generated/forms.json';
 import formNames from '../data/generated/form-names.json';
 import mc from '../data/regulations/M-C.json';
+import variantData from '../data/generated/variants.json';
 
 export const NAME_LOCALES = ['en', 'ja', 'ko', 'zh-Hant', 'zh-Hans', 'fr', 'de', 'es', 'it'] as const;
 export type NameLocale = (typeof NAME_LOCALES)[number];
@@ -37,6 +38,24 @@ export const catalog: CatalogForm[] = forms
   }));
 
 export const catalogById = new Map(catalog.map((f) => [f.id, f]));
+
+export interface CatalogVariant {
+  id: string;
+  names: Partial<Record<NameLocale, string>>;
+}
+
+const variantsByForm = variantData as Record<string, CatalogVariant[]>;
+const variantById = new Map(Object.values(variantsByForm).flat().map((v) => [v.id, v]));
+
+/** Cosmetic versions of a form, in game order; empty for forms without any. */
+export function variantsOf(formId: string): CatalogVariant[] {
+  return variantsByForm[formId] ?? [];
+}
+
+export function variantName(variantId: string, locale: NameLocale): string {
+  const variant = variantById.get(variantId);
+  return variant?.names[locale] ?? variant?.names.en ?? variantId;
+}
 
 export function displayName(formId: string, locale: NameLocale): string {
   const form = catalogById.get(formId);

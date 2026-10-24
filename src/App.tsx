@@ -3,6 +3,7 @@ import { displayName, searchForms } from './catalog';
 import { useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AddSheet } from './components/AddSheet';
+import { expiresAfter } from './components/EntryFields';
 import { FormSheet } from './components/FormSheet';
 import { Header } from './components/Header';
 import { ResultRow } from './components/ResultRow';
@@ -66,10 +67,10 @@ export function App() {
     catch (error) { say(t('error.generic', { message: error instanceof Error ? error.message : String(error) })); }
   };
 
-  const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; notes?: string | null } = {}) =>
+  const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; variant?: string | null; notes?: string | null; trial_expires_at?: string } = {}) =>
     guard(async () => {
       if (!store) return;
-      const entry = await store.add({ form_id: formId, status, nature: extra.nature as never, notes: extra.notes ?? null });
+      const entry = await store.add({ form_id: formId, status, nature: extra.nature as never, variant: extra.variant ?? null, notes: extra.notes ?? null, ...(extra.trial_expires_at ? { trial_expires_at: extra.trial_expires_at } : {}) });
       requestPersistentStorage();
       say(t(status === 'permanent' ? 'added.permanent' : 'added.trial', { name: name(formId) }), () => {
         void store.remove(entry.id);
@@ -145,7 +146,12 @@ export function App() {
           name={name(addingFormId)}
           onClose={() => setAddingFormId(null)}
           onAdd={async (draft) => {
-            await add(addingFormId, draft.status, { nature: draft.nature, notes: draft.notes.trim() || null });
+            await add(addingFormId, draft.status, {
+              nature: draft.nature,
+              variant: draft.variant,
+              notes: draft.notes.trim() || null,
+              ...(draft.status === 'trial' && draft.trialTouched ? { trial_expires_at: expiresAfter(draft.trialDays, draft.trialHours) } : {}),
+            });
             setAddingFormId(null);
           }}
         />

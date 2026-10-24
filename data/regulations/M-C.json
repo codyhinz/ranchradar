@@ -3,8 +3,8 @@
   "name": "Regulation Set M-C",
   "starts_at": "2026-09-09T02:00:00Z",
   "ends_at": "2026-12-02T01:59:59Z",
-  "status": "draft",
-  "expected_forms": 229,
+  "status": "final",
+  "expected_forms": 261,
   "forms": [
     "abomasnow",
     "absol",

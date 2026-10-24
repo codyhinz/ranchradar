@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { RosterView } from '../app/preferences';
-import { catalogById, displayName, type NameLocale } from '../catalog';
+import { catalogById, displayName, variantName, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import { ownershipText, t, trialTimeLeft, uiLocale } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
@@ -68,7 +68,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
             return (
               <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
                 <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${ownershipText(summary)}`}>
-                  <Sprite id={summary.form_id} size={64} />
+                  <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} size={64} />
                   <span className="tile-name">{name}</span>
                   {timer(summary) && (
                     <span className="trial-timer" data-urgent={timer(summary)!.urgent} title={timer(summary)!.label}>
@@ -89,7 +89,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
             return (
               <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
                 <button type="button" className="row-main" onClick={() => onOpen(summary.form_id)}>
-                  <Sprite id={summary.form_id} />
+                  <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} />
                   <span className="row-text">
                     <span className="row-name">{displayName(summary.form_id, locale)}</span>
                     <span className="row-meta">
@@ -103,6 +103,9 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
                         </span>
                       )}
                       {form && <TypeTags types={form.types} />}
+                      {summary.variants.length > 0 && (
+                        <span className="row-variants">{summary.variants.map((v) => variantName(v, locale)).join(', ')}</span>
+                      )}
                     </span>
                   </span>
                 </button>

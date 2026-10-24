@@ -120,3 +120,37 @@ describe('ownership summary', () => {
     expect(describeOwnership(undefined)).toBe('Not owned');
   });
 });
+
+describe('variants', () => {
+  it('saves, changes and clears a cosmetic variant, and counts each one once', async () => {
+    const s = store();
+    const a = await s.add({ form_id: 'alcremie', status: 'permanent', variant: 'alcremie-ruby-cream' });
+    clock = new Date(T0.getTime() + 1000);
+    await s.add({ form_id: 'alcremie', status: 'trial', variant: 'alcremie-ruby-cream' });
+    clock = new Date(T0.getTime() + 2000);
+    const c = await s.add({ form_id: 'alcremie', status: 'permanent' });
+    expect(c.variant).toBeNull();
+
+    await s.update(c.id, { variant: 'alcremie-mint-cream' });
+    expect(summarizeByForm(await s.list()).get('alcremie')!.variants).toEqual(['alcremie-ruby-cream', 'alcremie-mint-cream']);
+
+    expect((await s.update(a.id, { variant: null })).variant).toBeNull();
+  });
+
+  it('upgrades rows saved before variants existed', async () => {
+    db.close();
+    const { openDB } = await import('idb');
+    const name = `old-${crypto.randomUUID()}`;
+    const v1 = await openDB(name, 1, {
+      upgrade(d) {
+        d.createObjectStore('roster_entries', { keyPath: 'id' }).createIndex('by_form', 'form_id');
+        d.createObjectStore('outbox', { keyPath: ['table', 'rowId'] });
+        d.createObjectStore('meta', { keyPath: 'key' });
+      },
+    });
+    await v1.put('roster_entries', { id: 'old-1', form_id: 'garchomp', status: 'permanent', deleted_at: null });
+    v1.close();
+    db = await openRanchDB(name);
+    expect((await db.get('roster_entries', 'old-1'))!.variant).toBeNull();
+  });
+});

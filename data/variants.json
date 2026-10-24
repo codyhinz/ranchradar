@@ -1,0 +1,177 @@
+{
+  "_about": "Cosmetic versions of a form (same stats, different look). Stored on a roster entry as an optional variant. IDs are permanent once shipped; English labels here, other languages come from PokeAPI at seed time.",
+  "variants": {
+    "alcremie": [
+      {
+        "id": "alcremie-vanilla-cream",
+        "pokeapi_form": "alcremie-vanilla-cream-strawberry-sweet",
+        "en": "Vanilla Cream"
+      },
+      {
+        "id": "alcremie-ruby-cream",
+        "pokeapi_form": "alcremie-ruby-cream-strawberry-sweet",
+        "en": "Ruby Cream"
+      },
+      {
+        "id": "alcremie-matcha-cream",
+        "pokeapi_form": "alcremie-matcha-cream-strawberry-sweet",
+        "en": "Matcha Cream"
+      },
+      {
+        "id": "alcremie-mint-cream",
+        "pokeapi_form": "alcremie-mint-cream-strawberry-sweet",
+        "en": "Mint Cream"
+      },
+      {
+        "id": "alcremie-lemon-cream",
+        "pokeapi_form": "alcremie-lemon-cream-strawberry-sweet",
+        "en": "Lemon Cream"
+      },
+      {
+        "id": "alcremie-salted-cream",
+        "pokeapi_form": "alcremie-salted-cream-strawberry-sweet",
+        "en": "Salted Cream"
+      },
+      {
+        "id": "alcremie-ruby-swirl",
+        "pokeapi_form": "alcremie-ruby-swirl-strawberry-sweet",
+        "en": "Ruby Swirl"
+      },
+      {
+        "id": "alcremie-caramel-swirl",
+        "pokeapi_form": "alcremie-caramel-swirl-strawberry-sweet",
+        "en": "Caramel Swirl"
+      },
+      {
+        "id": "alcremie-rainbow-swirl",
+        "pokeapi_form": "alcremie-rainbow-swirl-strawberry-sweet",
+        "en": "Rainbow Swirl"
+      }
+    ],
+    "florges": [
+      {
+        "id": "florges-red",
+        "pokeapi_form": "florges-red",
+        "en": "Red Flower"
+      },
+      {
+        "id": "florges-yellow",
+        "pokeapi_form": "florges-yellow",
+        "en": "Yellow Flower"
+      },
+      {
+        "id": "florges-orange",
+        "pokeapi_form": "florges-orange",
+        "en": "Orange Flower"
+      },
+      {
+        "id": "florges-blue",
+        "pokeapi_form": "florges-blue",
+        "en": "Blue Flower"
+      },
+      {
+        "id": "florges-white",
+        "pokeapi_form": "florges-white",
+        "en": "White Flower"
+      }
+    ],
+    "furfrou": [
+      {
+        "id": "furfrou-natural",
+        "pokeapi_form": "furfrou-natural",
+        "en": "Natural Form"
+      },
+      {
+        "id": "furfrou-heart",
+        "pokeapi_form": "furfrou-heart",
+        "en": "Heart Trim"
+      },
+      {
+        "id": "furfrou-star",
+        "pokeapi_form": "furfrou-star",
+        "en": "Star Trim"
+      },
+      {
+        "id": "furfrou-diamond",
+        "pokeapi_form": "furfrou-diamond",
+        "en": "Diamond Trim"
+      },
+      {
+        "id": "furfrou-debutante",
+        "pokeapi_form": "furfrou-debutante",
+        "en": "Debutante Trim"
+      },
+      {
+        "id": "furfrou-matron",
+        "pokeapi_form": "furfrou-matron",
+        "en": "Matron Trim"
+      },
+      {
+        "id": "furfrou-dandy",
+        "pokeapi_form": "furfrou-dandy",
+        "en": "Dandy Trim"
+      },
+      {
+        "id": "furfrou-la-reine",
+        "pokeapi_form": "furfrou-la-reine",
+        "en": "La Reine Trim"
+      },
+      {
+        "id": "furfrou-kabuki",
+        "pokeapi_form": "furfrou-kabuki",
+        "en": "Kabuki Trim"
+      },
+      {
+        "id": "furfrou-pharaoh",
+        "pokeapi_form": "furfrou-pharaoh",
+        "en": "Pharaoh Trim"
+      }
+    ],
+    "squawkabilly": [
+      {
+        "id": "squawkabilly-green",
+        "pokeapi_form": "squawkabilly-green-plumage",
+        "en": "Green Plumage"
+      },
+      {
+        "id": "squawkabilly-blue",
+        "pokeapi_form": "squawkabilly-blue-plumage",
+        "en": "Blue Plumage"
+      },
+      {
+        "id": "squawkabilly-yellow",
+        "pokeapi_form": "squawkabilly-yellow-plumage",
+        "en": "Yellow Plumage"
+      },
+      {
+        "id": "squawkabilly-white",
+        "pokeapi_form": "squawkabilly-white-plumage",
+        "en": "White Plumage"
+      }
+    ],
+    "polteageist": [
+      {
+        "id": "polteageist-phony",
+        "pokeapi_form": "polteageist-phony",
+        "en": "Phony Form"
+      },
+      {
+        "id": "polteageist-antique",
+        "pokeapi_form": "polteageist-antique",
+        "en": "Antique Form"
+      }
+    ],
+    "maushold": [
+      {
+        "id": "maushold-family-of-three",
+        "pokeapi_form": "maushold-family-of-three",
+        "en": "Family of Three"
+      },
+      {
+        "id": "maushold-family-of-four",
+        "pokeapi_form": "maushold-family-of-four",
+        "en": "Family of Four"
+      }
+    ]
+  }
+}

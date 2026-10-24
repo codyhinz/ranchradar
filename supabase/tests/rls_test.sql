@@ -73,4 +73,27 @@ do $$ begin
   end;
 end $$;
 reset role;
+
+-- Variants: an entry's variant must belong to its form; anyone can read the reference rows
+insert into forms values ('alcremie','alcremie',869,'{fairy}','869');
+insert into form_variants values ('alcremie-vanilla-cream','alcremie',0),('alcremie-ruby-cream','alcremie',1);
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+insert into roster_entries (id, user_id, form_id, status, variant)
+  values ('22222222-2222-2222-2222-222222222222','00000000-0000-0000-0000-00000000000a',
+          'alcremie','permanent','alcremie-ruby-cream');
+do $$ begin
+  assert (select count(*) from form_variants) = 2, 'variants should be readable';
+  begin
+    update roster_entries set variant = 'alcremie-ruby-cream' where form_id = 'garchomp';
+    raise exception 'a variant from another form was accepted';
+  exception when foreign_key_violation then null;
+  end;
+  begin
+    insert into form_variants values ('alcremie-fake','alcremie',9);
+    raise exception 'client wrote reference data';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
 select 'ALL TESTS PASSED' as result;

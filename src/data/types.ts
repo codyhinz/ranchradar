@@ -20,16 +20,18 @@ export interface RosterEntry extends SyncFields {
   status: RosterStatus;
   trial_expires_at: ISODate | null;
   nature: Nature | null;
+  /** Cosmetic version (Alcremie flavor, Florges color, ...); null when not set or not applicable. */
+  variant: string | null;
   spread: unknown | null; // reserved for stat spreads
   notes: string | null;
   source: EntrySource;
 }
 
 export type NewRosterEntry = Pick<RosterEntry, 'form_id' | 'status'> &
-  Partial<Pick<RosterEntry, 'nature' | 'notes' | 'source' | 'trial_expires_at'>>;
+  Partial<Pick<RosterEntry, 'nature' | 'variant' | 'notes' | 'source' | 'trial_expires_at'>>;
 
 export type RosterPatch = Partial<
-  Pick<RosterEntry, 'status' | 'trial_expires_at' | 'nature' | 'notes' | 'spread'>
+  Pick<RosterEntry, 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'spread'>
 >;
 
 /** Tables that sync. Later features add their stores here and in a new DB migration. */
@@ -44,7 +46,8 @@ export const NATURES = [
 ] as const;
 export type Nature = (typeof NATURES)[number];
 
-/** Assumed trial length; still to be confirmed in-game (see spec open questions). */
+/** Trial length in days (confirmed in-game). */
 export const TRIAL_DAYS = 7;
 export const MAX_NOTES_LENGTH = 500;
+export const MAX_VARIANT_LENGTH = 64;
 export const MAX_ROSTER_ENTRIES = 2000;

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { t } from '../i18n';
 import { Dialog } from './Dialog';
-import { EntryFields, type EntryDraft } from './EntryFields';
+import { EntryFields, newDraft, type EntryDraft } from './EntryFields';
 import { Sprite } from './Sprite';
 
 interface AddSheetProps {
@@ -12,7 +12,7 @@ interface AddSheetProps {
 }
 
 export function AddSheet({ formId, name, onAdd, onClose }: AddSheetProps) {
-  const [draft, setDraft] = useState<EntryDraft>({ status: 'permanent', nature: null, notes: '' });
+  const [draft, setDraft] = useState<EntryDraft>(() => newDraft('permanent'));
   const [saving, setSaving] = useState(false);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -22,8 +22,8 @@ export function AddSheet({ formId, name, onAdd, onClose }: AddSheetProps) {
   return (
     <Dialog title={t('add.title', { name })} onClose={onClose}>
       <form onSubmit={submit}>
-        <div className="sheet-hero"><Sprite id={formId} size={88} /></div>
-        <EntryFields draft={draft} onChange={setDraft} idPrefix="add" />
+        <div className="sheet-hero"><Sprite id={formId} variant={draft.variant} size={88} /></div>
+        <EntryFields formId={formId} draft={draft} onChange={setDraft} idPrefix="add" />
         <div className="sheet-actions">
           <button type="button" className="button button-quiet" onClick={onClose}>{t('cancel')}</button>
           <button type="submit" className="button button-primary" disabled={saving}>{t('add.submit')}</button>
