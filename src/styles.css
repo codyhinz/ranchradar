@@ -571,10 +571,29 @@ body::before {
   display: inline-grid; place-items: center; background: var(--ember-strong); color: #fff; font-size: 0.75rem; font-weight: 700;
 }
 @media (max-width: 30rem) { .filter-button-label { display: none; } }
+.filter-wrap { position: relative; }
+.filter-button .chevron { width: 16px; height: 16px; transition: transform 160ms ease; }
+.filter-button[aria-expanded='true'] .chevron { transform: rotate(180deg); }
+.filter-badge { animation: pop 260ms ease-out; }
+/* Overlaid dropdown anchored under the button, growing from its corner */
 .filter-panel {
-  display: grid; gap: 0.85rem; margin: 0 0 1rem; padding: 0.9rem 1rem;
-  border: 1px solid var(--rail); border-radius: var(--radius-row); background: var(--surface); box-shadow: var(--lift, none);
-  animation: toast-in 160ms ease-out;
+  position: absolute; top: calc(100% + 0.5rem); right: 0; z-index: 30;
+  width: min(24rem, calc(100vw - 2rem)); max-height: min(70vh, 32rem); overflow-y: auto; overscroll-behavior: contain;
+  display: grid; gap: 0.85rem; padding: 0.9rem 1rem;
+  border: 1px solid var(--rail); border-radius: var(--radius-row); background: var(--surface); box-shadow: var(--shadow);
+  transform-origin: top right;
+  animation: dropdown-in 180ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.filter-panel[data-closing='true'] { animation: dropdown-out 140ms ease-in forwards; }
+@keyframes dropdown-in { from { opacity: 0; transform: translateY(-6px) scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes dropdown-out { to { opacity: 0; transform: translateY(-4px) scale(0.96); } }
+.filter-panel .chips { animation: chips-in 220ms ease-out backwards; }
+.filter-panel .chips:nth-child(2) { animation-delay: 40ms; }
+.filter-panel .chips:nth-child(3) { animation-delay: 80ms; }
+@keyframes chips-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) {
+  .filter-panel, .filter-panel .chips, .filter-badge { animation: none; }
+  .filter-button .chevron { transition: none; }
 }
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; border: 0; }
 .chips legend { width: 100%; margin-bottom: 0.35rem; padding: 0; font-weight: 600; font-size: var(--step--1); color: var(--muted); }
@@ -598,3 +617,9 @@ body::before {
 .check { display: flex; align-items: center; gap: 0.6rem; min-height: 40px; cursor: pointer; }
 .check input { width: 20px; height: 20px; accent-color: var(--ember-strong); }
 .box-total { margin: 0.25rem 0 0; font-weight: 700; }
+/* Phones: the dropdown spans the roster's width under the heading, so it never runs off-screen */
+@media (max-width: 30rem) {
+  .section-head { position: relative; }
+  .filter-wrap { position: static; }
+  .filter-panel { left: 0; right: 0; width: auto; transform-origin: top center; }
+}

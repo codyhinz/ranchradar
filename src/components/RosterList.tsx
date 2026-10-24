@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import typeNames from '../../data/generated/type-names.json';
 import { ROSTER_SORTS, useRosterSort, type RosterView } from '../app/preferences';
 import { activeFilterCount, applyRosterView, NO_FILTERS, ownedTypes, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
@@ -32,6 +32,26 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   const [sort, setSort] = useRosterSort();
   const [filters, setFilters] = useState<RosterFilters>(NO_FILTERS);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [panelClosing, setPanelClosing] = useState(false);
+  const filterRef = useRef<HTMLDivElement>(null);
+  const filterButtonRef = useRef<HTMLButtonElement>(null);
+  const closePanel = useCallback((refocus = false) => {
+    if (refocus) filterButtonRef.current?.focus();
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setPanelOpen(false); return; }
+    setPanelClosing(true);
+    window.setTimeout(() => { setPanelOpen(false); setPanelClosing(false); }, 140); // matches dropdown-out
+  }, []);
+  // Tapping outside or pressing Esc closes the dropdown.
+  useEffect(() => {
+    if (!panelOpen || panelClosing) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!filterRef.current?.contains(event.target as Node)) closePanel();
+    };
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') closePanel(true); };
+    document.addEventListener('pointerdown', onPointer);
+    document.addEventListener('keydown', onKey);
+    return () => { document.removeEventListener('pointerdown', onPointer); document.removeEventListener('keydown', onKey); };
+  }, [panelOpen, panelClosing, closePanel]);
   if (summaries.length === 0) {
     return (
       <div className="empty">
@@ -60,11 +80,61 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
       <div className="section-head">
         <h2 id="roster-heading">{t('roster.heading')}</h2>
         <span className="count box-count" data-state={boxState}>{t('roster.box', { used: boxUsed, capacity: boxCapacity })}</span>
-        <button type="button" className="filter-button" aria-expanded={panelOpen} aria-controls="roster-filters" onClick={() => setPanelOpen(!panelOpen)}>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-          <span className="filter-button-label">{t('filter.button')}</span>
-          {filterCount > 0 && <span className="filter-badge">{filterCount}</span>}
-        </button>
+        <div className="filter-wrap" ref={filterRef}>
+          <button
+            ref={filterButtonRef}
+            type="button"
+            className="filter-button"
+            aria-haspopup="dialog"
+            aria-expanded={panelOpen}
+            aria-controls="roster-filters"
+            onClick={() => (panelOpen ? closePanel() : setPanelOpen(true))}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+            <span className="filter-button-label">{t('filter.button')}</span>
+            {filterCount > 0 && <span key={filterCount} className="filter-badge">{filterCount}</span>}
+            <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+          {panelOpen && (
+            <div className="filter-panel" id="roster-filters" role="dialog" aria-label={t('filter.button')} data-closing={panelClosing}>
+              <fieldset className="chips">
+                <legend>{t('filter.status')}</legend>
+                {STATUS_FILTERS.map((status) => (
+                  <label key={status} className="chip">
+                    <input type="radio" name="roster-status" checked={filters.status === status} onChange={() => setFilters({ ...filters, status })} />
+                    <span>{t(`filter.status.${status}` as MessageKey)}</span>
+                  </label>
+                ))}
+              </fieldset>
+              {types.length > 1 && (
+                <fieldset className="chips">
+                  <legend>{t('filter.type')}</legend>
+                  {types.map((type) => (
+                    <label key={type} className="chip chip-type">
+                      <input type="checkbox" checked={filters.types.includes(type)} onChange={() => toggleType(type)} />
+                      <span className="type" data-type={type}>{typeLabel(type, locale)}</span>
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+              <fieldset className="chips">
+                <legend>{t('filter.sort')}</legend>
+                {ROSTER_SORTS.map((option) => (
+                  <label key={option} className="chip">
+                    <input type="radio" name="roster-sort" checked={sort === option} onChange={() => setSort(option)} />
+                    <span>{t(`sort.${option}` as MessageKey)}</span>
+                  </label>
+                ))}
+              </fieldset>
+              {filterCount > 0 && (
+                <div className="filter-foot">
+                  <span className="count">{t('filter.shown', { shown: sorted.length, total: summaries.length })}</span>
+                  <button type="button" className="button button-quiet" onClick={() => setFilters(NO_FILTERS)}>{t('filter.clear')}</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         <div className="view-toggle" role="group" aria-label={t('roster.view')}>
           {(['grid', 'list'] as const).map((option) => (
             <button
@@ -83,46 +153,6 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           ))}
         </div>
       </div>
-
-      {panelOpen && (
-        <div className="filter-panel" id="roster-filters">
-          <fieldset className="chips">
-            <legend>{t('filter.status')}</legend>
-            {STATUS_FILTERS.map((status) => (
-              <label key={status} className="chip">
-                <input type="radio" name="roster-status" checked={filters.status === status} onChange={() => setFilters({ ...filters, status })} />
-                <span>{t(`filter.status.${status}` as MessageKey)}</span>
-              </label>
-            ))}
-          </fieldset>
-          {types.length > 1 && (
-            <fieldset className="chips">
-              <legend>{t('filter.type')}</legend>
-              {types.map((type) => (
-                <label key={type} className="chip chip-type">
-                  <input type="checkbox" checked={filters.types.includes(type)} onChange={() => toggleType(type)} />
-                  <span className="type" data-type={type}>{typeLabel(type, locale)}</span>
-                </label>
-              ))}
-            </fieldset>
-          )}
-          <fieldset className="chips">
-            <legend>{t('filter.sort')}</legend>
-            {ROSTER_SORTS.map((option) => (
-              <label key={option} className="chip">
-                <input type="radio" name="roster-sort" checked={sort === option} onChange={() => setSort(option)} />
-                <span>{t(`sort.${option}` as MessageKey)}</span>
-              </label>
-            ))}
-          </fieldset>
-          {filterCount > 0 && (
-            <div className="filter-foot">
-              <span className="count">{t('filter.shown', { shown: sorted.length, total: summaries.length })}</span>
-              <button type="button" className="button button-quiet" onClick={() => setFilters(NO_FILTERS)}>{t('filter.clear')}</button>
-            </div>
-          )}
-        </div>
-      )}
 
       {sorted.length === 0 ? (
         <p className="no-results">{t('filter.none')}</p>
