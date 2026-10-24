@@ -1,5 +1,5 @@
 import type { FormOwnership } from '../data/ownership';
-import { boxCapacity } from './box';
+import { boxCapacity, DEFAULT_BOX, type BoxSettings } from './box';
 import { activeFilterCount, applyRosterView, NO_FILTERS, ownedTypes } from './rosterFilters';
 
 const own = (form_id: string, extra: Partial<FormOwnership> = {}): FormOwnership => ({
@@ -37,9 +37,14 @@ describe('roster filters', () => {
 });
 
 describe('box space', () => {
-  it('starts at 30, reaches 50 for a fully free player, and adds paid upgrades', () => {
-    expect(boxCapacity([])).toBe(30);
-    expect(boxCapacity(['great', 'ultra', 'master'])).toBe(50);
-    expect(boxCapacity(['great', 'ultra', 'master', 'starter', 'membership'])).toBe(1100);
+  const box = (extra: Partial<BoxSettings> = {}): BoxSettings => ({ ...DEFAULT_BOX, ...extra });
+  it('is 50 for a free-to-play player with ranked rewards, 30 before them', () => {
+    expect(boxCapacity(box())).toBe(50);
+    expect(boxCapacity(box({ rankedRewards: false }))).toBe(30);
+  });
+  it('ignores purchases while free to play, and adds them otherwise', () => {
+    expect(boxCapacity(box({ starterPack: true, membership: true }))).toBe(50);
+    expect(boxCapacity(box({ freeToPlay: false, starterPack: true }))).toBe(100);
+    expect(boxCapacity(box({ freeToPlay: false, starterPack: true, membership: true }))).toBe(1100);
   });
 });

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { displayName, searchForms } from './catalog';
 import { boxCapacity } from './app/box';
-import { useBoxUnlocks, useNameLocale, useRosterView, useTheme } from './app/preferences';
+import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AddSheet } from './components/AddSheet';
 import { expiresAfter } from './components/EntryFields';
@@ -23,8 +23,8 @@ export function App() {
   setUiLocale(locale); // interface text follows the same language setting as Pokémon names
   const [theme, setTheme] = useTheme();
   const [rosterView, setRosterView] = useRosterView();
-  const [boxUnlocks, setBoxUnlocks] = useBoxUnlocks();
-  const capacity = boxCapacity(boxUnlocks);
+  const [box, setBox] = useBoxSettings();
+  const capacity = boxCapacity(box);
   // Every copy takes a box slot, expired trials included, until it's returned in-game.
   const boxUsed = (entries ?? []).filter((e) => !e.deleted_at).length;
   const [query, setQuery] = useState('');
@@ -182,7 +182,7 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} boxUnlocks={boxUnlocks} onBoxUnlocksChange={setBoxUnlocks} boxUsed={boxUsed} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onClose={() => setSettingsOpen(false)} />
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />

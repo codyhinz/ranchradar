@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { guessLocale, NAME_LOCALES, type NameLocale } from '../catalog';
-import { BOX_UNLOCKS, type BoxUnlock } from './box';
+import { DEFAULT_BOX, type BoxSettings } from './box';
 
 /** A small localStorage-backed preference; falls back to memory if storage is blocked. */
 function usePreference<T extends string>(key: string, allowed: readonly T[], fallback: () => T): [T, (value: T) => void] {
@@ -63,16 +63,23 @@ export function useRosterSort() {
   return usePreference<RosterSort>('ranchradar:roster-sort', ROSTER_SORTS, () => 'az');
 }
 
-/** Which box-space upgrades the player has; remembered between visits. */
-export function useBoxUnlocks(): [BoxUnlock[], (unlocks: BoxUnlock[]) => void] {
-  const key = 'ranchradar:box-unlocks';
-  const known = BOX_UNLOCKS.map((u) => u.id) as readonly string[];
-  const [value, setValue] = useState<BoxUnlock[]>(() => {
+/** The player's box space: free to play or not, ranked rewards, purchases. Remembered between visits. */
+export function useBoxSettings(): [BoxSettings, (box: BoxSettings) => void] {
+  const key = 'ranchradar:box';
+  const [value, setValue] = useState<BoxSettings>(() => {
     try {
-      const saved: unknown = JSON.parse(localStorage.getItem(key) ?? '[]');
-      if (Array.isArray(saved)) return saved.filter((id): id is BoxUnlock => known.includes(id));
+      const saved: unknown = JSON.parse(localStorage.getItem(key) ?? 'null');
+      if (saved && typeof saved === 'object') {
+        const s = saved as Partial<BoxSettings>;
+        return {
+          freeToPlay: s.freeToPlay ?? DEFAULT_BOX.freeToPlay,
+          rankedRewards: s.rankedRewards ?? DEFAULT_BOX.rankedRewards,
+          starterPack: s.starterPack ?? false,
+          membership: s.membership ?? false,
+        };
+      }
     } catch { /* storage unavailable or malformed */ }
-    return [];
+    return DEFAULT_BOX;
   });
   return [
     value,

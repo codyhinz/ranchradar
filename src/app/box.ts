@@ -1,20 +1,26 @@
 /**
- * Pokémon Champions box space. Every player starts with 30 slots; reaching the Great, Ultra
- * and Master Ball tiers in Ranked Battles adds 5, 5 and 10 (50 for a fully free player), the
- * Starter Pack adds 50, and an active membership adds 1,000.
- * Every copy in the roster takes a slot, expired trials included, until it's returned in-game.
+ * Pokémon Champions box space. Every player starts with 30 slots, and first-time Ranked tier
+ * rewards raise that to 50, the most a free-to-play player can have. The Starter Pack adds a
+ * permanent 50 and an active membership adds 1,000. Every copy in the roster takes a slot,
+ * expired trials included, until it's returned in-game.
  */
-export const BOX_BASE_SLOTS = 30;
+export const BOX_START_SLOTS = 30;
+export const BOX_RANKED_SLOTS = 50;
+export const STARTER_PACK_SLOTS = 50;
+export const MEMBERSHIP_SLOTS = 1000;
 
-export const BOX_UNLOCKS = [
-  { id: 'great', slots: 5 },
-  { id: 'ultra', slots: 5 },
-  { id: 'master', slots: 10 },
-  { id: 'starter', slots: 50 },
-  { id: 'membership', slots: 1000 },
-] as const;
-export type BoxUnlock = (typeof BOX_UNLOCKS)[number]['id'];
+export interface BoxSettings {
+  freeToPlay: boolean;
+  /** Has earned the Ranked tier box rewards (30 → 50). */
+  rankedRewards: boolean;
+  starterPack: boolean;
+  membership: boolean;
+}
 
-export function boxCapacity(unlocks: readonly BoxUnlock[]): number {
-  return BOX_UNLOCKS.reduce((sum, unlock) => sum + (unlocks.includes(unlock.id) ? unlock.slots : 0), BOX_BASE_SLOTS);
+export const DEFAULT_BOX: BoxSettings = { freeToPlay: true, rankedRewards: true, starterPack: false, membership: false };
+
+export function boxCapacity(box: BoxSettings): number {
+  const base = box.rankedRewards ? BOX_RANKED_SLOTS : BOX_START_SLOTS;
+  if (box.freeToPlay) return base;
+  return base + (box.starterPack ? STARTER_PACK_SLOTS : 0) + (box.membership ? MEMBERSHIP_SLOTS : 0);
 }

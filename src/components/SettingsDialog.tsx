@@ -1,18 +1,18 @@
 import { LOCALE_LABELS, NAME_LOCALES, type NameLocale } from '../catalog';
 import { THEMES, type Theme } from '../app/preferences';
-import { BOX_UNLOCKS, boxCapacity, type BoxUnlock } from '../app/box';
-import { t, type MessageKey } from '../i18n';
+import { boxCapacity, type BoxSettings } from '../app/box';
+import { t } from '../i18n';
 import { Dialog } from './Dialog';
 
 const THEME_LABEL = { system: 'settings.theme.system', light: 'settings.theme.light', dark: 'settings.theme.dark' } as const;
 
-export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, boxUnlocks, onBoxUnlocksChange, boxUsed, onClose }: {
+export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onClose }: {
   locale: NameLocale;
   onLocaleChange: (locale: NameLocale) => void;
   theme: Theme;
   onThemeChange: (theme: Theme) => void;
-  boxUnlocks: BoxUnlock[];
-  onBoxUnlocksChange: (unlocks: BoxUnlock[]) => void;
+  box: BoxSettings;
+  onBoxChange: (box: BoxSettings) => void;
   boxUsed: number;
   onClose: () => void;
 }) {
@@ -38,21 +38,38 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
         <fieldset className="box-space">
           <legend>{t('settings.box')}</legend>
           <small className="hint">{t('settings.box.base')}</small>
-          {BOX_UNLOCKS.map((unlock) => (
-            <label key={unlock.id} className="check">
-              <input
-                type="checkbox"
-                checked={boxUnlocks.includes(unlock.id)}
-                onChange={(event) => onBoxUnlocksChange(event.target.checked
-                  ? [...boxUnlocks, unlock.id]
-                  : boxUnlocks.filter((id) => id !== unlock.id))}
-              />
-              <span>{t(`box.${unlock.id}` as MessageKey)}</span>
-            </label>
-          ))}
+          <fieldset className="segmented segmented-plain">
+            <legend className="sub-legend">{t('settings.box.ranked')}</legend>
+            {([false, true] as const).map((earned) => (
+              <label key={String(earned)} className="segment">
+                <input type="radio" name="box-ranked" checked={box.rankedRewards === earned} onChange={() => onBoxChange({ ...box, rankedRewards: earned })} />
+                <span>{t(earned ? 'box.ranked.all' : 'box.ranked.none')}</span>
+              </label>
+            ))}
+          </fieldset>
+          <label className="switch">
+            <input type="checkbox" role="switch" checked={box.freeToPlay} onChange={(event) => onBoxChange({ ...box, freeToPlay: event.target.checked })} />
+            <span className="switch-track" aria-hidden="true" />
+            <span className="switch-text">
+              <span>{t('settings.box.f2p')}</span>
+              <small className="hint">{t('settings.box.f2pHint')}</small>
+            </span>
+          </label>
+          {!box.freeToPlay && (
+            <div className="box-purchases">
+              <label className="check">
+                <input type="checkbox" checked={box.starterPack} onChange={(event) => onBoxChange({ ...box, starterPack: event.target.checked })} />
+                <span>{t('box.starter')}</span>
+              </label>
+              <label className="check">
+                <input type="checkbox" checked={box.membership} onChange={(event) => onBoxChange({ ...box, membership: event.target.checked })} />
+                <span>{t('box.membership')}</span>
+              </label>
+            </div>
+          )}
           <p className="box-total">
-            {t('settings.box.total', { count: boxCapacity(boxUnlocks).toLocaleString() })}
-            <span className="count"> · {t('roster.box', { used: boxUsed, capacity: boxCapacity(boxUnlocks) })}</span>
+            {t('settings.box.total', { count: boxCapacity(box).toLocaleString() })}
+            <span className="count"> · {t('roster.box', { used: boxUsed, capacity: boxCapacity(box) })}</span>
           </p>
         </fieldset>
       </div>
