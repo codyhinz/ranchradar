@@ -351,7 +351,7 @@ body::before {
 
 /* Sheets: bottom sheet on phones, centered card on wide screens */
 .sheet {
-  width: 100%; max-width: 32rem; max-height: min(90vh, 52rem);
+  width: 100%; max-width: 32rem; max-height: min(90vh, 52rem); max-height: min(90dvh, 52rem);
   margin: auto auto 0; padding: 0; border: 0;
   border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
   background: var(--surface); color: var(--coal); box-shadow: var(--shadow);
@@ -642,3 +642,54 @@ body::before {
 .switch-text { display: grid; gap: 0.1rem; font-weight: 600; }
 .box-purchases { display: grid; gap: 0.25rem; padding-left: 0.25rem; animation: chips-in 180ms ease-out; }
 @media (prefers-reduced-motion: reduce) { .switch-track, .switch-track::after { transition: none; } .box-purchases { animation: none; } }
+
+/* Copies sheet: quick remove beside edit, and a select mode for clearing out many at once */
+.copy-buttons { display: flex; gap: 0.4rem; }
+.copy-remove:hover { border-color: var(--danger); color: var(--danger); }
+.sheet-sub-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0.1rem 0 0.75rem; }
+.sheet-sub-row .sheet-sub { margin: 0; }
+.button-small { min-height: 36px; padding: 0 0.85rem; }
+.button-quiet[aria-pressed='true'] { background: var(--coal); color: var(--smoke); border-color: var(--coal); }
+.copies[data-selecting='true'] .copy-head { cursor: pointer; }
+.copy-check { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--ember-strong); animation: chips-in 160ms ease-out; }
+.copy[data-selected='true'] { outline: 2px solid var(--ember); outline-offset: -2px; }
+.select-bar {
+  /* Sticks to the bottom edge of the sheet while scrolling, and sits flush at the end */
+  position: sticky; bottom: 0; z-index: 2;
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  margin: 1rem -1.25rem calc(-1.25rem - env(safe-area-inset-bottom, 0px));
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 1px solid var(--rail); box-shadow: 0 -8px 16px rgb(0 0 0 / 0.12);
+  animation: chips-in 180ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) { .copy-check, .select-bar { animation: none; } }
+
+/* Roster select mode: a check on each picked Pokémon and a bar pinned to the bottom of the screen */
+.select-button[aria-pressed='true'] { border-color: var(--wood); background: var(--rail); }
+.select-mark {
+  position: absolute; top: 6px; left: 6px; z-index: 1; width: 24px; height: 24px; border-radius: 7px;
+  display: grid; place-items: center; border: 2px solid var(--wood); background: var(--surface);
+  animation: chips-in 160ms ease-out;
+}
+.select-mark svg { width: 16px; height: 16px; fill: none; stroke: transparent; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+[data-selected='true'] .select-mark { background: var(--ember-strong); border-color: var(--ember-strong); }
+[data-selected='true'] .select-mark svg { stroke: #fff; }
+.tile[data-selected='true'] button, .row[data-selected='true'] .row-main { outline: 3px solid var(--ember); outline-offset: -3px; }
+.row-main { position: relative; }
+.row-main .select-mark { position: static; flex: none; }
+.roster-select-bar {
+  position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); z-index: 25;
+  transform: translateX(-50%); width: min(40rem, calc(100% - 2rem));
+  display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem 0.6rem 1rem;
+  border: 1px solid var(--rail); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow);
+  animation: bar-up 200ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.roster-select-bar .count { margin-right: auto; }
+.roster-select-bar .button-danger { margin-right: 0; }
+@keyframes bar-up { from { opacity: 0; transform: translate(-50%, 12px); } }
+@media (max-width: 30rem) {
+  .roster-select-bar { flex-wrap: wrap; }
+  .roster-select-bar .count { width: 100%; }
+  .roster-select-bar .button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .select-mark, .roster-select-bar { animation: none; } }

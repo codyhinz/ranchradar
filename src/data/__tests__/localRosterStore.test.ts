@@ -154,3 +154,21 @@ describe('variants', () => {
     expect((await db.get('roster_entries', 'old-1'))!.variant).toBeNull();
   });
 });
+
+describe('bulk remove and undo', () => {
+  it('removes many copies in one go and brings them back on undo', async () => {
+    const s = store(true);
+    const copies = [];
+    for (let i = 0; i < 29; i++) copies.push(await s.add({ form_id: 'torkoal', status: 'permanent' }));
+    const keep = copies[0]!;
+    const removed = copies.slice(1).map((e) => e.id);
+
+    await s.removeMany(removed);
+    expect((await s.list()).map((e) => e.id)).toEqual([keep.id]);
+    expect((await db.getAll('outbox')).length).toBe(29); // every removal is queued for sync
+
+    await s.restore(removed);
+    expect((await s.list()).length).toBe(29);
+    expect((await s.list()).every((e) => e.deleted_at === null)).toBe(true);
+  });
+});

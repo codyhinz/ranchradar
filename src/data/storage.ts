@@ -12,6 +12,10 @@ export interface RosterStore {
   update(id: string, patch: RosterPatch): Promise<RosterEntry>;
   /** Soft delete: sets deleted_at so other devices learn it was removed. */
   remove(id: string): Promise<void>;
+  /** Removes several at once, in one write, e.g. clearing out duplicates. */
+  removeMany(ids: string[]): Promise<void>;
+  /** Brings back entries removed moments ago (Undo). */
+  restore(ids: string[]): Promise<void>;
   /** Called after any change; returns an unsubscribe function. */
   subscribe(listener: () => void): () => void;
 }

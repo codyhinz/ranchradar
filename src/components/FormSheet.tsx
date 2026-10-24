@@ -15,6 +15,8 @@ interface FormSheetProps {
   entries: RosterEntry[];
   onSave: (id: string, patch: RosterPatch) => Promise<void>;
   onRemove: (entry: RosterEntry) => Promise<void>;
+  /** Removes several copies at once (with Undo). */
+  onRemoveMany: (entries: RosterEntry[]) => Promise<void>;
   onAddAnother: () => void;
   onClose: () => void;
 }
@@ -43,13 +45,38 @@ function ordered(entries: RosterEntry[]): RosterEntry[] {
 }
 
 /** Every copy of one form as its own card: picture, status and details at a glance; tap to edit. */
-export function FormSheet({ formId, name, entries, onSave, onRemove, onAddAnother, onClose }: FormSheetProps) {
+export function FormSheet({ formId, name, entries, onSave, onRemove, onRemoveMany, onAddAnother, onClose }: FormSheetProps) {
   const list = ordered(entries);
   const [editingId, setEditingId] = useState<string | null>(list.length === 1 ? list[0]!.id : null);
+  // Select mode: tick copies, then remove them in one go (e.g. clearing out duplicates).
+  const [selecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const live = new Set(list.map((e) => e.id));
+  const picked = [...selected].filter((id) => live.has(id));
+  const allPicked = picked.length === list.length;
+  const toggle = (id: string) => setSelected((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
+  const startSelecting = () => { setEditingId(null); setSelected(new Set()); setSelecting(true); };
+  const stopSelecting = () => { setSelecting(false); setSelected(new Set()); };
+  const removePicked = async () => {
+    const chosen = list.filter((e) => selected.has(e.id));
+    stopSelecting();
+    await onRemoveMany(chosen);
+  };
   return (
     <Dialog title={t('form.entries', { name })} onClose={onClose}>
-      <p className="sheet-sub">{t('form.copies', { count: list.length })}</p>
-      <ul className="copies">
+      <div className="sheet-sub-row">
+        <p className="sheet-sub">{selecting ? t('form.selected', { count: picked.length }) : t('form.copies', { count: list.length })}</p>
+        {list.length > 1 && (
+          <button type="button" className="button button-quiet button-small" aria-pressed={selecting} onClick={selecting ? stopSelecting : startSelecting}>
+            {t(selecting ? 'form.selectDone' : 'form.select')}
+          </button>
+        )}
+      </div>
+      <ul className="copies" data-selecting={selecting}>
         {list.map((entry, index) => (
           <EntryCard
             index={index}
@@ -61,12 +88,26 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onAddAnothe
             onToggle={() => setEditingId(editingId === entry.id ? null : entry.id)}
             onSave={async (patch) => { await onSave(entry.id, patch); setEditingId(null); }}
             onRemove={() => onRemove(entry)}
+            selecting={selecting}
+            selected={selected.has(entry.id)}
+            onSelect={() => toggle(entry.id)}
           />
         ))}
       </ul>
-      <div className="sheet-actions">
-        <button type="button" className="button button-quiet" onClick={onAddAnother}>{t('form.addAnother')}</button>
-      </div>
+      {selecting ? (
+        <div className="select-bar">
+          <button type="button" className="button button-quiet" onClick={() => setSelected(allPicked ? new Set() : new Set(list.map((e) => e.id)))}>
+            {t(allPicked ? 'form.selectNone' : 'form.selectAll')}
+          </button>
+          <button type="button" className="button button-danger" disabled={picked.length === 0} onClick={() => void removePicked()}>
+            {t('form.removeSelected', { count: picked.length })}
+          </button>
+        </div>
+      ) : (
+        <div className="sheet-actions">
+          <button type="button" className="button button-quiet" onClick={onAddAnother}>{t('form.addAnother')}</button>
+        </div>
+      )}
     </Dialog>
   );
 }
@@ -75,7 +116,7 @@ function natureLabel(nature: string | null): string {
   return nature && (NATURES as readonly string[]).includes(nature) ? natureName(nature as Nature) : t('nature.none');
 }
 
-function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onRemove }: {
+function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onRemove, selecting, selected, onSelect }: {
   entry: RosterEntry;
   index: number;
   formId: string;
@@ -84,6 +125,9 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
   onToggle: () => void;
   onSave: (patch: RosterPatch) => Promise<void>;
   onRemove: () => void;
+  selecting: boolean;
+  selected: boolean;
+  onSelect: () => void;
 }) {
   const badge = badgeOf(entry);
   // React 18's types don't know `inert` yet, so set it directly: collapsed fields can't be tabbed into.
@@ -102,8 +146,18 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
     await onSave(patch);
   };
   return (
-    <li className="copy enter" data-badge={badge} style={{ '--i': index } as React.CSSProperties}>
-      <div className="copy-head">
+    <li className="copy enter" data-badge={badge} data-selected={selecting && selected} style={{ '--i': index } as React.CSSProperties}>
+      <div className="copy-head" onClick={selecting ? onSelect : undefined}>
+        {selecting && (
+          <input
+            type="checkbox"
+            className="copy-check"
+            checked={selected}
+            onChange={onSelect}
+            onClick={(event) => event.stopPropagation()}
+            aria-label={t('form.selectCopy', { label })}
+          />
+        )}
         <span className="copy-sprite"><Sprite id={formId} variant={entry.variant} size={66} /></span>
         <div className="copy-info">
           <span className="copy-label">{label}</span>
@@ -121,9 +175,16 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
             {entry.notes && <span className="copy-notes">{entry.notes}</span>}
           </span>
         </div>
-        <button type="button" className="copy-edit" aria-expanded={editing} onClick={onToggle} aria-label={t('entry.editCopy', { label })}>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></svg>
-        </button>
+        {!selecting && (
+          <span className="copy-buttons">
+            <button type="button" className="copy-edit copy-remove" onClick={onRemove} aria-label={t('entry.removeCopy', { label })}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" /></svg>
+            </button>
+            <button type="button" className="copy-edit" aria-expanded={editing} onClick={onToggle} aria-label={t('entry.editCopy', { label })}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></svg>
+            </button>
+          </span>
+        )}
       </div>
       {/* Always rendered so it can grow open smoothly; inert while collapsed. */}
       <div className="copy-drawer" data-open={editing} ref={drawerRef}>

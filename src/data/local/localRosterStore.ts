@@ -52,6 +52,23 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
     notify();
   }
 
+  /** Several rows (and their outbox marks) in one transaction, then one change notice. */
+  async function writeAll(rows: RosterEntry[]): Promise<void> {
+    if (rows.length === 0) return;
+    const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+    for (const entry of rows) {
+      await tx.objectStore('roster_entries').put(entry);
+      if (syncEnabled) {
+        const outbox = tx.objectStore('outbox');
+        const pending = await outbox.get(['roster_entries', entry.id]);
+        await outbox.put({ table: 'roster_entries', rowId: entry.id, isNew: pending ? pending.isNew : false, queuedAt: pending?.queuedAt ?? now().toISOString() });
+      }
+    }
+    await tx.done;
+    notify();
+  }
+  const live = (rows: RosterEntry[]) => rows.length;
+
   async function getLive(id: string): Promise<RosterEntry> {
     const entry = await db.get('roster_entries', id);
     if (!entry || entry.deleted_at) {
@@ -112,6 +129,26 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
       const current = await getLive(id);
       const timestamp = now().toISOString();
       await write({ ...current, deleted_at: timestamp, updated_at: timestamp }, false);
+    },
+
+    async removeMany(ids) {
+      const timestamp = now().toISOString();
+      const rows: RosterEntry[] = [];
+      for (const id of ids) rows.push({ ...(await getLive(id)), deleted_at: timestamp, updated_at: timestamp });
+      await writeAll(rows);
+    },
+
+    async restore(ids) {
+      const timestamp = now().toISOString();
+      const rows: RosterEntry[] = [];
+      for (const id of ids) {
+        const row = await db.get('roster_entries', id);
+        if (row?.deleted_at) rows.push({ ...row, deleted_at: null, updated_at: timestamp });
+      }
+      if (live(await this.list()) + rows.length > MAX_ROSTER_ENTRIES) {
+        throw new StorageError('row_cap_reached', `Roster is limited to ${MAX_ROSTER_ENTRIES} entries`);
+      }
+      await writeAll(rows);
     },
 
     subscribe(listener) {

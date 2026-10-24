@@ -20,6 +20,8 @@ interface RosterListProps {
   boxUsed: number;
   boxCapacity: number;
   onOpen: (formId: string) => void;
+  /** Removes every copy of these Pokémon (with Undo). */
+  onRemoveForms: (formIds: string[]) => void;
 }
 
 /** Everything you own, as a dense sprite grid (see it all at once) or a detailed list. */
@@ -28,10 +30,19 @@ const typeLabel = (type: string, locale: NameLocale) => {
   return names?.[locale] ?? names?.en ?? type;
 };
 
-export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, boxUsed, boxCapacity }: RosterListProps) {
+export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, onRemoveForms, boxUsed, boxCapacity }: RosterListProps) {
   const [sort, setSort] = useRosterSort();
   const [filters, setFilters] = useState<RosterFilters>(NO_FILTERS);
   const [panelOpen, setPanelOpen] = useState(false);
+  // Select mode: tap Pokémon to pick them, then remove them from the box in one go.
+  const [selecting, setSelecting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggleSelected = (formId: string) => setSelected((prev) => {
+    const next = new Set(prev);
+    if (next.has(formId)) next.delete(formId); else next.add(formId);
+    return next;
+  });
+  const stopSelecting = () => { setSelecting(false); setSelected(new Set()); };
   const [panelClosing, setPanelClosing] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
@@ -73,6 +84,15 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
     if (!left) return null;
     const urgent = Date.parse(summary.nextTrialExpiresAt!) - now.getTime() < 24 * 3_600_000;
     return { left, urgent, label: t('trial.leftLong', { time: left }) };
+  };
+  const pickedSummaries = sorted.filter((s) => selected.has(s.form_id));
+  const pickedCopies = pickedSummaries.reduce((sum, s) => sum + s.total, 0);
+  const allShownPicked = sorted.length > 0 && pickedSummaries.length === sorted.length;
+  const tap = (formId: string) => (selecting ? toggleSelected(formId) : onOpen(formId));
+  const removePicked = () => {
+    const ids = pickedSummaries.map((s) => s.form_id);
+    stopSelecting();
+    onRemoveForms(ids);
   };
   const boxState = boxUsed >= boxCapacity ? 'full' : boxUsed >= boxCapacity * 0.9 ? 'near' : 'ok';
   return (
@@ -135,6 +155,14 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
             </div>
           )}
         </div>
+        <button type="button" className="filter-button select-button" aria-pressed={selecting} onClick={() => (selecting ? stopSelecting() : setSelecting(true))}>
+          {selecting ? (
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          ) : (
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8.5 12.5l2.5 2.5 4.5-5" /></svg>
+          )}
+          <span className="filter-button-label">{t(selecting ? 'form.selectDone' : 'form.select')}</span>
+        </button>
         <div className="view-toggle" role="group" aria-label={t('roster.view')}>
           {(['grid', 'list'] as const).map((option) => (
             <button
@@ -161,8 +189,9 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           {sorted.map((summary, index) => {
             const name = displayName(summary.form_id, locale);
             return (
-              <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
-                <button type="button" onClick={() => onOpen(summary.form_id)} title={`${name}: ${ownershipText(summary)}`}>
+              <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
+                <button type="button" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined} title={`${name}: ${ownershipText(summary)}`}>
+                  {selecting && <SelectMark />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} size={64} />
                   <span className="tile-name">{name}</span>
                   {timer(summary) && (
@@ -182,8 +211,9 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           {sorted.map((summary, index) => {
             const form = catalogById.get(summary.form_id);
             return (
-              <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
-                <button type="button" className="row-main" onClick={() => onOpen(summary.form_id)}>
+              <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
+                <button type="button" className="row-main" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined}>
+                  {selecting && <SelectMark />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} />
                   <span className="row-text">
                     <span className="row-name">{displayName(summary.form_id, locale)}</span>
@@ -209,7 +239,26 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           })}
         </ul>
       )}
+      {selecting && (
+        <div className="roster-select-bar" role="region" aria-label={t('form.select')}>
+          <span className="count">{t('roster.selectedCount', { count: pickedSummaries.length, copies: pickedCopies })}</span>
+          <button type="button" className="button button-quiet" onClick={() => setSelected(allShownPicked ? new Set() : new Set(sorted.map((s) => s.form_id)))}>
+            {t(allShownPicked ? 'form.selectNone' : 'form.selectAll')}
+          </button>
+          <button type="button" className="button button-danger" disabled={pickedSummaries.length === 0} onClick={removePicked}>
+            {t('form.removeSelected', { count: pickedCopies })}
+          </button>
+        </div>
+      )}
     </section>
+  );
+}
+
+function SelectMark() {
+  return (
+    <span className="select-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+    </span>
   );
 }
 

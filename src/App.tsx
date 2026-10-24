@@ -145,7 +145,13 @@ export function App() {
             </div>
           )
         ) : (
-          <RosterList now={now} summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} boxUsed={boxUsed} boxCapacity={capacity} />
+          <RosterList now={now} summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} onRemoveForms={(formIds) => guard(async () => {
+            if (!store) return;
+            const ids = (entries ?? []).filter((e) => !e.deleted_at && formIds.includes(e.form_id)).map((e) => e.id);
+            if (ids.length === 0) return;
+            await store.removeMany(ids);
+            say(t('roster.removedMany', { count: ids.length }), () => { void store.restore(ids); });
+          })} boxUsed={boxUsed} boxCapacity={capacity} />
         )}
       </main>
 
@@ -175,8 +181,15 @@ export function App() {
           onAddAnother={() => { setAddingFormId(openFormId); setOpenFormId(null); }}
           onSave={(id, patch) => guard(async () => { await store?.update(id, patch); say(t('entry.saved')); })}
           onRemove={(entry) => guard(async () => {
-            await store?.remove(entry.id);
-            say(t('entry.deleted', { name: name(entry.form_id) }));
+            if (!store) return;
+            await store.remove(entry.id);
+            say(t('entry.deleted', { name: name(entry.form_id) }), () => { void store.restore([entry.id]); });
+          })}
+          onRemoveMany={(removed) => guard(async () => {
+            if (!store || removed.length === 0) return;
+            const ids = removed.map((e) => e.id);
+            await store.removeMany(ids);
+            say(t('entry.deletedMany', { count: ids.length, name: name(removed[0]!.form_id) }), () => { void store.restore(ids); });
           })}
         />
       )}
