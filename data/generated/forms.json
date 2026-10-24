@@ -427,6 +427,16 @@
     "sprite_key": "feraligatr"
   },
   {
+    "id": "ariados",
+    "species_id": "ariados",
+    "dex_number": 168,
+    "types": [
+      "bug",
+      "poison"
+    ],
+    "sprite_key": "ariados"
+  },
+  {
     "id": "ampharos",
     "species_id": "ampharos",
     "dex_number": 181,
@@ -1141,6 +1151,33 @@
       "dark"
     ],
     "sprite_key": "liepard"
+  },
+  {
+    "id": "simisage",
+    "species_id": "simisage",
+    "dex_number": 512,
+    "types": [
+      "grass"
+    ],
+    "sprite_key": "simisage"
+  },
+  {
+    "id": "simisear",
+    "species_id": "simisear",
+    "dex_number": 514,
+    "types": [
+      "fire"
+    ],
+    "sprite_key": "simisear"
+  },
+  {
+    "id": "simipour",
+    "species_id": "simipour",
+    "dex_number": 516,
+    "types": [
+      "water"
+    ],
+    "sprite_key": "simipour"
   },
   {
     "id": "musharna",
@@ -2027,6 +2064,16 @@
     "sprite_key": "flapple"
   },
   {
+    "id": "appletun",
+    "species_id": "appletun",
+    "dex_number": 842,
+    "types": [
+      "grass",
+      "dragon"
+    ],
+    "sprite_key": "appletun"
+  },
+  {
     "id": "sandaconda",
     "species_id": "sandaconda",
     "dex_number": 844,
@@ -2101,6 +2148,15 @@
       "steel"
     ],
     "sprite_key": "perrserker"
+  },
+  {
+    "id": "sirfetchd",
+    "species_id": "sirfetchd",
+    "dex_number": 865,
+    "types": [
+      "fighting"
+    ],
+    "sprite_key": "sirfetchd"
   },
   {
     "id": "mr-rime",
@@ -2270,6 +2326,26 @@
     "sprite_key": "skeledirge"
   },
   {
+    "id": "quaquaval",
+    "species_id": "quaquaval",
+    "dex_number": 914,
+    "types": [
+      "water",
+      "fighting"
+    ],
+    "sprite_key": "quaquaval"
+  },
+  {
+    "id": "pawmot",
+    "species_id": "pawmot",
+    "dex_number": 923,
+    "types": [
+      "electric",
+      "fighting"
+    ],
+    "sprite_key": "pawmot"
+  },
+  {
     "id": "maushold",
     "species_id": "maushold",
     "dex_number": 925,
@@ -2289,6 +2365,16 @@
     "sprite_key": "arboliva"
   },
   {
+    "id": "squawkabilly",
+    "species_id": "squawkabilly",
+    "dex_number": 931,
+    "types": [
+      "normal",
+      "flying"
+    ],
+    "sprite_key": "squawkabilly"
+  },
+  {
     "id": "garganacl",
     "species_id": "garganacl",
     "dex_number": 934,
@@ -2296,6 +2382,16 @@
       "rock"
     ],
     "sprite_key": "garganacl"
+  },
+  {
+    "id": "armarouge",
+    "species_id": "armarouge",
+    "dex_number": 936,
+    "types": [
+      "fire",
+      "psychic"
+    ],
+    "sprite_key": "armarouge"
   },
   {
     "id": "ceruledge",
@@ -2392,6 +2488,16 @@
     "sprite_key": "houndstone"
   },
   {
+    "id": "annihilape",
+    "species_id": "annihilape",
+    "dex_number": 979,
+    "types": [
+      "fighting",
+      "ghost"
+    ],
+    "sprite_key": "annihilape"
+  },
+  {
     "id": "farigiraf",
     "species_id": "farigiraf",
     "dex_number": 981,
@@ -2400,6 +2506,16 @@
       "psychic"
     ],
     "sprite_key": "farigiraf"
+  },
+  {
+    "id": "kingambit",
+    "species_id": "kingambit",
+    "dex_number": 983,
+    "types": [
+      "dark",
+      "steel"
+    ],
+    "sprite_key": "kingambit"
   },
   {
     "id": "baxcalibur",

@@ -494,6 +494,17 @@
     "es": "Feraligatr",
     "it": "Feraligatr"
   },
+  "ariados": {
+    "en": "Ariados",
+    "ja": "アリアドス",
+    "ko": "아리아도스",
+    "zh-Hant": "阿利多斯",
+    "zh-Hans": "阿利多斯",
+    "fr": "Migalos",
+    "de": "Ariados",
+    "es": "Ariados",
+    "it": "Ariados"
+  },
   "ampharos": {
     "en": "Ampharos",
     "ja": "デンリュウ",
@@ -1307,6 +1318,39 @@
     "de": "Kleoparda",
     "es": "Liepard",
     "it": "Liepard"
+  },
+  "simisage": {
+    "en": "Simisage",
+    "ja": "ヤナッキー",
+    "ko": "야나키",
+    "zh-Hant": "花椰猿",
+    "zh-Hans": "花椰猿",
+    "fr": "Feuiloutan",
+    "de": "Vegichita",
+    "es": "Simisage",
+    "it": "Simisage"
+  },
+  "simisear": {
+    "en": "Simisear",
+    "ja": "バオッキー",
+    "ko": "바오키",
+    "zh-Hant": "爆香猿",
+    "zh-Hans": "爆香猿",
+    "fr": "Flamoutan",
+    "de": "Grillchita",
+    "es": "Simisear",
+    "it": "Simisear"
+  },
+  "simipour": {
+    "en": "Simipour",
+    "ja": "ヒヤッキー",
+    "ko": "앗차키",
+    "zh-Hant": "冷水猿",
+    "zh-Hans": "冷水猿",
+    "fr": "Flotoutan",
+    "de": "Sodachita",
+    "es": "Simipour",
+    "it": "Simipour"
   },
   "musharna": {
     "en": "Musharna",
@@ -2320,6 +2364,17 @@
     "es": "Flapple",
     "it": "Flapple"
   },
+  "appletun": {
+    "en": "Appletun",
+    "ja": "タルップル",
+    "ko": "단지래플",
+    "zh-Hant": "豐蜜龍",
+    "zh-Hans": "丰蜜龙",
+    "fr": "Dratatin",
+    "de": "Schlapfel",
+    "es": "Appletun",
+    "it": "Appletun"
+  },
   "sandaconda": {
     "en": "Sandaconda",
     "ja": "サダイジャ",
@@ -2407,6 +2462,17 @@
     "de": "Mauzinger",
     "es": "Perrserker",
     "it": "Perrserker"
+  },
+  "sirfetchd": {
+    "en": "Sirfetch’d",
+    "ja": "ネギガナイト",
+    "ko": "창파나이트",
+    "zh-Hant": "蔥遊兵",
+    "zh-Hans": "葱游兵",
+    "fr": "Palarticho",
+    "de": "Lauchzelot",
+    "es": "Sirfetch’d",
+    "it": "Sirfetch’d"
   },
   "mr-rime": {
     "en": "Mr. Rime",
@@ -2595,6 +2661,28 @@
     "es": "Skeledirge",
     "it": "Skeledirge"
   },
+  "quaquaval": {
+    "en": "Quaquaval",
+    "ja": "ウェーニバル",
+    "ko": "웨이니발",
+    "zh-Hant": "狂歡浪舞鴨",
+    "zh-Hans": "狂欢浪舞鸭",
+    "fr": "Palmaval",
+    "de": "Bailonda",
+    "es": "Quaquaval",
+    "it": "Quaquaval"
+  },
+  "pawmot": {
+    "en": "Pawmot",
+    "ja": "パーモット",
+    "ko": "빠르모트",
+    "zh-Hant": "巴布土撥",
+    "zh-Hans": "巴布土拨",
+    "fr": "Pohmarmotte",
+    "de": "Pamomamo",
+    "es": "Pawmot",
+    "it": "Pawmot"
+  },
   "maushold": {
     "en": "Maushold",
     "ja": "イッカネズミ",
@@ -2617,6 +2705,17 @@
     "es": "Arboliva",
     "it": "Arboliva"
   },
+  "squawkabilly": {
+    "en": "Squawkabilly",
+    "ja": "イキリンコ",
+    "ko": "시비꼬",
+    "zh-Hant": "怒鸚哥",
+    "zh-Hans": "怒鹦哥",
+    "fr": "Tapatoès",
+    "de": "Krawalloro",
+    "es": "Squawkabilly",
+    "it": "Squawkabilly"
+  },
   "garganacl": {
     "en": "Garganacl",
     "ja": "キョジオーン",
@@ -2627,6 +2726,17 @@
     "de": "Saltigant",
     "es": "Garganacl",
     "it": "Garganacl"
+  },
+  "armarouge": {
+    "en": "Armarouge",
+    "ja": "グレンアルマ",
+    "ko": "카디나르마",
+    "zh-Hant": "紅蓮鎧騎",
+    "zh-Hans": "红莲铠骑",
+    "fr": "Carmadura",
+    "de": "Crimanzo",
+    "es": "Armarouge",
+    "it": "Armarouge"
   },
   "ceruledge": {
     "en": "Ceruledge",
@@ -2738,6 +2848,17 @@
     "es": "Houndstone",
     "it": "Houndstone"
   },
+  "annihilape": {
+    "en": "Annihilape",
+    "ja": "コノヨザル",
+    "ko": "저승갓숭",
+    "zh-Hant": "棄世猴",
+    "zh-Hans": "弃世猴",
+    "fr": "Courrousinge",
+    "de": "Epitaff",
+    "es": "Annihilape",
+    "it": "Annihilape"
+  },
   "farigiraf": {
     "en": "Farigiraf",
     "ja": "リキキリン",
@@ -2748,6 +2869,17 @@
     "de": "Farigiraf",
     "es": "Farigiraf",
     "it": "Farigiraf"
+  },
+  "kingambit": {
+    "en": "Kingambit",
+    "ja": "ドドゲザン",
+    "ko": "대도각참",
+    "zh-Hant": "仆刀將軍",
+    "zh-Hans": "仆刀将军",
+    "fr": "Scalpereur",
+    "de": "Gladimperio",
+    "es": "Kingambit",
+    "it": "Kingambit"
   },
   "baxcalibur": {
     "en": "Baxcalibur",

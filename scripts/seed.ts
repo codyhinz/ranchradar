@@ -122,6 +122,11 @@ async function main() {
     regulation.forms.forEach((id) => formIds.add(id));
     regulation.items.forEach((id) => itemIds.add(id));
   }
+  // Everything ever shipped keeps its reference record, so a Pokémon that leaves a season
+  // stays in people's rosters and can return later. Only the regulation's list decides legality.
+  const shipped = readRegistry();
+  shipped.forms.forEach((id) => formIds.add(id));
+  shipped.items.forEach((id) => itemIds.add(id));
 
   // Showdown lookups by our slug ids
   const speciesBySlug = new Map<string, Species>(Dex.species.all().map((s) => [slug(s.name), s]));
