@@ -39,6 +39,15 @@ export const catalog: CatalogForm[] = forms
 
 export const catalogById = new Map(catalog.map((f) => [f.id, f]));
 
+/** Every form ever shipped, including ones not in this season, for sorting and filtering a roster. */
+const allFormsById = new Map(forms.map((f) => [f.id, f]));
+export function dexNumberOf(formId: string): number {
+  return allFormsById.get(formId)?.dex_number ?? Number.MAX_SAFE_INTEGER;
+}
+export function typesOf(formId: string): string[] {
+  return allFormsById.get(formId)?.types ?? [];
+}
+
 export interface CatalogVariant {
   id: string;
   names: Partial<Record<NameLocale, string>>;

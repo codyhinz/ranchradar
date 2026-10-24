@@ -78,7 +78,9 @@
 :root[data-theme='light'] { color-scheme: light; }
 
 *, *::before, *::after { box-sizing: inherit; }
-html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); }
+html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); scrollbar-gutter: stable; overflow-x: clip; }
+/* The page behind an open sheet stays put; the gutter above keeps its width from jumping. */
+html:has(dialog[open]) { overflow: hidden; }
 body {
   margin: 0;
   background-color: var(--smoke); background-attachment: fixed;
@@ -181,7 +183,7 @@ body::before {
 .icon-button svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 
 /* Sections */
-.section-head { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0 0.75rem; }
+.section-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 1.25rem 0 0.75rem; }
 .section-head .count { margin-right: auto; }
 .section-head h2 { margin: 0; font: 600 var(--step-2) / 1.2 var(--font-sign); }
 .count { color: var(--muted); font-size: var(--step--1); }
@@ -556,3 +558,43 @@ body::before {
 .variant-value .sprite { width: 28px; height: 28px; }
 .copy-variant { font-weight: 600; }
 .row-variants { color: var(--muted); font-size: var(--step--1); }
+
+/* Roster filters: a toggle beside the layout switch, opening a panel of chips */
+.filter-button {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 40px; padding: 0 0.75rem;
+  border: 2px solid var(--rail); border-radius: 12px; background: transparent; font-weight: 600; cursor: pointer;
+}
+.filter-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.filter-button[aria-expanded='true'] { border-color: var(--wood); background: var(--rail); }
+.filter-badge {
+  min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 999px;
+  display: inline-grid; place-items: center; background: var(--ember-strong); color: #fff; font-size: 0.75rem; font-weight: 700;
+}
+@media (max-width: 30rem) { .filter-button-label { display: none; } }
+.filter-panel {
+  display: grid; gap: 0.85rem; margin: 0 0 1rem; padding: 0.9rem 1rem;
+  border: 1px solid var(--rail); border-radius: var(--radius-row); background: var(--surface); box-shadow: var(--lift, none);
+  animation: toast-in 160ms ease-out;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; border: 0; }
+.chips legend { width: 100%; margin-bottom: 0.35rem; padding: 0; font-weight: 600; font-size: var(--step--1); color: var(--muted); }
+.chip { position: relative; cursor: pointer; }
+.chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chip > span {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 0.8rem;
+  border: 2px solid var(--rail); border-radius: 999px; font-weight: 600; font-size: var(--step--1);
+}
+.chip input:checked + span { background: var(--coal); border-color: var(--coal); color: var(--smoke); }
+.chip input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+.chip-type input:checked + span::before { box-shadow: 0 0 0 2px var(--smoke); }
+.filter-foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.filter-foot .button { min-height: 36px; }
+
+/* Box space: the counter warms up as the box fills */
+.box-count[data-state='near'] { color: var(--hay-ink); background: var(--hay); padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 700; }
+.box-count[data-state='full'] { color: #fff; background: var(--danger); padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 700; }
+.box-space { display: grid; gap: 0.45rem; margin: 0; padding: 0; border: 0; }
+.box-space legend { font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
+.check { display: flex; align-items: center; gap: 0.6rem; min-height: 40px; cursor: pointer; }
+.check input { width: 20px; height: 20px; accent-color: var(--ember-strong); }
+.box-total { margin: 0.25rem 0 0; font-weight: 700; }

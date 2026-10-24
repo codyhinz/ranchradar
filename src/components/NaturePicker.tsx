@@ -3,6 +3,7 @@ import natureNames from '../../data/generated/nature-names.json';
 import { useNatureSort } from '../app/preferences';
 import type { NameLocale } from '../catalog';
 import { NATURES, type Nature } from '../data/types';
+import { revealWithin } from './reveal';
 import { t, uiLocale, type MessageKey } from '../i18n';
 
 type Stat = 'atk' | 'def' | 'spa' | 'spd' | 'spe';
@@ -64,8 +65,9 @@ export function NaturePicker({ value, onChange }: { value: Nature | null; onChan
   useEffect(() => { if (open) setActive(Math.max(0, options.indexOf(value))); }, [open, sort]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!open) return;
-    listRef.current?.parentElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)?.scrollIntoView({ block: 'nearest' });
+    const list = listRef.current;
+    revealWithin(list?.closest<HTMLElement>('.sheet') ?? null, list?.parentElement ?? null, true);
+    revealWithin(list, list?.querySelector<HTMLElement>(`[data-index="${active}"]`) ?? null);
   }, [open, active]);
 
   const choose = (index: number) => {

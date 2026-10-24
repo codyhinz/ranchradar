@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { displayName, searchForms } from './catalog';
-import { useNameLocale, useRosterView, useTheme } from './app/preferences';
+import { boxCapacity } from './app/box';
+import { useBoxUnlocks, useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AddSheet } from './components/AddSheet';
 import { expiresAfter } from './components/EntryFields';
@@ -22,6 +23,10 @@ export function App() {
   setUiLocale(locale); // interface text follows the same language setting as Pokémon names
   const [theme, setTheme] = useTheme();
   const [rosterView, setRosterView] = useRosterView();
+  const [boxUnlocks, setBoxUnlocks] = useBoxUnlocks();
+  const capacity = boxCapacity(boxUnlocks);
+  // Every copy takes a box slot, expired trials included, until it's returned in-game.
+  const boxUsed = (entries ?? []).filter((e) => !e.deleted_at).length;
   const [query, setQuery] = useState('');
   const [addingFormId, setAddingFormId] = useState<string | null>(null);
   const [openFormId, setOpenFormId] = useState<string | null>(null);
@@ -70,6 +75,10 @@ export function App() {
   const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; variant?: string | null; notes?: string | null; trial_expires_at?: string } = {}) =>
     guard(async () => {
       if (!store) return;
+      if (boxUsed >= capacity) {
+        setToast({ id: Date.now(), text: t('box.full', { capacity }), action: { label: t('settings.box'), run: () => setSettingsOpen(true) } });
+        return;
+      }
       const entry = await store.add({ form_id: formId, status, nature: extra.nature as never, variant: extra.variant ?? null, notes: extra.notes ?? null, ...(extra.trial_expires_at ? { trial_expires_at: extra.trial_expires_at } : {}) });
       requestPersistentStorage();
       say(t(status === 'permanent' ? 'added.permanent' : 'added.trial', { name: name(formId) }), () => {
@@ -136,7 +145,7 @@ export function App() {
             </div>
           )
         ) : (
-          <RosterList now={now} summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} />
+          <RosterList now={now} summaries={[...summaries.values()]} locale={locale} view={rosterView} onViewChange={setRosterView} onOpen={setOpenFormId} boxUsed={boxUsed} boxCapacity={capacity} />
         )}
       </main>
 
@@ -173,7 +182,7 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} boxUnlocks={boxUnlocks} onBoxUnlocksChange={setBoxUnlocks} boxUsed={boxUsed} onClose={() => setSettingsOpen(false)} />
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />

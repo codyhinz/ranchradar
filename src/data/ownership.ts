@@ -11,6 +11,8 @@ export interface FormOwnership {
   nextTrialExpiresAt: string | null;
   /** Distinct variants among the copies, in the order first added. */
   variants: string[];
+  /** When the newest copy was added. */
+  lastAddedAt: string;
 }
 
 /** Groups live entries by form, e.g. Garchomp → 2 owned (1 permanent, 1 trial). */
@@ -20,10 +22,11 @@ export function summarizeByForm(entries: RosterEntry[], at: Date = new Date()): 
     if (entry.deleted_at) continue;
     let summary = byForm.get(entry.form_id);
     if (!summary) {
-      summary = { form_id: entry.form_id, total: 0, permanent: 0, trial: 0, expiredTrials: 0, nextTrialExpiresAt: null, variants: [] };
+      summary = { form_id: entry.form_id, total: 0, permanent: 0, trial: 0, expiredTrials: 0, nextTrialExpiresAt: null, variants: [], lastAddedAt: entry.created_at };
       byForm.set(entry.form_id, summary);
     }
     summary.total++;
+    if (entry.created_at > summary.lastAddedAt) summary.lastAddedAt = entry.created_at;
     if (entry.variant && !summary.variants.includes(entry.variant)) summary.variants.push(entry.variant);
     if (entry.status === 'permanent') {
       summary.permanent++;

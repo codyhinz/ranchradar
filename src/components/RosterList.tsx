@@ -1,8 +1,11 @@
 import type React from 'react';
-import type { RosterView } from '../app/preferences';
+import { useState } from 'react';
+import typeNames from '../../data/generated/type-names.json';
+import { ROSTER_SORTS, useRosterSort, type RosterView } from '../app/preferences';
+import { activeFilterCount, applyRosterView, NO_FILTERS, ownedTypes, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
 import { catalogById, displayName, variantName, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
-import { ownershipText, t, trialTimeLeft, uiLocale } from '../i18n';
+import { ownershipText, t, trialTimeLeft, type MessageKey } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
 import { TypeTags } from './TypeTags';
@@ -13,11 +16,22 @@ interface RosterListProps {
   locale: NameLocale;
   view: RosterView;
   onViewChange: (view: RosterView) => void;
+  /** Box slots used (every copy, expired trials included) and available. */
+  boxUsed: number;
+  boxCapacity: number;
   onOpen: (formId: string) => void;
 }
 
 /** Everything you own, as a dense sprite grid (see it all at once) or a detailed list. */
-export function RosterList({ summaries, now, locale, view, onViewChange, onOpen }: RosterListProps) {
+const typeLabel = (type: string, locale: NameLocale) => {
+  const names = (typeNames as Record<string, Partial<Record<NameLocale, string>>>)[type];
+  return names?.[locale] ?? names?.en ?? type;
+};
+
+export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, boxUsed, boxCapacity }: RosterListProps) {
+  const [sort, setSort] = useRosterSort();
+  const [filters, setFilters] = useState<RosterFilters>(NO_FILTERS);
+  const [panelOpen, setPanelOpen] = useState(false);
   if (summaries.length === 0) {
     return (
       <div className="empty">
@@ -27,21 +41,30 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
       </div>
     );
   }
-  // Alphabetical by the name shown in the current language (50音順 in Japanese, and so on).
-  const collator = new Intl.Collator(uiLocale());
-  const sorted = [...summaries].sort((a, b) => collator.compare(displayName(a.form_id, locale), displayName(b.form_id, locale)));
+  const sorted = applyRosterView(summaries, filters, sort, locale);
+  const filterCount = activeFilterCount(filters);
+  const types = ownedTypes(summaries);
+  const toggleType = (type: string) => setFilters({
+    ...filters,
+    types: filters.types.includes(type) ? filters.types.filter((t) => t !== type) : [...filters.types, type],
+  });
   const timer = (summary: FormOwnership) => {
     const left = trialTimeLeft(summary.nextTrialExpiresAt, now);
     if (!left) return null;
     const urgent = Date.parse(summary.nextTrialExpiresAt!) - now.getTime() < 24 * 3_600_000;
     return { left, urgent, label: t('trial.leftLong', { time: left }) };
   };
-  const total = summaries.reduce((sum, s) => sum + s.total, 0);
+  const boxState = boxUsed >= boxCapacity ? 'full' : boxUsed >= boxCapacity * 0.9 ? 'near' : 'ok';
   return (
     <section aria-labelledby="roster-heading">
       <div className="section-head">
         <h2 id="roster-heading">{t('roster.heading')}</h2>
-        <span className="count">{t('roster.count', { count: total })}</span>
+        <span className="count box-count" data-state={boxState}>{t('roster.box', { used: boxUsed, capacity: boxCapacity })}</span>
+        <button type="button" className="filter-button" aria-expanded={panelOpen} aria-controls="roster-filters" onClick={() => setPanelOpen(!panelOpen)}>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+          <span className="filter-button-label">{t('filter.button')}</span>
+          {filterCount > 0 && <span className="filter-badge">{filterCount}</span>}
+        </button>
         <div className="view-toggle" role="group" aria-label={t('roster.view')}>
           {(['grid', 'list'] as const).map((option) => (
             <button
@@ -61,7 +84,49 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen 
         </div>
       </div>
 
-      {view === 'grid' ? (
+      {panelOpen && (
+        <div className="filter-panel" id="roster-filters">
+          <fieldset className="chips">
+            <legend>{t('filter.status')}</legend>
+            {STATUS_FILTERS.map((status) => (
+              <label key={status} className="chip">
+                <input type="radio" name="roster-status" checked={filters.status === status} onChange={() => setFilters({ ...filters, status })} />
+                <span>{t(`filter.status.${status}` as MessageKey)}</span>
+              </label>
+            ))}
+          </fieldset>
+          {types.length > 1 && (
+            <fieldset className="chips">
+              <legend>{t('filter.type')}</legend>
+              {types.map((type) => (
+                <label key={type} className="chip chip-type">
+                  <input type="checkbox" checked={filters.types.includes(type)} onChange={() => toggleType(type)} />
+                  <span className="type" data-type={type}>{typeLabel(type, locale)}</span>
+                </label>
+              ))}
+            </fieldset>
+          )}
+          <fieldset className="chips">
+            <legend>{t('filter.sort')}</legend>
+            {ROSTER_SORTS.map((option) => (
+              <label key={option} className="chip">
+                <input type="radio" name="roster-sort" checked={sort === option} onChange={() => setSort(option)} />
+                <span>{t(`sort.${option}` as MessageKey)}</span>
+              </label>
+            ))}
+          </fieldset>
+          {filterCount > 0 && (
+            <div className="filter-foot">
+              <span className="count">{t('filter.shown', { shown: sorted.length, total: summaries.length })}</span>
+              <button type="button" className="button button-quiet" onClick={() => setFilters(NO_FILTERS)}>{t('filter.clear')}</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {sorted.length === 0 ? (
+        <p className="no-results">{t('filter.none')}</p>
+      ) : view === 'grid' ? (
         <ul className="tiles" key="grid">
           {sorted.map((summary, index) => {
             const name = displayName(summary.form_id, locale);

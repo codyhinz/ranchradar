@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { variantName, variantsOf } from '../catalog';
+import { revealWithin } from './reveal';
 import { t, uiLocale } from '../i18n';
 import { Sprite } from './Sprite';
 
@@ -23,8 +24,9 @@ export function VariantPicker({ formId, value, onChange }: {
   useEffect(() => { if (open) setActive(Math.max(0, options.indexOf(value))); }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!open) return;
-    listRef.current?.parentElement?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    listRef.current?.querySelector<HTMLElement>(`[data-index="${active}"]`)?.scrollIntoView({ block: 'nearest' });
+    const list = listRef.current;
+    revealWithin(list?.closest<HTMLElement>('.sheet') ?? null, list?.parentElement ?? null, true);
+    revealWithin(list, list?.querySelector<HTMLElement>(`[data-index="${active}"]`) ?? null);
   }, [open, active]);
 
   const choose = (index: number) => {
