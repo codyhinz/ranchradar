@@ -1,0 +1,37 @@
+# Supabase's free plan pauses a project after about a week without activity.
+# This reads one row from a public reference table every three days so it never does.
+# Needs two repository secrets: SUPABASE_URL (https://<ref>.supabase.co) and
+# SUPABASE_ANON_KEY (the anon / publishable key; it is public, but keeping it in
+# secrets keeps it out of logs). A failed run emails the repo owner.
+name: Supabase keep-alive
+
+on:
+  schedule:
+    - cron: '17 9 */3 * *' # 09:17 UTC every third day; off the hour, when GitHub's queue is quieter
+  workflow_dispatch: # "Run workflow" button, to test it once after adding the secrets
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read one row from a public table
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "::error::Add the SUPABASE_URL and SUPABASE_ANON_KEY repository secrets."
+            exit 1
+          fi
+          status=$(curl -sS -o response.json -w '%{http_code}' --retry 3 --retry-delay 20 --retry-all-errors \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            "${SUPABASE_URL%/}/rest/v1/regulations?select=id&limit=1")
+          echo "Supabase answered HTTP $status"
+          if [ "$status" != "200" ]; then
+            cat response.json
+            echo "::error::Keep-alive query failed. If the project is paused, restore it in the Supabase dashboard."
+            exit 1
+          fi
