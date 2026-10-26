@@ -42,3 +42,11 @@ describe('backup files', () => {
     expect(cleaned.trial_expires_at).toBeNull(); // permanent copies have no expiry
   });
 });
+
+describe('backup files across seasons', () => {
+  it('keeps Pokémon that have left the current regulation', () => {
+    const { rows, skipped } = parseBackup(JSON.stringify(toBackup([entry({ form_id: 'bouffalant', nature: null })])));
+    expect(skipped).toBe(0);
+    expect(rows[0]?.form_id).toBe('bouffalant');
+  });
+});

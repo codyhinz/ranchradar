@@ -1,4 +1,4 @@
-import { catalogById, variantsOf } from '../catalog';
+import { isKnownForm, variantsOf } from '../catalog';
 import { MAX_NOTES_LENGTH, NATURES, type ImportedRosterEntry, type RosterEntry } from './types';
 
 /**
@@ -79,7 +79,7 @@ function readRow(raw: unknown): ImportedRosterEntry | null {
   if (!isObject(raw)) return null;
   const { id, form_id, status } = raw;
   if (typeof id !== 'string' || !UUID.test(id)) return null;
-  if (typeof form_id !== 'string' || !catalogById.has(form_id)) return null;
+  if (typeof form_id !== 'string' || !isKnownForm(form_id)) return null; // out-of-season forms are fine
   if (status !== 'trial' && status !== 'permanent') return null;
   if (!isDate(raw.created_at) || !isDate(raw.updated_at)) return null;
   const nature = typeof raw.nature === 'string' && (NATURES as readonly string[]).includes(raw.nature) ? raw.nature as ImportedRosterEntry['nature'] : null;

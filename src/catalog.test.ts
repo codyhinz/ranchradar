@@ -1,4 +1,4 @@
-import { guessLocale, normalize, searchForms } from './catalog';
+import { guessLocale, isInSeason, isKnownForm, normalize, regulationAt, regulations, searchForms } from './catalog';
 
 describe('normalize', () => {
   it('folds accents, width and hiragana', () => {
@@ -50,5 +50,27 @@ describe('guessLocale', () => {
     expect(guessLocale(['zh-CN'])).toBe('zh-Hans');
     expect(guessLocale(['pt-BR', 'fr'])).toBe('fr');
     expect(guessLocale(['pt-BR'])).toBe('en');
+  });
+});
+
+describe('regulations', () => {
+  const reg = (id: string, starts_at: string) => ({ id, name: id, starts_at, ends_at: '2099-01-01T00:00:00Z', status: 'final' as const, forms: [] });
+  const list = [reg('M-C', '2026-09-09T02:00:00Z'), reg('M-D', '2026-12-02T02:00:00Z')];
+
+  it('switches to a file shipped ahead of time on its start date, not before', () => {
+    expect(regulationAt(new Date('2026-12-02T01:59:00Z'), list).id).toBe('M-C');
+    expect(regulationAt(new Date('2026-12-02T02:00:00Z'), list).id).toBe('M-D');
+  });
+
+  it('keeps the last regulation after it ends until a new file arrives', () => {
+    expect(regulationAt(new Date('2027-06-01T00:00:00Z'), [list[0]!]).id).toBe('M-C');
+  });
+
+  it('finds every regulation file and knows forms that left the season', () => {
+    expect(regulations.map((r) => r.id)).toContain('M-C');
+    expect(isInSeason('garchomp')).toBe(true);
+    expect(isInSeason('bouffalant')).toBe(false); // known from data, not in M-C
+    expect(isKnownForm('bouffalant')).toBe(true);
+    expect(isKnownForm('missingno')).toBe(false);
   });
 });

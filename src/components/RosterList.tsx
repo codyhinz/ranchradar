@@ -2,8 +2,8 @@ import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import typeNames from '../../data/generated/type-names.json';
 import { ROSTER_SORTS, useRosterSort, type RosterView } from '../app/preferences';
-import { activeFilterCount, applyRosterView, NO_FILTERS, ownedTypes, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
-import { catalogById, displayName, variantName, type NameLocale } from '../catalog';
+import { activeFilterCount, applyRosterView, NO_FILTERS, outOfSeasonCount, ownedTypes, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
+import { currentRegulation, displayName, isInSeason, typesOf, variantName, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import { ownershipText, t, trialTimeLeft, type MessageKey } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
@@ -77,6 +77,8 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   const sorted = applyRosterView(summaries, filters, sort, locale);
   const filterCount = activeFilterCount(filters);
   const expiredCount = summaries.reduce((sum, s) => sum + s.expiredTrials, 0);
+  const outCount = outOfSeasonCount(summaries);
+  const seasonTag = t('season.out', { id: currentRegulation.id });
   const types = ownedTypes(summaries);
   const toggleType = (type: string) => setFilters({
     ...filters,
@@ -131,6 +133,12 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
                   </label>
                 ))}
               </fieldset>
+              {(outCount > 0 || filters.hideOutOfSeason) && (
+                <label className="check season-check">
+                  <input type="checkbox" checked={filters.hideOutOfSeason} onChange={(event) => setFilters({ ...filters, hideOutOfSeason: event.target.checked })} />
+                  <span>{t('filter.hideOutOfSeason', { id: currentRegulation.id, count: outCount })}</span>
+                </label>
+              )}
               {expiredCount > 0 && (
                 <button type="button" className="button button-quiet button-small clear-expired" onClick={onClearExpired}>
                   {t('expired.clear', { count: expiredCount })}
@@ -207,11 +215,12 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           {sorted.map((summary, index) => {
             const name = displayName(summary.form_id, locale);
             return (
-              <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
+              <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} data-season={isInSeason(summary.form_id) ? undefined : 'out'} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
                 <button type="button" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined} title={`${name}: ${ownershipText(summary)}`}>
                   {selecting && <SelectMark />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} size={64} />
                   <span className="tile-name">{name}</span>
+                  {!isInSeason(summary.form_id) && <span className="season-tag">{seasonTag}</span>}
                   {timer(summary) && (
                     <span className="trial-timer" data-urgent={timer(summary)!.urgent} title={timer(summary)!.label}>
                       <TimerIcon />{timer(summary)!.left}
@@ -227,9 +236,8 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
       ) : (
         <ul className="rows fence" key="list">
           {sorted.map((summary, index) => {
-            const form = catalogById.get(summary.form_id);
             return (
-              <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
+              <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} data-season={isInSeason(summary.form_id) ? undefined : 'out'} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
                 <button type="button" className="row-main" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined}>
                   {selecting && <SelectMark />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} />
@@ -245,7 +253,8 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
                           <TimerIcon />{timer(summary)!.left}
                         </span>
                       )}
-                      {form && <TypeTags types={form.types} />}
+                      {!isInSeason(summary.form_id) && <span className="season-tag">{seasonTag}</span>}
+                      <TypeTags types={typesOf(summary.form_id)} />
                       {summary.variants.length > 0 && (
                         <span className="row-variants">{summary.variants.map((v) => variantName(v, locale)).join(', ')}</span>
                       )}

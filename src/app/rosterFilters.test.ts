@@ -1,6 +1,6 @@
 import type { FormOwnership } from '../data/ownership';
 import { boxCapacity, DEFAULT_BOX, type BoxSettings } from './box';
-import { activeFilterCount, applyRosterView, NO_FILTERS, ownedTypes } from './rosterFilters';
+import { activeFilterCount, applyRosterView, NO_FILTERS, outOfSeasonCount, ownedTypes } from './rosterFilters';
 
 const own = (form_id: string, extra: Partial<FormOwnership> = {}): FormOwnership => ({
   form_id, total: 1, permanent: 1, trial: 0, expiredTrials: 0, nextTrialExpiresAt: null, variants: [],
@@ -17,15 +17,15 @@ const ids = (list: FormOwnership[]) => list.map((s) => s.form_id);
 
 describe('roster filters', () => {
   it('filters by status', () => {
-    expect(ids(applyRosterView(roster, { status: 'permanent', types: [] }, 'az', 'en'))).toEqual(['garchomp', 'torkoal']);
-    expect(ids(applyRosterView(roster, { status: 'trial', types: [] }, 'az', 'en'))).toEqual(['ninetales-alola', 'garchomp']); // "Alolan Ninetales" sorts first
-    expect(ids(applyRosterView(roster, { status: 'expired', types: [] }, 'az', 'en'))).toEqual(['garchomp', 'pikachu']);
+    expect(ids(applyRosterView(roster, { ...NO_FILTERS, status: 'permanent' }, 'az', 'en'))).toEqual(['garchomp', 'torkoal']);
+    expect(ids(applyRosterView(roster, { ...NO_FILTERS, status: 'trial' }, 'az', 'en'))).toEqual(['ninetales-alola', 'garchomp']); // "Alolan Ninetales" sorts first
+    expect(ids(applyRosterView(roster, { ...NO_FILTERS, status: 'expired' }, 'az', 'en'))).toEqual(['garchomp', 'pikachu']);
   });
 
   it('matches any selected type and only offers owned types', () => {
-    expect(ids(applyRosterView(roster, { status: 'all', types: ['fire', 'electric'] }, 'az', 'en'))).toEqual(['pikachu', 'torkoal']);
+    expect(ids(applyRosterView(roster, { ...NO_FILTERS, status: 'all', types: ['fire', 'electric'] }, 'az', 'en'))).toEqual(['pikachu', 'torkoal']);
     expect(ownedTypes(roster)).toEqual(['dragon', 'electric', 'fairy', 'fire', 'ground', 'ice']);
-    expect(activeFilterCount({ status: 'trial', types: ['fire', 'ice'] })).toBe(3);
+    expect(activeFilterCount({ ...NO_FILTERS, status: 'trial', types: ['fire', 'ice'] })).toBe(3);
   });
 
   it('sorts by dex number, soonest trial, newest and most copies', () => {
@@ -46,5 +46,14 @@ describe('box space', () => {
     expect(boxCapacity(box({ starterPack: true, membership: true }))).toBe(50);
     expect(boxCapacity(box({ freeToPlay: false, starterPack: true }))).toBe(100);
     expect(boxCapacity(box({ freeToPlay: false, starterPack: true, membership: true }))).toBe(1100);
+  });
+});
+
+describe('out-of-season filter', () => {
+  it('hides Pokémon not in the current regulation and counts as a filter', () => {
+    const owned = [own('garchomp'), own('bouffalant')];
+    expect(outOfSeasonCount(owned)).toBe(1);
+    expect(applyRosterView(owned, { ...NO_FILTERS, hideOutOfSeason: true }, 'az', 'en').map((s) => s.form_id)).toEqual(['garchomp']);
+    expect(activeFilterCount({ ...NO_FILTERS, hideOutOfSeason: true })).toBe(1);
   });
 });

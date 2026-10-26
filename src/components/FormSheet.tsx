@@ -7,7 +7,7 @@ import { t, uiLocale } from '../i18n';
 import { Dialog } from './Dialog';
 import { EntryFields, expiresAfter, newDraft, type EntryDraft } from './EntryFields';
 import { Sprite } from './Sprite';
-import { variantName } from '../catalog';
+import { currentRegulation, isInSeason, variantName } from '../catalog';
 
 interface FormSheetProps {
   formId: string;
@@ -80,6 +80,9 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onMakePerma
           </button>
         )}
       </div>
+      {!isInSeason(formId) && (
+        <p className="season-note">{t('season.outLong', { name, id: currentRegulation.id })}</p>
+      )}
       <ul className="copies" data-selecting={selecting}>
         {list.map((entry, index) => (
           <EntryCard

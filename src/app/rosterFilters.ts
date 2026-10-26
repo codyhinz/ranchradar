@@ -1,4 +1,4 @@
-import { dexNumberOf, displayName, typesOf, type NameLocale } from '../catalog';
+import { dexNumberOf, displayName, isInSeason, typesOf, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import type { RosterSort } from './preferences';
 
@@ -9,12 +9,14 @@ export interface RosterFilters {
   status: StatusFilter;
   /** Matches a Pokémon with any of these types; empty means every type. */
   types: string[];
+  /** Hides Pokémon that aren't legal in the current regulation (they stay in the box). */
+  hideOutOfSeason: boolean;
 }
 
-export const NO_FILTERS: RosterFilters = { status: 'all', types: [] };
+export const NO_FILTERS: RosterFilters = { status: 'all', types: [], hideOutOfSeason: false };
 
 export function activeFilterCount(filters: RosterFilters): number {
-  return (filters.status === 'all' ? 0 : 1) + filters.types.length;
+  return (filters.status === 'all' ? 0 : 1) + filters.types.length + (filters.hideOutOfSeason ? 1 : 0);
 }
 
 function matchesStatus(summary: FormOwnership, status: StatusFilter): boolean {
@@ -47,6 +49,7 @@ export function applyRosterView(
   };
   return summaries
     .filter((s) => matchesStatus(s, filters.status))
+    .filter((s) => !filters.hideOutOfSeason || isInSeason(s.form_id))
     .filter((s) => filters.types.length === 0 || typesOf(s.form_id).some((type) => filters.types.includes(type)))
     .sort(compare[sort]);
 }
@@ -54,4 +57,9 @@ export function applyRosterView(
 /** Types present in the roster, so the type filter only offers ones that can match. */
 export function ownedTypes(summaries: FormOwnership[]): string[] {
   return [...new Set(summaries.flatMap((s) => typesOf(s.form_id)))].sort();
+}
+
+/** How many owned Pokémon aren't legal this regulation, so the filter only shows when it can matter. */
+export function outOfSeasonCount(summaries: FormOwnership[]): number {
+  return summaries.filter((s) => !isInSeason(s.form_id)).length;
 }

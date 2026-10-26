@@ -762,3 +762,17 @@ body::before {
 }
 .expired-bar .button { color: var(--coal); }
 @media (prefers-reduced-motion: reduce) { .expired-actions { animation: none; } }
+
+/* Season changeover: Pokémon not legal in the current regulation stay in the box, dimmed and tagged */
+.season-tag {
+  display: inline-block; padding: 0.05rem 0.45rem; border-radius: 999px; border: 1px solid var(--rail);
+  color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.01em; white-space: nowrap;
+}
+.tile .season-tag { margin-top: 0.15rem; }
+.tile[data-season='out'] .sprite, .row[data-season='out'] .sprite { filter: grayscale(0.85); opacity: 0.55; }
+.tile[data-season='out'] .tile-name, .row[data-season='out'] .row-name { color: var(--muted); }
+.season-note {
+  margin: 0 0 0.75rem; padding: 0.55rem 0.75rem; border-radius: var(--radius-row);
+  background: var(--rail); color: var(--coal); font-size: var(--step--1);
+}
+.season-check { min-height: 36px; font-weight: 600; font-size: var(--step--1); }

@@ -12,3 +12,14 @@
 4. Run `npm run seed`, then `npm run validate:data`.
 5. Keep `"status": "draft"` until the list is complete, then switch to `"final"` so the count is enforced.
 6. Commit the regulation file and everything `seed` changed in one pull request.
+
+## How a season change goes live
+
+- The app picks up every file in `regulations/` on its own; nothing in `src/` needs editing.
+- The regulation in effect is the latest one whose `starts_at` has passed. Ship the new file as soon as
+  the list is announced: it stays dormant until its start date, then takes over.
+- An open app notices the start date within a minute and offers a Refresh. Installed apps also check for
+  a new build every hour and whenever they come back into view, so a late-shipped file still reaches them.
+- Pokémon that leave the season stay in rosters and backups. They're dimmed and tagged "Not in M-D",
+  and the roster filter can hide them. Search only offers the current season's Pokémon.
+- If the old season ends before the new file ships, the old one keeps applying until it does.

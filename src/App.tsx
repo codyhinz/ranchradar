@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { displayName, searchForms } from './catalog';
+import { currentRegulation, displayName, regulationAt, searchForms } from './catalog';
 import { boxCapacity } from './app/box';
 import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
@@ -41,6 +41,8 @@ export function App() {
     const timer = window.setInterval(() => setNow(new Date()), 60_000);
     return () => window.clearInterval(timer);
   }, []);
+  // A regulation shipped ahead of time takes over on its start date; the page offers a reload then.
+  const liveRegulation = regulationAt(now);
   const summaries = useMemo(() => summarizeByForm(entries ?? [], now), [entries, now]);
   const results = useMemo(() => searchForms(query, locale).slice(0, 60), [query, locale]);
   const name = (formId: string) => displayName(formId, locale);
@@ -247,7 +249,7 @@ export function App() {
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />
-      <UpdatePrompt />
+      <UpdatePrompt seasonStarted={liveRegulation.id !== currentRegulation.id ? liveRegulation.id : null} />
     </div>
   );
 }

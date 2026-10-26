@@ -1,6 +1,5 @@
 import forms from '../data/generated/forms.json';
 import formNames from '../data/generated/form-names.json';
-import mc from '../data/regulations/M-C.json';
 import variantData from '../data/generated/variants.json';
 
 export const NAME_LOCALES = ['en', 'ja', 'ko', 'zh-Hant', 'zh-Hans', 'fr', 'de', 'es', 'it'] as const;
@@ -20,13 +19,41 @@ export interface CatalogForm {
 
 const names = formNames as Record<string, Partial<Record<NameLocale, string>>>;
 
-/** The regulation in effect: the one whose dates contain today, else the latest. */
-const regulations = [mc];
-export const currentRegulation =
-  regulations.find((r) => Date.now() >= Date.parse(r.starts_at) && Date.now() < Date.parse(r.ends_at)) ??
-  regulations[regulations.length - 1]!;
+export interface Regulation {
+  id: string;
+  name: string;
+  starts_at: string;
+  ends_at: string;
+  status: 'draft' | 'final';
+  forms: string[];
+}
+
+/**
+ * Every file in data/regulations/, oldest first. Dropping in a new file (say M-D.json) is all a
+ * season change needs: it ships ahead of time and takes over on its start date.
+ */
+export const regulations: Regulation[] = Object.values(
+  import.meta.glob<Regulation>('../data/regulations/*.json', { eager: true, import: 'default' }),
+).sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+
+/**
+ * The regulation in effect at `now`: the latest one that has started. Between seasons, or after
+ * the last known one ends, the most recent keeps applying until the next file arrives.
+ */
+export function regulationAt(now: Date, list: Regulation[] = regulations): Regulation {
+  const started = list.filter((r) => Date.parse(r.starts_at) <= now.getTime());
+  return started[started.length - 1] ?? list[0]!;
+}
+
+/** Fixed for the life of the page; the app offers a reload when the date passes into a new one. */
+export const currentRegulation = regulationAt(new Date());
 
 const legal = new Set(currentRegulation.forms);
+
+/** True when this form can be recruited and battled in the current regulation. */
+export function isInSeason(formId: string): boolean {
+  return legal.has(formId);
+}
 
 export const catalog: CatalogForm[] = forms
   .filter((f) => legal.has(f.id))
@@ -41,6 +68,10 @@ export const catalogById = new Map(catalog.map((f) => [f.id, f]));
 
 /** Every form ever shipped, including ones not in this season, for sorting and filtering a roster. */
 const allFormsById = new Map(forms.map((f) => [f.id, f]));
+/** Any form that has ever been in a regulation: what a roster or a backup may hold. */
+export function isKnownForm(formId: string): boolean {
+  return allFormsById.has(formId);
+}
 export function dexNumberOf(formId: string): number {
   return allFormsById.get(formId)?.dex_number ?? Number.MAX_SAFE_INTEGER;
 }
@@ -69,7 +100,7 @@ export function variantName(variantId: string, locale: NameLocale): string {
 export function displayName(formId: string, locale: NameLocale): string {
   const form = catalogById.get(formId);
   const fallback = names[formId];
-  return form?.names[locale] ?? form?.names.en ?? fallback?.en ?? formId;
+  return form?.names[locale] ?? fallback?.[locale] ?? form?.names.en ?? fallback?.en ?? formId;
 }
 
 /**
