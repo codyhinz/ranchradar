@@ -445,10 +445,11 @@ body::before {
 .copy-info { flex: 1; min-width: 0; display: grid; gap: 0.25rem; justify-items: start; }
 .copy-label { font: 600 var(--step-1) / 1.2 var(--font-sign); }
 .status-badge {
-  white-space: nowrap; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.6rem 0.15rem 0.45rem;
+  /* wraps inside the card instead of running under the buttons on narrow screens */
+  max-width: 100%; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.6rem 0.15rem 0.45rem;
   border-radius: 999px; font-weight: 700; font-size: var(--step--1);
 }
-.status-badge svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.status-badge svg { flex: none; width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .status-badge[data-badge='permanent'] { background: var(--ember-strong); color: #fff; }
 .status-badge[data-badge='trial'] { background: var(--hay); color: var(--hay-ink); }
 .status-badge[data-badge='expired'] { background: transparent; color: var(--danger); border: 2px solid currentColor; }
@@ -649,7 +650,7 @@ body::before {
 @media (prefers-reduced-motion: reduce) { .switch-track, .switch-track::after { transition: none; } .box-purchases { animation: none; } }
 
 /* Copies sheet: quick remove beside edit, and a select mode for clearing out many at once */
-.copy-buttons { display: flex; gap: 0.4rem; }
+.copy-buttons { display: flex; gap: 0.4rem; flex: none; align-self: flex-start; }
 .copy-remove:hover { border-color: var(--danger); color: var(--danger); }
 .sheet-sub-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0.1rem 0 0.75rem; }
 .sheet-sub-row .sheet-sub { margin: 0; }
@@ -719,4 +720,23 @@ body::before {
   .roster-tools { gap: 0.3rem; }
   .tool-button { width: 40px; height: 40px; }
   .view-toggle button { width: 32px; height: 32px; }
+}
+
+/* Copy cards: badge and details sit under the name */
+.copy-details { display: grid; gap: 0.25rem; justify-items: start; min-width: 0; max-width: 100%; }
+/* Phones: name shares a line with the buttons; badge and details use the full width below them */
+@media (max-width: 30rem) {
+  .copy-head {
+    display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto;
+    grid-template-areas: "check sprite name buttons" "check sprite details details";
+    gap: 0.35rem 0; align-items: center;
+  }
+  .copy-check { grid-area: check; margin-right: 0.6rem; }
+  .copy-sprite { grid-area: sprite; margin-right: 0.6rem; width: 64px; height: 64px; }
+  .copy-sprite .sprite { width: 56px; height: 56px; }
+  .copy-info { display: contents; }
+  .copy-label { grid-area: name; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .copy-details { grid-area: details; }
+  .copy-buttons { grid-area: buttons; margin-left: 0.5rem; }
+  .status-badge { white-space: nowrap; }
 }

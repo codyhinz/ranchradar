@@ -83,6 +83,7 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onRemoveMan
             key={entry.id}
             entry={entry}
             formId={formId}
+            name={name}
             label={list.length > 1 ? t('form.copyLabel', { n: index + 1, total: list.length }) : name}
             editing={editingId === entry.id}
             onToggle={() => setEditingId(editingId === entry.id ? null : entry.id)}
@@ -116,10 +117,12 @@ function natureLabel(nature: string | null): string {
   return nature && (NATURES as readonly string[]).includes(nature) ? natureName(nature as Nature) : t('nature.none');
 }
 
-function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onRemove, selecting, selected, onSelect }: {
+function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSave, onRemove, selecting, selected, onSelect }: {
   entry: RosterEntry;
   index: number;
   formId: string;
+  /** Shown on the card; `label` ("Copy 1 of 2") still tells copies apart for screen readers. */
+  name: string;
   label: string;
   editing: boolean;
   onToggle: () => void;
@@ -160,7 +163,8 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
         )}
         <span className="copy-sprite"><Sprite id={formId} variant={entry.variant} size={66} /></span>
         <div className="copy-info">
-          <span className="copy-label">{label}</span>
+          <span className="copy-label">{name}</span>
+          <div className="copy-details">
           <span className="status-badge" data-badge={badge}>
             {badge === 'permanent' ? (
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
@@ -174,6 +178,7 @@ function EntryCard({ entry, formId, label, editing, index, onToggle, onSave, onR
             {t('nature.label')}: {natureLabel(entry.nature)}
             {entry.notes && <span className="copy-notes">{entry.notes}</span>}
           </span>
+          </div>
         </div>
         {!selecting && (
           <span className="copy-buttons">
