@@ -8,7 +8,7 @@ describe('translations', () => {
 
   it('keep every placeholder in every language', () => {
     const english = (key: MessageKey) => { setUiLocale('en'); return t(key); };
-    const sample: MessageKey[] = ['search.none', 'own.summary', 'add.permanent', 'entry.trialExpires', 'form.copyLabel', 'error.generic', 'nature.raises'];
+    const sample: MessageKey[] = ['search.none', 'own.summary', 'add.permanent', 'entry.trialExpires', 'form.copyLabel', 'error.generic', 'nature.raises', 'backup.imported', 'backup.exported', 'notes.count'];
     for (const locale of NAME_LOCALES) {
       for (const key of sample) {
         const en = english(key);

@@ -34,6 +34,12 @@ export type RosterPatch = Partial<
   Pick<RosterEntry, 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'spread'>
 >;
 
+/** A row as it travels in a backup file: no user, server version or tombstone. */
+export type ImportedRosterEntry = Pick<
+  RosterEntry,
+  'id' | 'form_id' | 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'source' | 'created_at' | 'updated_at'
+>;
+
 /** Tables that sync. Later features add their stores here and in a new DB migration. */
 export type SyncTable = 'roster_entries';
 

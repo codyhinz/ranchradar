@@ -12,6 +12,7 @@ import { RosterList } from './components/RosterList';
 import { SettingsDialog } from './components/SettingsDialog';
 import { Toast, type ToastMessage } from './components/Toast';
 import { UpdatePrompt } from './components/UpdatePrompt';
+import { BackupError, MAX_BACKUP_BYTES, backupFileName, parseBackup, toBackup } from './data/backup';
 import { summarizeByForm } from './data/ownership';
 import type { RosterStatus } from './data/types';
 import { setUiLocale, t } from './i18n';
@@ -85,6 +86,34 @@ export function App() {
         void store.remove(entry.id);
       });
     });
+
+  const exportRoster = () => {
+    const live = (entries ?? []).filter((e) => !e.deleted_at);
+    if (live.length === 0) { say(t('backup.empty')); return; }
+    const blob = new Blob([JSON.stringify(toBackup(live), null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = backupFileName();
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    say(t('backup.exported', { count: live.length }));
+  };
+
+  const importRoster = (file: File) => guard(async () => {
+    if (!store) return;
+    try {
+      if (file.size > MAX_BACKUP_BYTES) throw new BackupError('too_large', 'Backup file is too large');
+      const { rows, skipped } = parseBackup(await file.text());
+      const result = await store.importEntries(rows);
+      requestPersistentStorage();
+      const done = t('backup.imported', { added: result.added, updated: result.updated, unchanged: result.unchanged });
+      say(skipped ? `${done} · ${t('backup.skipped', { count: skipped })}` : done);
+    } catch (error) {
+      if (!(error instanceof BackupError)) throw error; // storage errors go through guard()
+      say(t(error.code === 'newer_format' ? 'backup.newer' : error.code === 'too_large' ? 'backup.tooLarge' : 'backup.invalid'));
+    }
+  });
 
   const openEntries = openFormId ? (entries ?? []).filter((e) => e.form_id === openFormId && !e.deleted_at) : [];
 
@@ -195,7 +224,7 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)} onClose={() => setSettingsOpen(false)} />
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />

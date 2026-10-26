@@ -80,6 +80,7 @@ const en = {
   'roster.selectedCount': '{count} selected · {copies} box slots', 'roster.removedMany': 'Removed {count} from your box',
   'form.select': 'Select', 'form.selectDone': 'Done', 'form.selectAll': 'Select all', 'form.selectNone': 'Clear selection', 'form.removeSelected': 'Remove {count}', 'form.selected': '{count} selected', 'form.selectCopy': 'Select {label}', 'entry.removeCopy': 'Remove {label}', 'entry.deletedMany': 'Removed {count} {name}',
   'filter.button': 'Filter & sort', 'filter.status': 'Show', 'filter.status.all': 'All', 'filter.status.permanent': 'Permanent', 'filter.status.trial': 'Trial', 'filter.status.expired': 'Expired trials', 'filter.type': 'Type', 'filter.sort': 'Sort by', 'sort.az': 'A–Z', 'sort.dex': 'Dex number', 'sort.expiring': 'Trial ending soon', 'sort.recent': 'Recently added', 'sort.copies': 'Most copies', 'filter.clear': 'Clear filters', 'filter.shown': '{shown} of {total} shown', 'filter.none': 'No Pokémon match these filters.', 'roster.box': '{used} / {capacity} box slots', 'box.full': 'Your box is full ({capacity} slots). Return a Pokémon in-game first, or update your box space in Settings.', 'settings.box': 'Box space', 'settings.box.base': 'You start with 30 slots; reaching higher Ranked tiers raises it to 50.', 'settings.box.f2p': 'Free to play', 'settings.box.f2pHint': 'Turn this off if you bought the Starter Pack or have a membership.', 'settings.box.ranked': 'Ranked box rewards', 'box.ranked.none': 'Not yet · 30', 'box.ranked.all': 'Earned · 50', 'settings.box.total': 'Total: {count} slots', 'box.starter': 'Starter Pack (+50)', 'box.membership': 'Membership, while active (+1,000)',
+  'notes.count': '{count} / {max}', 'settings.backup': 'Backup', 'settings.backup.hint': 'Your roster lives only in this browser. Save a copy to a file, or bring one back. Importing adds anything missing and keeps the newer copy of anything already here.', 'backup.export': 'Export roster', 'backup.import': 'Import backup', 'backup.exported': 'Saved {count} Pokémon to a file', 'backup.imported': 'Import done: {added} added, {updated} updated, {unchanged} already up to date', 'backup.skipped': '{count} couldn’t be read and were skipped', 'backup.invalid': 'That file isn’t a RanchRadar backup.', 'backup.newer': 'That backup is from a newer version of RanchRadar. Update the app and try again.', 'backup.tooLarge': 'That file is too large to be a RanchRadar backup.', 'backup.empty': 'Your roster is empty, so there’s nothing to export yet.',
 };
 
 export type MessageKey = keyof typeof en;
@@ -120,6 +121,7 @@ const ja: Messages = {
   'settings.disclaimer': 'RanchRadarはファンによる非公式プロジェクトで、任天堂、ゲームフリーク、クリーチャーズ、株式会社ポケモンとは関係ありません。',
   'update.available': 'RanchRadarの新しいバージョンがあります。', 'update.reload': '更新',
   'error.generic': '保存できませんでした：{message}', 'loading': 'ロースターを読み込み中…',
+  'notes.count': '{count} / {max}', 'settings.backup': 'バックアップ', 'settings.backup.hint': 'ロースターはこのブラウザにだけ保存されています。ファイルに保存したり、ファイルから戻したりできます。読み込むと、足りない分が追加され、すでにある分は新しいほうが残ります。', 'backup.export': 'ロースターを書き出す', 'backup.import': 'バックアップを読み込む', 'backup.exported': '{count}匹をファイルに保存しました', 'backup.imported': '読み込み完了：追加{added}・更新{updated}・変更なし{unchanged}', 'backup.skipped': '読み込めなかった{count}件はスキップしました', 'backup.invalid': 'RanchRadarのバックアップファイルではありません。', 'backup.newer': '新しいバージョンのRanchRadarで作られたバックアップです。アプリを更新してからもう一度お試しください。', 'backup.tooLarge': 'ファイルが大きすぎるため、RanchRadarのバックアップではないようです。', 'backup.empty': 'ロースターが空なので、まだ書き出すものがありません。',
 };
 
 const ko: Messages = {
@@ -157,6 +159,7 @@ const ko: Messages = {
   'settings.disclaimer': 'RanchRadar는 팬 프로젝트이며 Nintendo, Game Freak, Creatures, The Pokémon Company와 관련이 없습니다.',
   'update.available': 'RanchRadar의 새 버전이 준비되었습니다.', 'update.reload': '새로고침',
   'error.generic': '저장하지 못했습니다: {message}', 'loading': '로스터를 불러오는 중…',
+  'notes.count': '{count} / {max}', 'settings.backup': '백업', 'settings.backup.hint': '로스터는 이 브라우저에만 저장됩니다. 파일로 저장하거나 파일에서 되돌릴 수 있습니다. 불러오면 없는 항목은 추가되고, 이미 있는 항목은 더 최신인 쪽이 남습니다.', 'backup.export': '로스터 내보내기', 'backup.import': '백업 불러오기', 'backup.exported': '{count}마리를 파일로 저장했습니다', 'backup.imported': '불러오기 완료: 추가 {added}, 업데이트 {updated}, 변경 없음 {unchanged}', 'backup.skipped': '읽을 수 없는 {count}개는 건너뛰었습니다', 'backup.invalid': 'RanchRadar 백업 파일이 아닙니다.', 'backup.newer': '더 새로운 버전의 RanchRadar에서 만든 백업입니다. 앱을 업데이트한 뒤 다시 시도하세요.', 'backup.tooLarge': '파일이 너무 커서 RanchRadar 백업이 아닌 것 같습니다.', 'backup.empty': '로스터가 비어 있어 아직 내보낼 항목이 없습니다.',
 };
 
 const zhHant: Messages = {
@@ -194,6 +197,7 @@ const zhHant: Messages = {
   'settings.disclaimer': 'RanchRadar 是粉絲專案，與任天堂、Game Freak、Creatures 及寶可夢公司無關。',
   'update.available': 'RanchRadar 有新版本可用。', 'update.reload': '重新整理',
   'error.generic': '無法儲存：{message}', 'loading': '正在載入你的陣容…',
+  'notes.count': '{count} / {max}', 'settings.backup': '備份', 'settings.backup.hint': '你的陣容只儲存在這個瀏覽器中。可以存成檔案，或從檔案還原。匯入時會加入缺少的項目，已有的項目則保留較新的版本。', 'backup.export': '匯出陣容', 'backup.import': '匯入備份', 'backup.exported': '已將 {count} 隻存成檔案', 'backup.imported': '匯入完成：新增 {added}、更新 {updated}、無變更 {unchanged}', 'backup.skipped': '有 {count} 筆無法讀取，已略過', 'backup.invalid': '這不是 RanchRadar 的備份檔。', 'backup.newer': '這個備份來自較新版本的 RanchRadar。請更新應用程式後再試一次。', 'backup.tooLarge': '檔案太大，不是 RanchRadar 的備份。', 'backup.empty': '陣容是空的，目前沒有可匯出的內容。',
 };
 
 const zhHans: Messages = {
@@ -231,6 +235,7 @@ const zhHans: Messages = {
   'settings.disclaimer': 'RanchRadar 是粉丝项目，与任天堂、Game Freak、Creatures 及宝可梦公司无关。',
   'update.available': 'RanchRadar 有新版本可用。', 'update.reload': '刷新',
   'error.generic': '无法保存：{message}', 'loading': '正在加载你的阵容…',
+  'notes.count': '{count} / {max}', 'settings.backup': '备份', 'settings.backup.hint': '你的阵容只保存在这个浏览器中。可以存成文件，或从文件恢复。导入时会添加缺少的项目，已有的项目则保留较新的版本。', 'backup.export': '导出阵容', 'backup.import': '导入备份', 'backup.exported': '已将 {count} 只存成文件', 'backup.imported': '导入完成：新增 {added}、更新 {updated}、无变化 {unchanged}', 'backup.skipped': '有 {count} 条无法读取，已跳过', 'backup.invalid': '这不是 RanchRadar 的备份文件。', 'backup.newer': '这个备份来自较新版本的 RanchRadar。请更新应用后再试一次。', 'backup.tooLarge': '文件太大，不是 RanchRadar 的备份。', 'backup.empty': '阵容是空的，目前没有可导出的内容。',
 };
 
 const fr: Messages = {
@@ -268,6 +273,7 @@ const fr: Messages = {
   'settings.disclaimer': 'RanchRadar est un projet de fan, sans lien avec Nintendo, Game Freak, Creatures ou The Pokémon Company.',
   'update.available': 'Une nouvelle version de RanchRadar est prête.', 'update.reload': 'Actualiser',
   'error.generic': 'Enregistrement impossible : {message}', 'loading': 'Chargement de votre équipe…',
+  'notes.count': '{count} / {max}', 'settings.backup': 'Sauvegarde', 'settings.backup.hint': 'Votre équipe n’est enregistrée que dans ce navigateur. Enregistrez-en une copie dans un fichier, ou restaurez-la. L’import ajoute ce qui manque et garde la version la plus récente de ce qui est déjà là.', 'backup.export': 'Exporter l’équipe', 'backup.import': 'Importer une sauvegarde', 'backup.exported': '{count} Pokémon enregistrés dans un fichier', 'backup.imported': 'Import terminé : {added} ajoutés, {updated} mis à jour, {unchanged} déjà à jour', 'backup.skipped': '{count} illisibles ont été ignorés', 'backup.invalid': 'Ce fichier n’est pas une sauvegarde RanchRadar.', 'backup.newer': 'Cette sauvegarde vient d’une version plus récente de RanchRadar. Mettez l’app à jour et réessayez.', 'backup.tooLarge': 'Ce fichier est trop volumineux pour être une sauvegarde RanchRadar.', 'backup.empty': 'Votre équipe est vide, il n’y a encore rien à exporter.',
 };
 
 const de: Messages = {
@@ -305,6 +311,7 @@ const de: Messages = {
   'settings.disclaimer': 'RanchRadar ist ein Fanprojekt und steht in keiner Verbindung zu Nintendo, Game Freak, Creatures oder The Pokémon Company.',
   'update.available': 'Eine neue Version von RanchRadar ist bereit.', 'update.reload': 'Aktualisieren',
   'error.generic': 'Speichern fehlgeschlagen: {message}', 'loading': 'Dein Team wird geladen…',
+  'notes.count': '{count} / {max}', 'settings.backup': 'Sicherung', 'settings.backup.hint': 'Dein Team ist nur in diesem Browser gespeichert. Speichere eine Kopie als Datei oder stelle sie wieder her. Beim Import kommt Fehlendes dazu, und bei Vorhandenem bleibt die neuere Version.', 'backup.export': 'Team exportieren', 'backup.import': 'Sicherung importieren', 'backup.exported': '{count} Pokémon in einer Datei gespeichert', 'backup.imported': 'Import fertig: {added} hinzugefügt, {updated} aktualisiert, {unchanged} schon aktuell', 'backup.skipped': '{count} konnten nicht gelesen werden und wurden übersprungen', 'backup.invalid': 'Diese Datei ist keine RanchRadar-Sicherung.', 'backup.newer': 'Diese Sicherung stammt aus einer neueren RanchRadar-Version. Aktualisiere die App und versuche es erneut.', 'backup.tooLarge': 'Diese Datei ist zu groß für eine RanchRadar-Sicherung.', 'backup.empty': 'Dein Team ist leer, es gibt noch nichts zu exportieren.',
 };
 
 const es: Messages = {
@@ -342,6 +349,7 @@ const es: Messages = {
   'settings.disclaimer': 'RanchRadar es un proyecto de fans, sin relación con Nintendo, Game Freak, Creatures ni The Pokémon Company.',
   'update.available': 'Hay una nueva versión de RanchRadar lista.', 'update.reload': 'Actualizar',
   'error.generic': 'No se pudo guardar: {message}', 'loading': 'Cargando tu equipo…',
+  'notes.count': '{count} / {max}', 'settings.backup': 'Copia de seguridad', 'settings.backup.hint': 'Tu equipo solo se guarda en este navegador. Guarda una copia en un archivo o restáurala. Al importar se añade lo que falta y se conserva la versión más reciente de lo que ya está.', 'backup.export': 'Exportar equipo', 'backup.import': 'Importar copia', 'backup.exported': '{count} Pokémon guardados en un archivo', 'backup.imported': 'Importación lista: {added} añadidos, {updated} actualizados, {unchanged} ya al día', 'backup.skipped': '{count} no se pudieron leer y se omitieron', 'backup.invalid': 'Ese archivo no es una copia de seguridad de RanchRadar.', 'backup.newer': 'Esa copia es de una versión más reciente de RanchRadar. Actualiza la app y vuelve a intentarlo.', 'backup.tooLarge': 'Ese archivo es demasiado grande para ser una copia de RanchRadar.', 'backup.empty': 'Tu equipo está vacío, así que aún no hay nada que exportar.',
 };
 
 const it: Messages = {
@@ -379,6 +387,7 @@ const it: Messages = {
   'settings.disclaimer': 'RanchRadar è un progetto di fan, non affiliato con Nintendo, Game Freak, Creatures o The Pokémon Company.',
   'update.available': 'È pronta una nuova versione di RanchRadar.', 'update.reload': 'Aggiorna',
   'error.generic': 'Impossibile salvare: {message}', 'loading': 'Caricamento della squadra…',
+  'notes.count': '{count} / {max}', 'settings.backup': 'Backup', 'settings.backup.hint': 'La tua squadra è salvata solo in questo browser. Salvane una copia in un file o ripristinala. L’importazione aggiunge ciò che manca e tiene la versione più recente di ciò che c’è già.', 'backup.export': 'Esporta squadra', 'backup.import': 'Importa backup', 'backup.exported': '{count} Pokémon salvati in un file', 'backup.imported': 'Importazione completata: {added} aggiunti, {updated} aggiornati, {unchanged} già aggiornati', 'backup.skipped': '{count} non leggibili sono stati saltati', 'backup.invalid': 'Questo file non è un backup di RanchRadar.', 'backup.newer': 'Questo backup viene da una versione più recente di RanchRadar. Aggiorna l’app e riprova.', 'backup.tooLarge': 'Questo file è troppo grande per essere un backup di RanchRadar.', 'backup.empty': 'La tua squadra è vuota, quindi non c’è ancora niente da esportare.',
 };
 
 const dictionaries: Record<NameLocale, Messages> = {

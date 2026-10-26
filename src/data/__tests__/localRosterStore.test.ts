@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import type { ImportedRosterEntry } from '../types';
 import { openRanchDB, type RanchDB } from '../local/db';
 import { createLocalRosterStore } from '../local/localRosterStore';
 import { describeOwnership, summarizeByForm } from '../ownership';
@@ -170,5 +171,67 @@ describe('bulk remove and undo', () => {
     await s.restore(removed);
     expect((await s.list()).length).toBe(29);
     expect((await s.list()).every((e) => e.deleted_at === null)).toBe(true);
+  });
+});
+
+describe('importing a backup', () => {
+  const row = (over: Partial<ImportedRosterEntry> = {}): ImportedRosterEntry => ({
+    id: crypto.randomUUID(), form_id: 'garchomp', status: 'permanent', trial_expires_at: null,
+    nature: null, variant: null, notes: null, source: 'manual',
+    created_at: '2026-10-10T00:00:00.000Z', updated_at: '2026-10-10T00:00:00.000Z', ...over,
+  });
+
+  it('adds missing rows, keeps the newer copy of existing ones, and never deletes', async () => {
+    const s = store();
+    const mine = await s.add({ form_id: 'garchomp', status: 'permanent' }); // updated at T0
+    const keep = await s.add({ form_id: 'lucario', status: 'permanent' });
+    const result = await s.importEntries([
+      row({ id: mine.id, notes: 'from backup', updated_at: '2026-10-19T00:00:00.000Z' }), // newer: wins
+      row({ id: keep.id, form_id: 'lucario', notes: 'old', updated_at: '2026-10-01T00:00:00.000Z' }), // older: ignored
+      row({ form_id: 'snorlax' }), // new
+    ]);
+    expect(result).toEqual({ added: 1, updated: 1, unchanged: 1 });
+    expect((await s.get(mine.id))?.notes).toBe('from backup');
+    expect((await s.get(keep.id))?.notes).toBeNull();
+    expect(await s.list()).toHaveLength(3);
+  });
+
+  it('revives a deleted copy when the backup has a newer version of it', async () => {
+    const s = store();
+    const entry = await s.add({ form_id: 'garchomp', status: 'permanent' });
+    await s.remove(entry.id);
+    await s.importEntries([row({ id: entry.id, updated_at: '2026-10-20T00:00:00.000Z' })]);
+    expect((await s.get(entry.id))?.deleted_at).toBeNull();
+  });
+
+  it('queues imported rows for upload when sync is on', async () => {
+    const s = store(true);
+    await s.importEntries([row()]);
+    const [item] = await db.getAll('outbox');
+    expect(item?.isNew).toBe(true);
+  });
+});
+
+describe('purging tombstones', () => {
+  it('hard-deletes old tombstones but keeps recent ones and live rows', async () => {
+    const s = store();
+    const old = await s.add({ form_id: 'garchomp', status: 'permanent' });
+    const recent = await s.add({ form_id: 'lucario', status: 'permanent' });
+    const live = await s.add({ form_id: 'snorlax', status: 'permanent' });
+    await s.remove(old.id);
+    clock = new Date(T0.getTime() + 3 * 86_400_000);
+    await s.remove(recent.id);
+    expect(await s.purgeDeleted(new Date(clock.getTime() - 86_400_000))).toBe(1);
+    expect(await s.get(old.id)).toBeUndefined();
+    expect((await s.get(recent.id))?.deleted_at).not.toBeNull();
+    expect(await s.get(live.id)).toBeDefined();
+  });
+
+  it('keeps tombstones that are still waiting to upload', async () => {
+    const s = store(true);
+    const entry = await s.add({ form_id: 'garchomp', status: 'permanent' });
+    await s.remove(entry.id);
+    clock = new Date(T0.getTime() + 3 * 86_400_000);
+    expect(await s.purgeDeleted(new Date(clock.getTime() - 86_400_000))).toBe(0);
   });
 });

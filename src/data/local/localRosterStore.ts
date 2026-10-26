@@ -1,10 +1,11 @@
-import { StorageError, type RosterStore } from '../storage';
+import { StorageError, type ImportResult, type RosterStore } from '../storage';
 import {
   MAX_NOTES_LENGTH,
   MAX_ROSTER_ENTRIES,
   MAX_VARIANT_LENGTH,
   NATURES,
   TRIAL_DAYS,
+  type ImportedRosterEntry,
   type NewRosterEntry,
   type RosterEntry,
   type RosterPatch,
@@ -149,6 +150,73 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
         throw new StorageError('row_cap_reached', `Roster is limited to ${MAX_ROSTER_ENTRIES} entries`);
       }
       await writeAll(rows);
+    },
+
+    async importEntries(rows: ImportedRosterEntry[]): Promise<ImportResult> {
+      const result: ImportResult = { added: 0, updated: 0, unchanged: 0 };
+      const existing = new Map((await this.list({ includeDeleted: true })).map((e) => [e.id, e]));
+      const toWrite: Array<{ entry: RosterEntry; isNew: boolean }> = [];
+      for (const row of rows) {
+        const current = existing.get(row.id);
+        const imported = {
+          form_id: row.form_id,
+          status: row.status,
+          trial_expires_at: row.status === 'permanent' ? null : row.trial_expires_at,
+          nature: row.nature,
+          variant: row.variant,
+          notes: row.notes,
+          source: row.source,
+          created_at: row.created_at,
+          updated_at: row.updated_at,
+        };
+        if (!current) {
+          toWrite.push({ entry: validate({ ...imported, id: row.id, user_id: userId, spread: null, version: 1, deleted_at: null }), isNew: true });
+          result.added++;
+        } else if (row.updated_at > current.updated_at) {
+          // Keeps this device's server version (the conflict base) and owner; revives a deleted copy.
+          toWrite.push({ entry: validate({ ...current, ...imported, deleted_at: null }), isNew: false });
+          result.updated++;
+        } else {
+          result.unchanged++;
+        }
+      }
+      const liveAfter = [...existing.values()].filter((e) => !e.deleted_at).length
+        + toWrite.filter(({ entry }) => {
+          const before = existing.get(entry.id);
+          return !before || before.deleted_at !== null; // new rows and revived copies take a slot
+        }).length;
+      if (liveAfter > MAX_ROSTER_ENTRIES) {
+        throw new StorageError('row_cap_reached', `Roster is limited to ${MAX_ROSTER_ENTRIES} entries`);
+      }
+      if (toWrite.length === 0) return result;
+      const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+      for (const { entry, isNew } of toWrite) {
+        await tx.objectStore('roster_entries').put(entry);
+        if (syncEnabled) {
+          const outbox = tx.objectStore('outbox');
+          const pending = await outbox.get(['roster_entries', entry.id]);
+          await outbox.put({ table: 'roster_entries', rowId: entry.id, isNew: pending ? pending.isNew : isNew, queuedAt: pending?.queuedAt ?? now().toISOString() });
+        }
+      }
+      await tx.done;
+      notify();
+      return result;
+    },
+
+    async purgeDeleted(before: Date): Promise<number> {
+      const cutoff = before.toISOString();
+      const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+      const outbox = tx.objectStore('outbox');
+      let purged = 0;
+      for (const entry of await tx.objectStore('roster_entries').getAll()) {
+        if (!entry.deleted_at || entry.deleted_at >= cutoff) continue;
+        if (await outbox.get(['roster_entries', entry.id])) continue; // the server hasn't heard yet
+        await tx.objectStore('roster_entries').delete(entry.id);
+        purged++;
+      }
+      await tx.done;
+      if (purged) notify();
+      return purged;
     },
 
     subscribe(listener) {

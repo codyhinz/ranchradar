@@ -2,11 +2,12 @@ import { LOCALE_LABELS, NAME_LOCALES, type NameLocale } from '../catalog';
 import { THEMES, type Theme } from '../app/preferences';
 import { boxCapacity, type BoxSettings } from '../app/box';
 import { t } from '../i18n';
+import { useRef } from 'react';
 import { Dialog } from './Dialog';
 
 const THEME_LABEL = { system: 'settings.theme.system', light: 'settings.theme.light', dark: 'settings.theme.dark' } as const;
 
-export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onClose }: {
+export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onExport, onImport, onClose }: {
   locale: NameLocale;
   onLocaleChange: (locale: NameLocale) => void;
   theme: Theme;
@@ -14,8 +15,13 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
   box: BoxSettings;
   onBoxChange: (box: BoxSettings) => void;
   boxUsed: number;
+  /** Saves the roster to a backup file. */
+  onExport: () => void;
+  /** Merges a chosen backup file into the roster. */
+  onImport: (file: File) => void;
   onClose: () => void;
 }) {
+  const fileRef = useRef<HTMLInputElement>(null);
   return (
     <Dialog title={t('settings.title')} onClose={onClose}>
       <div className="fields">
@@ -71,6 +77,33 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
             {t('settings.box.total', { count: boxCapacity(box).toLocaleString() })}
             <span className="count"> · {t('roster.box', { used: boxUsed, capacity: boxCapacity(box) })}</span>
           </p>
+        </fieldset>
+        <fieldset className="backup">
+          <legend>{t('settings.backup')}</legend>
+          <small className="hint">{t('settings.backup.hint')}</small>
+          <div className="backup-actions">
+            <button type="button" className="button button-quiet" onClick={onExport}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14" /></svg>
+              {t('backup.export')}
+            </button>
+            <button type="button" className="button button-quiet" onClick={() => fileRef.current?.click()}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7.5 8.5L12 4l4.5 4.5M5 19h14" /></svg>
+              {t('backup.import')}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="application/json,.json"
+              className="visually-hidden"
+              tabIndex={-1}
+              aria-hidden="true"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = ''; // the same file can be picked again later
+                if (file) onImport(file);
+              }}
+            />
+          </div>
         </fieldset>
       </div>
       <p className="fine-print">{t('settings.disclaimer')}</p>

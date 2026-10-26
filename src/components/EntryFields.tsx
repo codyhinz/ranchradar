@@ -1,4 +1,4 @@
-import { TRIAL_DAYS, type Nature, type RosterStatus } from '../data/types';
+import { MAX_NOTES_LENGTH, TRIAL_DAYS, type Nature, type RosterStatus } from '../data/types';
 import { NaturePicker } from './NaturePicker';
 import { VariantPicker } from './VariantPicker';
 import { variantsOf } from '../catalog';
@@ -48,6 +48,7 @@ export function EntryFields({ formId, draft, onChange, idPrefix }: {
     const d = clamp(days, TRIAL_DAYS);
     onChange({ ...draft, trialDays: d, trialHours: d === TRIAL_DAYS ? 0 : clamp(hours, 23), trialTouched: true });
   };
+  const nearLimit = draft.notes.length >= MAX_NOTES_LENGTH * 0.8;
   return (
     <div className="fields">
       <fieldset className="segmented">
@@ -105,11 +106,18 @@ export function EntryFields({ formId, draft, onChange, idPrefix }: {
         <span>{t('notes.label')}</span>
         <textarea
           rows={3}
-          maxLength={500}
+          maxLength={MAX_NOTES_LENGTH}
           value={draft.notes}
           placeholder={t('notes.placeholder')}
+          aria-describedby={nearLimit ? `${idPrefix}-notes-count` : undefined}
           onChange={(event) => onChange({ ...draft, notes: event.target.value })}
         />
+        {/* Appears near the limit, so the field never just silently stops taking text */}
+        {nearLimit && (
+          <small id={`${idPrefix}-notes-count`} className="notes-count" data-full={draft.notes.length >= MAX_NOTES_LENGTH} aria-live="polite">
+            {t('notes.count', { count: draft.notes.length, max: MAX_NOTES_LENGTH })}
+          </small>
+        )}
       </label>
     </div>
   );

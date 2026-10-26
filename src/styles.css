@@ -740,3 +740,14 @@ body::before {
   .copy-buttons { grid-area: buttons; margin-left: 0.5rem; }
   .status-badge { white-space: nowrap; }
 }
+
+/* Notes: a counter appears near the limit */
+.notes-count { justify-self: end; color: var(--muted); font-size: var(--step--1); font-weight: 600; font-variant-numeric: tabular-nums; }
+.notes-count[data-full='true'] { color: var(--danger); }
+
+/* Settings: roster backup */
+.backup { display: grid; gap: 0.45rem; margin: 0; padding: 0; border: 0; }
+.backup legend { font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
+.backup-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.backup-actions .button { display: inline-flex; align-items: center; gap: 0.45rem; }
+.backup-actions svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }

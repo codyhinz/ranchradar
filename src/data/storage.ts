@@ -1,4 +1,4 @@
-import type { NewRosterEntry, RosterEntry, RosterPatch } from './types';
+import type { ImportedRosterEntry, NewRosterEntry, RosterEntry, RosterPatch } from './types';
 
 /**
  * The only way the UI touches roster data. Local (device) and cloud implementations
@@ -16,8 +16,25 @@ export interface RosterStore {
   removeMany(ids: string[]): Promise<void>;
   /** Brings back entries removed moments ago (Undo). */
   restore(ids: string[]): Promise<void>;
+  /**
+   * Merges rows from a backup file, matched by id: rows not on this device are added,
+   * and for rows already here the newer `updated_at` wins. Nothing is ever deleted.
+   */
+  importEntries(rows: ImportedRosterEntry[]): Promise<ImportResult>;
+  /**
+   * Hard-deletes tombstones removed before `before` that are no longer waiting to upload,
+   * so soft deletes don't pile up forever. Returns how many were purged.
+   */
+  purgeDeleted(before: Date): Promise<number>;
   /** Called after any change; returns an unsubscribe function. */
   subscribe(listener: () => void): () => void;
+}
+
+export interface ImportResult {
+  added: number;
+  updated: number;
+  /** Already here and at least as new as the backup's copy. */
+  unchanged: number;
 }
 
 export class StorageError extends Error {

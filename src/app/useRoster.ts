@@ -4,13 +4,20 @@ import { createLocalRosterStore } from '../data/local/localRosterStore';
 import type { RosterStore } from '../data/storage';
 import type { RosterEntry } from '../data/types';
 
+/** Deleted copies stay restorable this long, then are cleared out on the next launch. */
+export const TOMBSTONE_TTL_MS = 24 * 60 * 60 * 1000;
+
 /** Opens the on-device database once and hands back a guest-mode store. */
 export function useRosterStore(): RosterStore | null {
   const [store, setStore] = useState<RosterStore | null>(null);
   useEffect(() => {
     let cancelled = false;
     openRanchDB().then((db) => {
-      if (!cancelled) setStore(createLocalRosterStore({ db, userId: null, syncEnabled: false }));
+      if (cancelled) return;
+      const local = createLocalRosterStore({ db, userId: null, syncEnabled: false });
+      // Housekeeping only: a failed purge just leaves the tombstones for next time.
+      void local.purgeDeleted(new Date(Date.now() - TOMBSTONE_TTL_MS)).catch(() => undefined);
+      setStore(local);
     });
     return () => { cancelled = true; };
   }, []);
