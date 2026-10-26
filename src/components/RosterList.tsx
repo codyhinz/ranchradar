@@ -100,20 +100,22 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
       <div className="section-head">
         <h2 id="roster-heading">{t('roster.heading')}</h2>
         <span className="count box-count" data-state={boxState}>{t('roster.box', { used: boxUsed, capacity: boxCapacity })}</span>
+        {/* Filter, select and layout stay together as one row of icons */}
+        <div className="roster-tools">
         <div className="filter-wrap" ref={filterRef}>
           <button
             ref={filterButtonRef}
             type="button"
-            className="filter-button"
+            className="tool-button filter-button"
             aria-haspopup="dialog"
             aria-expanded={panelOpen}
             aria-controls="roster-filters"
+            title={t('filter.button')}
             onClick={() => (panelOpen ? closePanel() : setPanelOpen(true))}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-            <span className="filter-button-label">{t('filter.button')}</span>
+            <span className="visually-hidden">{t('filter.button')}</span>
             {filterCount > 0 && <span key={filterCount} className="filter-badge">{filterCount}</span>}
-            <svg className="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
           </button>
           {panelOpen && (
             <div className="filter-panel" id="roster-filters" role="dialog" aria-label={t('filter.button')} data-closing={panelClosing}>
@@ -155,13 +157,13 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
             </div>
           )}
         </div>
-        <button type="button" className="filter-button select-button" aria-pressed={selecting} onClick={() => (selecting ? stopSelecting() : setSelecting(true))}>
+        <button type="button" className="tool-button select-button" aria-pressed={selecting} title={t(selecting ? 'form.selectDone' : 'form.select')} onClick={() => (selecting ? stopSelecting() : setSelecting(true))}>
           {selecting ? (
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
           ) : (
             <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M8.5 12.5l2.5 2.5 4.5-5" /></svg>
           )}
-          <span className="filter-button-label">{t(selecting ? 'form.selectDone' : 'form.select')}</span>
+          <span className="visually-hidden">{t(selecting ? 'form.selectDone' : 'form.select')}</span>
         </button>
         <div className="view-toggle" role="group" aria-label={t('roster.view')}>
           {(['grid', 'list'] as const).map((option) => (
@@ -179,6 +181,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
               )}
             </button>
           ))}
+        </div>
         </div>
       </div>
 

@@ -560,20 +560,25 @@ body::before {
 .row-variants { color: var(--muted); font-size: var(--step--1); }
 
 /* Roster filters: a toggle beside the layout switch, opening a panel of chips */
-.filter-button {
-  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 40px; padding: 0 0.75rem;
-  border: 2px solid var(--rail); border-radius: 12px; background: transparent; font-weight: 600; cursor: pointer;
+/* Filter, select and layout sit together as one row of same-size icons */
+.roster-tools { display: flex; align-items: center; gap: 0.5rem; flex: none; margin-left: auto; }
+.tool-button {
+  position: relative; display: inline-grid; place-items: center; width: 48px; height: 48px; padding: 0;
+  border: 2px solid var(--rail); border-radius: 12px; background: transparent; cursor: pointer;
+  transition: transform 90ms ease, background-color 160ms ease, border-color 160ms ease;
 }
-.filter-button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.tool-button:hover { border-color: var(--wood); }
+.tool-button:active { transform: scale(0.92); }
+.tool-button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .filter-button[aria-expanded='true'] { border-color: var(--wood); background: var(--rail); }
+/* Active-filter count rides the icon's corner */
 .filter-badge {
-  min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 999px;
-  display: inline-grid; place-items: center; background: var(--ember-strong); color: #fff; font-size: 0.75rem; font-weight: 700;
+  position: absolute; top: -7px; right: -7px;
+  min-width: 1.25rem; height: 1.25rem; padding: 0 0.3rem; border-radius: 999px;
+  display: inline-grid; place-items: center; background: var(--ember-strong); color: #fff; font-size: 0.7rem; font-weight: 700;
+  box-shadow: 0 0 0 2px var(--surface);
 }
-@media (max-width: 30rem) { .filter-button-label { display: none; } }
 .filter-wrap { position: relative; }
-.filter-button .chevron { width: 16px; height: 16px; transition: transform 160ms ease; }
-.filter-button[aria-expanded='true'] .chevron { transform: rotate(180deg); }
 .filter-badge { animation: pop 260ms ease-out; }
 /* Overlaid dropdown anchored under the button, growing from its corner */
 .filter-panel {
@@ -593,7 +598,7 @@ body::before {
 @keyframes chips-in { from { opacity: 0; transform: translateY(-4px); } }
 @media (prefers-reduced-motion: reduce) {
   .filter-panel, .filter-panel .chips, .filter-badge { animation: none; }
-  .filter-button .chevron { transition: none; }
+  .tool-button { transition: none; }
 }
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; border: 0; }
 .chips legend { width: 100%; margin-bottom: 0.35rem; padding: 0; font-weight: 600; font-size: var(--step--1); color: var(--muted); }
