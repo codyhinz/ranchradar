@@ -180,6 +180,12 @@ export function App() {
             if (ids.length === 0) return;
             await store.removeMany(ids);
             say(t('roster.removedMany', { count: ids.length }), () => { void store.restore(ids); });
+          })} onClearExpired={() => guard(async () => {
+            if (!store) return;
+            const ids = (entries ?? []).filter((e) => !e.deleted_at && e.status === 'trial' && e.trial_expires_at && new Date(e.trial_expires_at) <= now).map((e) => e.id);
+            if (ids.length === 0) return;
+            await store.removeMany(ids);
+            say(t('expired.cleared', { count: ids.length }), () => { void store.restore(ids); });
           })} boxUsed={boxUsed} boxCapacity={capacity} />
         )}
       </main>
@@ -209,6 +215,19 @@ export function App() {
           onClose={() => setOpenFormId(null)}
           onAddAnother={() => { setAddingFormId(openFormId); setOpenFormId(null); }}
           onSave={(id, patch) => guard(async () => { await store?.update(id, patch); say(t('entry.saved')); })}
+          onMakePermanent={(entry) => guard(async () => {
+            if (!store) return;
+            const expiredAt = entry.trial_expires_at;
+            await store.update(entry.id, { status: 'permanent' });
+            say(t('expired.madePermanent', { name: name(entry.form_id) }), () => {
+              void store.update(entry.id, { status: 'trial', trial_expires_at: expiredAt });
+            });
+          })}
+          onReturn={(entry) => guard(async () => {
+            if (!store) return;
+            await store.remove(entry.id);
+            say(t('expired.returned', { name: name(entry.form_id) }), () => { void store.restore([entry.id]); });
+          })}
           onRemove={(entry) => guard(async () => {
             if (!store) return;
             await store.remove(entry.id);

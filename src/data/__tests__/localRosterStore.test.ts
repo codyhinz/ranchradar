@@ -235,3 +235,15 @@ describe('purging tombstones', () => {
     expect(await s.purgeDeleted(new Date(clock.getTime() - 86_400_000))).toBe(0);
   });
 });
+
+describe('expired trials', () => {
+  it('making one permanent can be undone back to the same expired trial', async () => {
+    const s = store();
+    const trial = await s.add({ form_id: 'garchomp', status: 'trial' });
+    clock = new Date(T0.getTime() + 8 * 86_400_000); // a day past expiry
+    const perm = await s.update(trial.id, { status: 'permanent' });
+    expect(perm.trial_expires_at).toBeNull();
+    const back = await s.update(trial.id, { status: 'trial', trial_expires_at: trial.trial_expires_at });
+    expect(back.trial_expires_at).toBe(trial.trial_expires_at);
+  });
+});

@@ -15,6 +15,10 @@ interface FormSheetProps {
   entries: RosterEntry[];
   onSave: (id: string, patch: RosterPatch) => Promise<void>;
   onRemove: (entry: RosterEntry) => Promise<void>;
+  /** Expired trial recruited for good in-game (2,500 VP or a Teammate Ticket). */
+  onMakePermanent: (entry: RosterEntry) => Promise<void>;
+  /** Expired trial sent back to the Ranch in-game, freeing its box slot. */
+  onReturn: (entry: RosterEntry) => Promise<void>;
   /** Removes several copies at once (with Undo). */
   onRemoveMany: (entries: RosterEntry[]) => Promise<void>;
   onAddAnother: () => void;
@@ -45,7 +49,7 @@ function ordered(entries: RosterEntry[]): RosterEntry[] {
 }
 
 /** Every copy of one form as its own card: picture, status and details at a glance; tap to edit. */
-export function FormSheet({ formId, name, entries, onSave, onRemove, onRemoveMany, onAddAnother, onClose }: FormSheetProps) {
+export function FormSheet({ formId, name, entries, onSave, onRemove, onMakePermanent, onReturn, onRemoveMany, onAddAnother, onClose }: FormSheetProps) {
   const list = ordered(entries);
   const [editingId, setEditingId] = useState<string | null>(list.length === 1 ? list[0]!.id : null);
   // Select mode: tick copies, then remove them in one go (e.g. clearing out duplicates).
@@ -89,6 +93,8 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onRemoveMan
             onToggle={() => setEditingId(editingId === entry.id ? null : entry.id)}
             onSave={async (patch) => { await onSave(entry.id, patch); setEditingId(null); }}
             onRemove={() => onRemove(entry)}
+            onMakePermanent={() => onMakePermanent(entry)}
+            onReturn={() => onReturn(entry)}
             selecting={selecting}
             selected={selected.has(entry.id)}
             onSelect={() => toggle(entry.id)}
@@ -117,7 +123,7 @@ function natureLabel(nature: string | null): string {
   return nature && (NATURES as readonly string[]).includes(nature) ? natureName(nature as Nature) : t('nature.none');
 }
 
-function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSave, onRemove, selecting, selected, onSelect }: {
+function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSave, onRemove, onMakePermanent, onReturn, selecting, selected, onSelect }: {
   entry: RosterEntry;
   index: number;
   formId: string;
@@ -128,6 +134,8 @@ function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSav
   onToggle: () => void;
   onSave: (patch: RosterPatch) => Promise<void>;
   onRemove: () => void;
+  onMakePermanent: () => void;
+  onReturn: () => void;
   selecting: boolean;
   selected: boolean;
   onSelect: () => void;
@@ -191,6 +199,17 @@ function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSav
           </span>
         )}
       </div>
+      {/* An expired trial can't battle: the two things a player does with one in-game */}
+      {badge === 'expired' && !selecting && !editing && (
+        <div className="expired-actions">
+          <button type="button" className="button button-primary button-small" onClick={onMakePermanent} aria-label={t('expired.makePermanentCopy', { label })}>
+            {t('expired.makePermanent')}
+          </button>
+          <button type="button" className="button button-quiet button-small" onClick={onReturn} aria-label={t('expired.returnCopy', { label })}>
+            {t('expired.return')}
+          </button>
+        </div>
+      )}
       {/* Always rendered so it can grow open smoothly; inert while collapsed. */}
       <div className="copy-drawer" data-open={editing} ref={drawerRef}>
         <div className="copy-drawer-inner">

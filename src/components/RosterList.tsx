@@ -22,6 +22,8 @@ interface RosterListProps {
   onOpen: (formId: string) => void;
   /** Removes every copy of these Pokémon (with Undo). */
   onRemoveForms: (formIds: string[]) => void;
+  /** Returns every expired trial to the Ranch (with Undo). */
+  onClearExpired: () => void;
 }
 
 /** Everything you own, as a dense sprite grid (see it all at once) or a detailed list. */
@@ -30,7 +32,7 @@ const typeLabel = (type: string, locale: NameLocale) => {
   return names?.[locale] ?? names?.en ?? type;
 };
 
-export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, onRemoveForms, boxUsed, boxCapacity }: RosterListProps) {
+export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, onRemoveForms, onClearExpired, boxUsed, boxCapacity }: RosterListProps) {
   const [sort, setSort] = useRosterSort();
   const [filters, setFilters] = useState<RosterFilters>(NO_FILTERS);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -74,6 +76,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   }
   const sorted = applyRosterView(summaries, filters, sort, locale);
   const filterCount = activeFilterCount(filters);
+  const expiredCount = summaries.reduce((sum, s) => sum + s.expiredTrials, 0);
   const types = ownedTypes(summaries);
   const toggleType = (type: string) => setFilters({
     ...filters,
@@ -128,6 +131,11 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
                   </label>
                 ))}
               </fieldset>
+              {expiredCount > 0 && (
+                <button type="button" className="button button-quiet button-small clear-expired" onClick={onClearExpired}>
+                  {t('expired.clear', { count: expiredCount })}
+                </button>
+              )}
               {types.length > 1 && (
                 <fieldset className="chips">
                   <legend>{t('filter.type')}</legend>
@@ -185,6 +193,13 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
         </div>
       </div>
 
+      {/* Looking at expired trials: offer to send them all back in one go */}
+      {filters.status === 'expired' && expiredCount > 0 && (
+        <div className="expired-bar">
+          <span>{t('expired.summary', { count: expiredCount })}</span>
+          <button type="button" className="button button-quiet button-small" onClick={onClearExpired}>{t('expired.clearShort')}</button>
+        </div>
+      )}
       {sorted.length === 0 ? (
         <p className="no-results">{t('filter.none')}</p>
       ) : view === 'grid' ? (
