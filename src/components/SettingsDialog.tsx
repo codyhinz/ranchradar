@@ -3,11 +3,13 @@ import { THEMES, type Theme } from '../app/preferences';
 import { boxCapacity, type BoxSettings } from '../app/box';
 import { t } from '../i18n';
 import { useRef } from 'react';
+import type { AuthState } from '../app/useAuth';
+import { AccountSection } from './AccountSection';
 import { Dialog } from './Dialog';
 
 const THEME_LABEL = { system: 'settings.theme.system', light: 'settings.theme.light', dark: 'settings.theme.dark' } as const;
 
-export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onExport, onImport, onClose }: {
+export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onExport, onImport, auth, recovering, onRecovered, say, onClose }: {
   locale: NameLocale;
   onLocaleChange: (locale: NameLocale) => void;
   theme: Theme;
@@ -19,12 +21,17 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
   onExport: () => void;
   /** Merges a chosen backup file into the roster. */
   onImport: (file: File) => void;
+  auth: AuthState;
+  recovering: boolean;
+  onRecovered: () => void;
+  say: (text: string) => void;
   onClose: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   return (
     <Dialog title={t('settings.title')} onClose={onClose}>
       <div className="fields">
+        <AccountSection auth={auth} recovering={recovering} onRecovered={onRecovered} say={say} />
         <fieldset className="segmented segmented-plain">
           <legend>{t('settings.theme')}</legend>
           {THEMES.map((option) => (

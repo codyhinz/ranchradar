@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { currentRegulation, displayName, regulationAt, searchForms } from './catalog';
 import { boxCapacity } from './app/box';
 import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
+import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AddSheet } from './components/AddSheet';
 import { expiresAfter } from './components/EntryFields';
@@ -34,6 +35,9 @@ export function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const { auth, recovering, endRecovery } = useAuth();
+  // Back from a password-reset link: open Settings, where the new-password form is waiting.
+  useEffect(() => { if (recovering) setSettingsOpen(true); }, [recovering]);
 
   // Ticks every minute so trial countdowns and expiries stay current while the app is open.
   const [now, setNow] = useState(() => new Date());
@@ -245,7 +249,7 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)} auth={auth} recovering={recovering} onRecovered={endRecovery} say={(text) => say(text)} onClose={() => setSettingsOpen(false)} />
       )}
 
       <Toast toast={toast} onDismiss={dismissToast} />

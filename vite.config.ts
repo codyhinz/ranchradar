@@ -1,10 +1,33 @@
-import { defineConfig } from 'vite';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { fillHeaders } from './scripts/lib/headers';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+
+/** Fills the Supabase origin into dist/_headers' CSP once the build has copied it over. */
+function securityHeaders(): Plugin {
+  let outDir = 'dist';
+  let supabaseUrl: string | undefined;
+  return {
+    name: 'ranchradar-security-headers',
+    apply: 'build',
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+      // loadEnv reads .env files and real environment variables (Cloudflare's build settings).
+      supabaseUrl = loadEnv(config.mode, config.root, 'VITE_').VITE_SUPABASE_URL || undefined;
+    },
+    writeBundle() {
+      const file = join(outDir, '_headers');
+      writeFileSync(file, fillHeaders(readFileSync(file, 'utf8'), supabaseUrl));
+    },
+  };
+}
 
 export default defineConfig({
   plugins: [
     react(),
+    securityHeaders(),
     VitePWA({
       // Ask before swapping in a new build, so a new regulation never lands mid-check.
       registerType: 'prompt',
