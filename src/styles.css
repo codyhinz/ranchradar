@@ -698,3 +698,25 @@ body::before {
   .roster-select-bar .button { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .select-mark, .roster-select-bar { animation: none; } }
+
+/* Phones: title and box count stack on the left, the icon row stays beside them on one line */
+@media (max-width: 40rem) {
+  .section-head {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "title tools" "count tools"; align-items: center; gap: 0.1rem 0.6rem;
+  }
+  .section-head h2 { grid-area: title; white-space: nowrap; }
+  .section-head .count { grid-area: count; justify-self: start; margin-right: 0; }
+  .roster-tools { grid-area: tools; margin-left: 0; gap: 0.4rem; }
+  .tool-button { width: 44px; height: 44px; }
+  .view-toggle button { width: 36px; height: 36px; }
+}
+@media (max-width: 23rem) { .section-head h2 { font-size: var(--step-1); } }
+/* Very narrow phones (320px): title gets its own line, count and icons share the next */
+@media (max-width: 21rem) {
+  .section-head { grid-template-areas: "title title" "count tools"; row-gap: 0.4rem; }
+  .section-head .count { white-space: nowrap; }
+  .roster-tools { gap: 0.3rem; }
+  .tool-button { width: 40px; height: 40px; }
+  .view-toggle button { width: 32px; height: 32px; }
+}
