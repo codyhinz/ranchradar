@@ -115,7 +115,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   content: ""; position: absolute; left: 1rem; right: 1rem; bottom: 0.55rem; height: 6px;
   border-top: 2px solid var(--rail); border-bottom: 2px solid var(--rail);
 }
-.masthead > .icon-button { flex: none; margin: -0.25rem -0.25rem 0 0; }
 .brand-text { flex: 1; min-width: 0; container-type: inline-size; }
 .brand {
   flex: 1; min-width: 0;
@@ -777,18 +776,59 @@ body::before {
 }
 .season-check { min-height: 36px; font-weight: 600; font-size: var(--step--1); }
 
-/* Settings: account */
-.account { display: grid; gap: 0.6rem; margin: 0; padding: 0; border: 0; }
-.account legend { font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
-.auth-form, .account-signed-in { display: grid; gap: 0.75rem; }
+/* Masthead: account and settings buttons */
+.masthead-actions { display: flex; flex: none; gap: 0.15rem; margin: -0.25rem -0.25rem 0 0; }
+.account-badge {
+  display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--ember-strong); color: #fff; font-family: var(--font-sign); font-weight: 700; font-size: 1rem; line-height: 1;
+}
+.account-button.is-signed-in:hover .account-badge { box-shadow: 0 0 0 3px var(--glow); }
+
+/* Account sheet: email form first, Google and Discord underneath */
+.auth-start, .auth-form, .account-signed-in { display: grid; gap: 0.75rem; }
+.auth-lede { margin: 0; color: var(--muted); }
+.input-with-icon { position: relative; display: grid; }
+.input-icon {
+  position: absolute; left: 0.8rem; top: 50%; width: 18px; height: 18px; translate: 0 -50%; pointer-events: none;
+  fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+}
+.auth-form .input-with-icon input { padding-left: 2.6rem; }
+.auth-form input::placeholder { color: var(--muted); }
+.auth-forgot { justify-self: end; min-height: 32px; margin-top: -0.4rem; font-size: var(--step--1); }
+.auth-submit { width: 100%; min-height: 48px; background: var(--ember-strong); color: #fff; }
+.auth-switch { margin: 0; text-align: center; color: var(--muted); }
+.auth-switch .link-button { min-height: 32px; }
+.provider-buttons { display: grid; gap: 0.5rem; }
+.provider-button {
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+  width: 100%; min-height: 48px; background: var(--smoke); border-color: var(--rail); color: var(--coal);
+}
+.provider-button:hover:not(:disabled) { border-color: var(--wood); }
+.brand-mark { width: 20px; height: 20px; flex: none; }
+.provider-button[aria-busy='true'] { opacity: 0.75; cursor: progress; }
+/* "or" between two fence rails, echoing the masthead sign */
+.auth-divider { display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0; color: var(--muted); font-size: var(--step--1); }
+.auth-divider::before, .auth-divider::after {
+  content: ""; flex: 1; height: 6px; border-top: 2px solid var(--rail); border-bottom: 2px solid var(--rail);
+}
 .auth-form input {
   min-height: 44px; padding: 0.5rem 0.75rem; border: 2px solid var(--rail); border-radius: 10px;
   background: var(--smoke); font-weight: 400;
 }
 .auth-form input:focus-visible { border-color: var(--hay); }
-.auth-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.auth-switch { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+.password-input { position: relative; display: grid; }
+.auth-form .password-input input { padding-right: 4.5rem; }
+.reveal-password {
+  position: absolute; top: 0; right: 0; bottom: 0; min-width: 44px; padding: 0 0.75rem;
+  border: 0; background: transparent; color: var(--muted); font-weight: 600; font-size: var(--step--1); cursor: pointer;
+}
+.reveal-password:hover { color: var(--coal); }
+.auth-back { justify-self: center; }
 .auth-error { margin: 0; color: var(--danger); font-weight: 600; font-size: var(--step--1); }
 .auth-sent { display: grid; gap: 0.5rem; justify-items: start; padding: 0.75rem; border-radius: var(--radius-row); background: var(--rail); }
 .auth-sent p { margin: 0; }
+.account-card { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: var(--radius-row); background: var(--smoke); border: 1px solid var(--rail); }
+.account-card .account-badge { width: 44px; height: 44px; font-size: 1.35rem; }
+.account-who { display: grid; min-width: 0; }
 .account-email { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.account-signed-in > .hint { margin: 0; }

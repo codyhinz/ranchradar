@@ -19,7 +19,7 @@ RanchRadar is a mobile-first web app you can install like a native one. It works
 - **Undo everywhere.** Every removal, bulk clear, and status change can be undone from the toast.
 - **Backups.** Export your roster to a JSON file and import it on another device.
 - **Nine languages.** Interface text, Pokémon names, and search in English, Japanese, Korean, Traditional and Simplified Chinese, French, German, Spanish, and Italian.
-- **Accounts (in progress).** Email sign-in works today; cloud sync across devices is being built.
+- **Accounts (in progress).** Sign in with Google, Discord, or email and password from the account button in the header; cloud sync across devices is being built.
 
 ## Tech stack
 
@@ -56,6 +56,8 @@ VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...            # Project Settings �
 ```
 
 Then apply the schema in `supabase/migrations/` to your project, and under Authentication → URL Configuration add `http://localhost:5173/**` as a redirect URL. Restart `npm run dev` after editing `.env.local`.
+
+For Google and Discord sign-in, turn each provider on under Authentication → Sign In / Providers and paste in its client ID and secret. In the Google Cloud console (an OAuth client of type Web application) and the Discord Developer Portal (OAuth2), set the redirect URL to `https://your-project-ref.supabase.co/auth/v1/callback`. The buttons always show, so enable both providers before deploying. For the button icons, save Google’s and Discord’s official marks from their brand kits as `public/icons/brands/google.svg` and `public/icons/brands/discord.svg`; without them the buttons show text only.
 
 The publishable key is meant to be public. What protects each person's data is row-level security, defined in the migrations and tested in CI.
 

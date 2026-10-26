@@ -14,6 +14,7 @@ const KNOWN: Record<string, MessageKey> = {
   over_request_rate_limit: 'auth.error.rateLimit',
   signup_disabled: 'auth.error.signupOff',
   email_provider_disabled: 'auth.error.signupOff',
+  provider_disabled: 'auth.error.provider',
 };
 
 export function authErrorKey(error: unknown): MessageKey {
