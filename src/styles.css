@@ -111,7 +111,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
   clip: rect(0 0 0 0); white-space: nowrap;
 }
 
-.app { max-width: 42rem; margin: 0 auto; padding: 0 1rem 6rem; }
+.app {
+  max-width: 42rem; margin: 0 auto; padding: 0 1rem 1rem;
+  /* Fills the screen so the footer sits at the bottom even when the roster is short */
+  display: flex; flex-direction: column;
+  min-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+.app > main { flex-grow: 1; margin-bottom: 2rem; }
+/* Room for the floating select bar so it never covers the last row */
+.app:has(.roster-select-bar) { padding-bottom: 6rem; }
 
 /* Masthead: the one loud moment. Painted sunset art with the name lettered on as live text. */
 .masthead { position: relative; margin: 1rem 0 0.25rem; }
@@ -891,11 +900,11 @@ body::after {
 .account-signed-in > .hint { margin: 0; }
 
 /* Footer: legal links and the fan-project notice, quiet under the roster */
-.app-footer { margin-top: 3rem; padding-top: 1rem; border-top: 2px solid var(--rail); color: var(--muted); font-size: var(--step--1); }
-.app-footer nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.app-footer { padding-top: 0.5rem; border-top: 1px solid var(--rail); color: var(--muted); font-size: var(--step--1); }
+.app-footer nav { display: flex; flex-wrap: wrap; gap: 0 1.25rem; }
 .app-footer a { display: inline-flex; align-items: center; min-height: 32px; color: var(--coal); text-underline-offset: 0.2em; text-decoration-color: var(--rail); }
 .app-footer a:hover { text-decoration-color: var(--ember); }
-.app-footer p { margin: 0.5rem 0 0; max-width: 36rem; }
+.app-footer p { margin: 0; font-size: 0.75rem; line-height: 1.4; }
 .auth-legal { margin: 0.25rem 0 0; color: var(--muted); font-size: var(--step--1); text-align: center; line-height: 1.5; }
 .auth-legal a { color: inherit; text-underline-offset: 0.15em; }
 .auth-legal a:hover { color: var(--coal); }

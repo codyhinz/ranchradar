@@ -1,5 +1,6 @@
 import { Fragment, useState, type FormEvent } from 'react';
 import { authErrorKey } from '../app/authErrors';
+import { rememberOAuthChoice } from '../app/signInHint';
 import type { AuthState } from '../app/useAuth';
 import { supabase } from '../data/cloud/supabase';
 import { t, type MessageKey } from '../i18n';
@@ -49,6 +50,7 @@ export function AccountSheet({ auth, recovering, onRecovered, initialError, say,
 
   const withProvider = (provider: Provider) => void run(provider, async () => {
     // Leaves the page for Google or Discord, so `busy` stays on until the browser navigates.
+    rememberOAuthChoice(provider);
     const { error: err } = await client.auth.signInWithOAuth({ provider, options: { redirectTo } });
     if (err) throw err;
     await new Promise(() => {});

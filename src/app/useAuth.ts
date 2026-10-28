@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../data/cloud/supabase';
 import type { MessageKey } from '../i18n';
-import { signInMethod } from './signInMethod';
+import { oauthChoice } from './signInHint';
+import { sessionMethod, signInMethod } from './signInMethod';
 
 export type AuthProvider = 'email' | 'google' | 'discord';
 
@@ -41,7 +42,7 @@ export function useAuth() {
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
       const user = session?.user;
       setAuth(user
-        ? { status: 'signedIn', userId: user.id, email: user.email ?? '', provider: signInMethod(user) }
+        ? { status: 'signedIn', userId: user.id, email: user.email ?? '', provider: signInMethod(user, sessionMethod(session?.access_token), oauthChoice()) }
         : { status: 'signedOut' });
     });
     return () => data.subscription.unsubscribe();
