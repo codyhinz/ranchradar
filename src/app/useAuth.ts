@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../data/cloud/supabase';
 import type { MessageKey } from '../i18n';
+import { signInMethod } from './signInMethod';
 
 export type AuthProvider = 'email' | 'google' | 'discord';
 
@@ -25,8 +26,6 @@ function takeRedirectError(): MessageKey | null {
 }
 const redirectError = takeRedirectError();
 
-const providerOf = (value: unknown): AuthProvider => (value === 'google' || value === 'discord' ? value : 'email');
-
 /**
  * Who's signed in, kept current as sessions start, refresh and end (including in other tabs).
  * `recovering` turns on when someone arrives from a password-reset link, so the app can ask
@@ -42,7 +41,7 @@ export function useAuth() {
       if (event === 'PASSWORD_RECOVERY') setRecovering(true);
       const user = session?.user;
       setAuth(user
-        ? { status: 'signedIn', userId: user.id, email: user.email ?? '', provider: providerOf(user.app_metadata?.provider) }
+        ? { status: 'signedIn', userId: user.id, email: user.email ?? '', provider: signInMethod(user) }
         : { status: 'signedOut' });
     });
     return () => data.subscription.unsubscribe();
