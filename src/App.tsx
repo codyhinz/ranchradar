@@ -9,6 +9,7 @@ import { AddSheet } from './components/AddSheet';
 import { expiresAfter } from './components/EntryFields';
 import { FormSheet } from './components/FormSheet';
 import { Header } from './components/Header';
+import { Mascot, type Mood } from './components/Mascot';
 import { ResultRow } from './components/ResultRow';
 import { RosterList } from './components/RosterList';
 import { SettingsDialog } from './components/SettingsDialog';
@@ -54,7 +55,7 @@ export function App() {
   const results = useMemo(() => searchForms(query, locale).slice(0, 60), [query, locale]);
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
-  const say = (text: string, onUndo?: () => void) => setToast({ id: Date.now(), text, onUndo });
+  const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
 
   // "/" jumps to search from anywhere, the way it does on most search-first sites.
   useEffect(() => {
@@ -80,7 +81,7 @@ export function App() {
 
   const guard = async (action: () => Promise<void>) => {
     try { await action(); }
-    catch (error) { say(t('error.generic', { message: error instanceof Error ? error.message : String(error) })); }
+    catch (error) { say(t('error.generic', { message: error instanceof Error ? error.message : String(error) }), undefined, 'confused'); }
   };
 
   const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; variant?: string | null; notes?: string | null; trial_expires_at?: string } = {}) =>
@@ -94,7 +95,7 @@ export function App() {
       requestPersistentStorage();
       say(t(status === 'permanent' ? 'added.permanent' : 'added.trial', { name: name(formId) }), () => {
         void store.remove(entry.id);
-      });
+      }, 'cheer');
     });
 
   const exportRoster = () => {
@@ -121,7 +122,7 @@ export function App() {
       say(skipped ? `${done} · ${t('backup.skipped', { count: skipped })}` : done);
     } catch (error) {
       if (!(error instanceof BackupError)) throw error; // storage errors go through guard()
-      say(t(error.code === 'newer_format' ? 'backup.newer' : error.code === 'too_large' ? 'backup.tooLarge' : 'backup.invalid'));
+      say(t(error.code === 'newer_format' ? 'backup.newer' : error.code === 'too_large' ? 'backup.tooLarge' : 'backup.invalid'), undefined, 'confused');
     }
   });
 
@@ -179,6 +180,7 @@ export function App() {
             </>
           ) : (
             <div className="no-results">
+              <Mascot mood="sleeping" size={112} />
               <p>{t('search.none', { query: query.trim() })}</p>
               <button type="button" className="link-button" onClick={goHome}>{t('results.back')}</button>
             </div>

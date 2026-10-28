@@ -19,6 +19,11 @@
   --shadow: 0 12px 32px rgb(43 39 36 / 0.22);
   --lift: 0 1px 0 rgb(255 255 255 / 0.6) inset, 0 1px 2px rgb(43 39 36 / 0.08), 0 4px 12px rgb(43 39 36 / 0.08);
   --glow: rgb(226 83 30 / 0.20);
+  /* sunset over the ranch: a warm glow at the top, hay-gold low in the corner */
+  --page-bg:
+    radial-gradient(130% 55% at 50% -12%, rgb(240 150 90 / 0.30), transparent 62%),
+    radial-gradient(70% 45% at 100% 100%, rgb(231 184 74 / 0.16), transparent 70%),
+    linear-gradient(180deg, #efe3d8 0%, #e9e4df 40%, #e3dbd3 100%);
 
   --font-sign: 'Zilla Slab', 'Rockwell', 'Roboto Slab', Georgia, serif;
   --font-body: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible', system-ui, sans-serif;
@@ -55,6 +60,11 @@
     --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
     --lift: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px rgb(0 0 0 / 0.3);
     --glow: rgb(255 107 51 / 0.22);
+    /* dusk: an ember glow behind the sign fading into coal, a little purple low down */
+    --page-bg:
+      radial-gradient(130% 55% at 50% -12%, rgb(214 92 38 / 0.30), transparent 62%),
+      radial-gradient(70% 45% at 100% 100%, rgb(96 62 92 / 0.22), transparent 70%),
+      linear-gradient(180deg, #2b201c 0%, #1f1b19 45%, #171311 100%);
   }
 }
 :root[data-theme='dark'] {
@@ -74,6 +84,11 @@
   --shadow: 0 12px 32px rgb(0 0 0 / 0.5);
   --lift: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px rgb(0 0 0 / 0.3);
   --glow: rgb(255 107 51 / 0.22);
+  /* dusk: an ember glow behind the sign fading into coal, a little purple low down */
+  --page-bg:
+    radial-gradient(130% 55% at 50% -12%, rgb(214 92 38 / 0.30), transparent 62%),
+    radial-gradient(70% 45% at 100% 100%, rgb(96 62 92 / 0.22), transparent 70%),
+    linear-gradient(180deg, #2b201c 0%, #1f1b19 45%, #171311 100%);
 }
 :root[data-theme='light'] { color-scheme: light; }
 
@@ -81,11 +96,9 @@
 html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 5rem); scrollbar-gutter: stable; overflow-x: clip; }
 /* The page behind an open sheet stays put; the gutter above keeps its width from jumping. */
 html:has(dialog[open]) { overflow: hidden; }
+html { background-color: var(--smoke); }
 body {
   margin: 0;
-  background-color: var(--smoke); background-attachment: fixed;
-  /* faint grain so the page reads like weathered board, not flat paint */
-  background-image: var(--grain);
   color: var(--coal);
   font: 400 var(--step-0) / 1.5 var(--font-body);
   -webkit-text-size-adjust: 100%;
@@ -100,62 +113,82 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .app { max-width: 42rem; margin: 0 auto; padding: 0 1rem 6rem; }
 
-/* Masthead: the one loud moment */
-.masthead {
-  position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
-  margin: 1rem 0 0.5rem; padding: 1rem 1rem 1.4rem;
-  border: 1px solid var(--rail); border-radius: 20px;
-  background:
-    radial-gradient(circle at 70px 75%, var(--glow), transparent 150px),
-    linear-gradient(180deg, var(--surface), color-mix(in srgb, var(--surface) 60%, var(--smoke)));
-  box-shadow: var(--lift);
-}
-/* two fence rails along the bottom of the sign */
-.masthead::after {
-  content: ""; position: absolute; left: 1rem; right: 1rem; bottom: 0.55rem; height: 6px;
-  border-top: 2px solid var(--rail); border-bottom: 2px solid var(--rail);
-}
-.brand-text { flex: 1; min-width: 0; container-type: inline-size; }
+/* Masthead: the one loud moment. Painted sunset art with the name lettered on as live text. */
+.masthead { position: relative; margin: 1rem 0 0.25rem; }
 .brand {
-  flex: 1; min-width: 0;
-  display: flex; align-items: flex-end; gap: 0.75rem;
-  padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; border-radius: 12px;
+  position: relative; display: block; width: 100%; padding: 0; border: 0; cursor: pointer;
+  border-radius: 18px; overflow: hidden; background: #3a2e35;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset, 0 10px 28px rgb(43 25 20 / 0.28);
+  container-type: inline-size;
 }
-.mascot { position: relative; display: block; width: 96px; height: 96px; flex: none; margin: -0.5rem 0 -0.75rem -0.5rem; }
-@media (max-width: 22rem) { .mascot { width: 56px !important; height: 56px !important; } .mascot-sprite { width: 56px !important; height: 56px !important; } .smoke { bottom: 35px !important; } .tagline { display: none; } }
-@media (max-width: 30rem) { .mascot { width: 72px; height: 72px; } .mascot-sprite { width: 72px; height: 72px; } .smoke { bottom: 46px; left: 7px; } }
-.mascot-sprite { position: relative; z-index: 1; }
-.smoke {
-  position: absolute; left: 12px; bottom: 60px; width: 40px; height: 48px;
-  fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; opacity: 0.55;
-  stroke-dasharray: 6 9;
-  animation: drift 4.5s linear infinite;
+.banner, .banner img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 1; object-fit: cover; }
+/* the lettering sits in the open sky and field to the right of the mascot */
+.sign {
+  position: absolute; inset: 0 3% 0 46%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  padding-top: 5%;
 }
-.smoke path:nth-child(2) { opacity: 0.6; animation: drift 6s linear infinite reverse; }
-@keyframes drift { to { stroke-dashoffset: -60; } }
-
 .wordmark {
-  margin: 0;
-  font: 700 clamp(1.5rem, 7vw, 2.4rem) / 0.95 var(--font-sign);
-  font-size: min(2.4rem, 17cqi); /* never wider than the space beside Torkoal and the gear */
-  letter-spacing: -0.01em;
-  color: var(--coal);
-  /* a branded-iron edge: a hot ember underline burned into the sign */
-  text-decoration: underline 4px var(--ember);
-  text-underline-offset: 0.18em;
+  margin: 0; font: 700 8.4cqi / 0.9 var(--font-sign); letter-spacing: -0.01em; white-space: nowrap;
+  color: #fff1dc;
+  /* painted-sign edge: a thick dark outline drawn behind the fill, then a soft drop */
+  -webkit-text-stroke: 0.09em #2a1a14; paint-order: stroke fill;
+  text-shadow: 0 0.05em 0 #2a1a14, 0 0.12em 0.18em rgb(20 8 4 / 0.45);
 }
-.tagline { margin: 0.6rem 0 0; color: var(--muted); font-size: var(--step--1); }
+/* a barn-wood rail with a gold star burned in, like a ranch gate sign */
+.sign-rail {
+  position: relative; display: block; width: 74%; height: max(5px, 1.4cqi); margin-top: 2.6cqi;
+  border-radius: 999px; border: max(1.5px, 0.35cqi) solid #2a1a14;
+  background: linear-gradient(180deg, #c98a5a, #8a5232);
+  box-shadow: 0 0.4cqi 0.8cqi rgb(20 8 4 / 0.4);
+}
+.sign-rail::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 4.6cqi; aspect-ratio: 1; translate: -50% -50%;
+  background: #f2c14e;
+  clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  filter: drop-shadow(0 0 0.3cqi #2a1a14) drop-shadow(0 0 0.3cqi #2a1a14);
+}
+.tagline {
+  margin: 2.2cqi 0 0; max-width: 92%;
+  font: 600 max(0.75rem, 2.1cqi) / 1.3 var(--font-body); color: #fde8cf;
+  text-shadow: 0 1px 2px rgb(20 8 4 / 0.9), 0 0 8px rgb(20 8 4 / 0.6);
+}
+.brand:hover .banner img { filter: brightness(1.04) saturate(1.05); }
+.brand:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.banner img { transition: filter 200ms ease; }
+
+/* Phones: the 2:1 art with the mascot larger; lettering takes the right 56% */
+@media (max-width: 30rem) {
+  .brand { border-radius: 14px; }
+  .banner, .banner img { aspect-ratio: 2 / 1; }
+  .sign { inset: 0 3% 0 44%; padding-top: 0; }
+  .wordmark { font-size: 9.6cqi; }
+  .sign-rail { width: 82%; height: max(5px, 1.8cqi); margin-top: 3cqi; }
+  .sign-rail::after { width: 6cqi; }
+  .tagline { display: none; }
+}
 
 /* Search */
 .search-bar {
   position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   display: flex; align-items: center; gap: 0.5rem;
   margin: 0 -1rem; padding: 0.75rem 1rem;
-  background-color: var(--smoke); background-image: var(--grain); background-attachment: fixed;
 }
 body::before {
   content: ""; position: fixed; inset: 0 0 auto; z-index: 10;
-  height: env(safe-area-inset-top, 0px); background: var(--smoke);
+  height: env(safe-area-inset-top, 0px);
+}
+/* The page gradient is a fixed layer behind everything, so it holds still while the roster
+   scrolls (iOS Safari ignores background-attachment: fixed). Faint grain on top reads as
+   weathered board, not flat paint. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: var(--grain), var(--page-bg);
+}
+/* the sticky search strip and the notch strip are frosted glass over it */
+.search-bar, body::before {
+  background: color-mix(in srgb, var(--smoke) 22%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
 }
 .search-bar input {
   flex: 1; min-width: 0; min-height: 52px;
@@ -343,7 +376,15 @@ body::before {
 @media (min-width: 40rem) { .add-label { display: inline; } }
 
 /* Empty, loading, no results */
-.empty { text-align: center; padding: 3rem 1rem; }
+.empty { text-align: center; padding: 2rem 1rem 3rem; }
+/* the mascot's moods sit on a soft ember glow so they read on both themes */
+.mascot { display: block; height: auto; max-width: 100%; filter: drop-shadow(0 8px 18px var(--glow)); user-select: none; }
+.empty .mascot { margin: 0 auto; }
+.no-results { display: grid; justify-items: start; gap: 0.25rem; }
+.no-results .mascot { width: 96px; margin-left: -0.5rem; }
+.no-results p { margin: 0; }
+.toast.has-mascot { padding-left: 0.4rem; gap: 0.6rem; }
+.toast-mascot { flex: none; width: 44px; margin: -0.6rem 0 -0.6rem; filter: none; }
 .empty h2 { margin: 0.5rem 0 0.25rem; font: 600 var(--step-2) / 1.2 var(--font-sign); }
 .empty p { margin: 0; color: var(--muted); }
 .loading, .no-results { color: var(--muted); padding: 2rem 0.5rem; max-width: 34rem; }
@@ -777,7 +818,23 @@ body::before {
 .season-check { min-height: 36px; font-weight: 600; font-size: var(--step--1); }
 
 /* Masthead: account and settings buttons */
-.masthead-actions { display: flex; flex: none; gap: 0.15rem; margin: -0.25rem -0.25rem 0 0; }
+/* desktop: a smoked-glass pill in the sky's top-right corner */
+.masthead-actions {
+  position: absolute; top: 0.6rem; right: 0.6rem; z-index: 1;
+  display: flex; gap: 2px; padding: 2px; border-radius: 999px;
+  background: rgb(31 22 20 / 0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.masthead-actions .icon-button { width: 40px; height: 40px; color: #f6ece2; }
+.masthead-actions .icon-button:hover { background: rgb(255 255 255 / 0.14); }
+.masthead-actions .icon-button:focus-visible { outline: 2px solid #f6ece2; outline-offset: 1px; }
+/* phones: the buttons sit on the page above the sign, so they never cover the lettering */
+@media (max-width: 30rem) {
+  .masthead { display: flex; flex-direction: column-reverse; margin-top: 0.25rem; }
+  .masthead-actions { position: static; align-self: flex-end; padding: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; margin: 0 -0.4rem 0.1rem 0; }
+  .masthead-actions .icon-button { width: 44px; height: 44px; color: var(--coal); }
+  .masthead-actions .icon-button:hover { background: var(--rail); }
+  .masthead-actions .icon-button:focus-visible { outline-color: var(--focus); }
+}
 .account-badge {
   display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
   background: var(--ember-strong); color: #fff; font-family: var(--font-sign); font-weight: 700; font-size: 1rem; line-height: 1;

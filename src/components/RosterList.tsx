@@ -8,6 +8,7 @@ import type { FormOwnership } from '../data/ownership';
 import { ownershipText, t, trialTimeLeft, type MessageKey } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
+import { Mascot } from './Mascot';
 import { TypeTags } from './TypeTags';
 
 interface RosterListProps {
@@ -68,7 +69,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   if (summaries.length === 0) {
     return (
       <div className="empty">
-        <Sprite id="torkoal" size={84} className="empty-sprite" />
+        <Mascot mood="sleeping" size={144} />
         <h2>{t('roster.empty.title')}</h2>
         <p>{t('roster.empty.body')}</p>
       </div>
@@ -209,7 +210,10 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
         </div>
       )}
       {sorted.length === 0 ? (
-        <p className="no-results">{t('filter.none')}</p>
+        <div className="no-results">
+          <Mascot mood="sleeping" size={96} />
+          <p>{t('filter.none')}</p>
+        </div>
       ) : view === 'grid' ? (
         <ul className="tiles" key="grid">
           {sorted.map((summary, index) => {

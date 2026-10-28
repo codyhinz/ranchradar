@@ -1,9 +1,11 @@
 import type { AuthState } from '../app/useAuth';
 import { t } from '../i18n';
 import { initialOf } from './AccountSheet';
-import { Sprite } from './Sprite';
 
-/** Wordmark with Torkoal as the ranch's mascot and a drifting wisp of smoke above it. */
+/**
+ * The ranch sign: painted sunset art with the name lettered on as real text, so it stays
+ * sharp at any size and reads to screen readers. Phones get a taller crop with the mascot larger.
+ */
 export function Header({ auth, onOpenAccount, onOpenSettings, onHome }: {
   auth: AuthState;
   onOpenAccount: () => void;
@@ -14,17 +16,18 @@ export function Header({ auth, onOpenAccount, onOpenSettings, onHome }: {
   return (
     <header className="masthead">
       <button type="button" className="brand" onClick={onHome} aria-label={t('home')}>
-        <span className="mascot">
-          <svg className="smoke" viewBox="0 0 60 70" aria-hidden="true">
-            <path d="M30 68c-9-10 9-16 0-28s8-18 2-30" />
-            <path d="M40 66c-6-8 7-12 1-21s5-13 1-20" />
-          </svg>
-          <Sprite id="torkoal" size={96} className="mascot-sprite" />
-        </span>
-        <div className="brand-text">
+        <picture className="banner">
+          <source media="(max-width: 30rem)" srcSet="/brand/banner-phone-480.webp 480w, /brand/banner-phone-960.webp 960w" sizes="100vw" width={960} height={480} />
+          <img
+            src="/brand/banner-1536.webp" srcSet="/brand/banner-768.webp 768w, /brand/banner-1536.webp 1536w"
+            sizes="(max-width: 42rem) 100vw, 42rem" width={1536} height={512} alt="" fetchPriority="high" decoding="async"
+          />
+        </picture>
+        <span className="sign">
           <h1 className="wordmark">RanchRadar</h1>
+          <span className="sign-rail" aria-hidden="true" />
           <p className="tagline">{t('app.tagline')}</p>
-        </div>
+        </span>
       </button>
       <div className="masthead-actions">
         {auth.status !== 'unavailable' && (

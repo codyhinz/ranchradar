@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { t } from '../i18n';
+import { Mascot, type Mood } from './Mascot';
 
 export interface ToastMessage {
   id: number;
@@ -8,6 +9,8 @@ export interface ToastMessage {
   onUndo?: () => void;
   /** Any other single action, e.g. opening Settings. */
   action?: { label: string; run: () => void };
+  /** The mascot cheers a new addition and looks puzzled when something fails. */
+  mood?: Mood;
 }
 
 /**
@@ -42,7 +45,8 @@ export function Toast({ toast, onDismiss }: { toast: ToastMessage | null; onDism
   return createPortal(
     <div className="toast-region" role="status" aria-live="polite">
       {toast && (
-        <div className="toast" key={toast.id}>
+        <div className={`toast${toast.mood ? ' has-mascot' : ''}`} key={toast.id}>
+          {toast.mood && <Mascot mood={toast.mood} size={44} className="toast-mascot" />}
           <span>{toast.text}</span>
           {toast.action && (
             <button type="button" className="toast-action" onClick={() => { toast.action!.run(); onDismiss(); }}>
