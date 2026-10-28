@@ -42,6 +42,33 @@ describe('adding', () => {
   });
 });
 
+describe('adding several at once', () => {
+  it('writes every row with one change notice, each queued as an insert', async () => {
+    const s = store(true);
+    let notices = 0;
+    s.subscribe(() => notices++);
+    const added = await s.addMany([
+      { form_id: 'garchomp', status: 'permanent' },
+      { form_id: 'ninetales-alola', status: 'trial' },
+    ]);
+    expect(added).toHaveLength(2);
+    expect(added[1]!.trial_expires_at).toBe('2026-10-25T12:00:00.000Z');
+    expect(await s.list()).toHaveLength(2);
+    expect(notices).toBe(1);
+    const outbox = await db.getAll('outbox');
+    expect(outbox.map((item) => item.isNew)).toEqual([true, true]);
+  });
+
+  it('saves nothing when any row is invalid', async () => {
+    const s = store();
+    await expect(s.addMany([
+      { form_id: 'garchomp', status: 'permanent' },
+      { form_id: 'garchomp', status: 'permanent', notes: 'x'.repeat(501) },
+    ])).rejects.toBeInstanceOf(StorageError);
+    expect(await s.list()).toHaveLength(0);
+  });
+});
+
 describe('editing and deleting', () => {
   it('merges patches without touching the server version', async () => {
     const s = store();

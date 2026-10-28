@@ -37,6 +37,8 @@
   --radius-sheet: 18px;
 
   box-sizing: border-box;
+  /* Space taken at the bottom of the screen by fixed chrome (the tab bar, once there is one) */
+  --bottom-chrome: env(safe-area-inset-bottom, 0px);
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -121,6 +123,30 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .app > main { flex-grow: 1; margin-bottom: 2rem; }
 /* Room for the floating select bar so it never covers the last row */
 .app:has(.roster-select-bar) { padding-bottom: 6rem; }
+.app:has(.tab-bar) { padding-bottom: calc(1rem + var(--tab-bar-h)); }
+.app:has(.tab-bar):has(.roster-select-bar) { padding-bottom: calc(6rem + var(--tab-bar-h)); }
+
+/* Tab bar: one fence rail across the bottom, the open tab lit in ember */
+:root { --tab-bar-h: 3.75rem; }
+:root:has(.tab-bar) { --bottom-chrome: calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px)); }
+.tab-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
+  display: flex; justify-content: center;
+  padding: 0 0.5rem env(safe-area-inset-bottom, 0px);
+  background: var(--surface); border-top: 2px solid var(--rail); box-shadow: var(--lift);
+}
+.tab {
+  position: relative; flex: 1; max-width: 8rem; height: var(--tab-bar-h);
+  display: grid; place-items: center; align-content: center; gap: 0.15rem;
+  border: 0; background: transparent; color: var(--muted); cursor: pointer;
+  font-size: 0.75rem; font-weight: 600;
+}
+.tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.tab[aria-current='page'] { color: var(--coal); }
+.tab[aria-current='page'] svg { stroke: var(--ember); }
+.tab[aria-current='page']::before {
+  content: ""; position: absolute; top: -2px; left: 25%; right: 25%; height: 3px; border-radius: 0 0 3px 3px; background: var(--ember);
+}
 
 /* Masthead: the one loud moment. Painted sunset art with the name lettered on as live text. */
 .masthead { position: relative; margin: 1rem 0 0.25rem; }
@@ -529,7 +555,7 @@ body::after {
 
 /* Toast and update banner */
 .toast-region {
-  position: fixed; left: 0; right: 0; bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  position: fixed; left: 0; right: 0; bottom: calc(1rem + var(--bottom-chrome));
   display: flex; justify-content: center; padding: 0 1rem; pointer-events: none; z-index: 20;
 }
 .toast, .update {
@@ -733,7 +759,7 @@ body::after {
 .row-main { position: relative; }
 .row-main .select-mark { position: static; flex: none; }
 .roster-select-bar {
-  position: fixed; left: 50%; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); z-index: 25;
+  position: fixed; left: 50%; bottom: calc(1rem + var(--bottom-chrome)); z-index: 25;
   transform: translateX(-50%); width: min(40rem, calc(100% - 2rem));
   display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 0.75rem 0.6rem 1rem;
   border: 1px solid var(--rail); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow);
@@ -908,3 +934,61 @@ body::after {
 .auth-legal { margin: 0.25rem 0 0; color: var(--muted); font-size: var(--step--1); text-align: center; line-height: 1.5; }
 .auth-legal a { color: inherit; text-underline-offset: 0.15em; }
 .auth-legal a:hover { color: var(--coal); }
+
+/* Add several: the trailing tile and row on the roster, and the empty-state button */
+.empty-bulk { margin-top: 1.25rem; }
+.bulk-icon { width: 40px; height: 40px; fill: none; stroke: var(--wood); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.tile-bulk button {
+  grid-template-rows: 1fr auto; align-items: center; min-height: 8.5rem; color: var(--muted);
+  background: transparent; border-style: dashed; border-bottom-width: 2px; box-shadow: none;
+}
+.tile-bulk button:hover { color: var(--coal); }
+.row-bulk .row-main { color: var(--muted); }
+.row-bulk .bulk-icon { width: 48px; height: 48px; padding: 6px; }
+.row-bulk .row-name { font-size: var(--step-0); }
+
+/* Add several sheet */
+.bulk-controls { display: grid; gap: 0.5rem; }
+.bulk-long { margin: 0; color: var(--muted); font-size: var(--step--1); }
+.bulk-filter input {
+  min-height: 44px; padding: 0.55rem 0.75rem; font-weight: 400;
+  border: 2px solid var(--rail); border-radius: 10px; background: var(--smoke);
+}
+.bulk-grid {
+  list-style: none; margin: 0.75rem 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr)); gap: 0.45rem;
+}
+.bulk-tile { display: flex; }
+.bulk-tile button {
+  position: relative; width: 100%; display: grid; grid-template-rows: auto 1fr; justify-items: center; gap: 0.1rem;
+  padding: 0.35rem 0.2rem 0.45rem; border: 2px solid var(--rail); border-radius: 10px;
+  background: var(--smoke); cursor: pointer;
+  -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation;
+  transition: transform 90ms ease;
+}
+.bulk-tile button:active { transform: scale(0.96); }
+.bulk-tile[data-picked='permanent'] button { border-color: var(--ember-strong); background: color-mix(in srgb, var(--ember) 14%, var(--smoke)); }
+.bulk-tile[data-picked='trial'] button { border-color: var(--hay); background: color-mix(in srgb, var(--hay) 24%, var(--smoke)); }
+.bulk-tile .sprite { pointer-events: none; }
+.bulk-name { font-size: 0.75rem; font-weight: 600; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.bulk-mark {
+  position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--ember-strong); color: #fff;
+}
+.bulk-tile[data-picked='trial'] .bulk-mark { background: var(--hay); color: var(--hay-ink); }
+.bulk-mark svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.bulk-owned {
+  position: absolute; top: 4px; right: 4px; padding: 0 0.35rem; border-radius: 999px;
+  background: var(--coal); color: var(--smoke); font-size: 0.65rem; font-weight: 700; line-height: 1.25rem;
+}
+.bulk-none { margin: 1.5rem 0; color: var(--muted); text-align: center; }
+.bulk-foot {
+  position: sticky; bottom: 0; z-index: 1;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.75rem;
+  margin: 0.75rem -1.25rem calc(-1.25rem - env(safe-area-inset-bottom, 0px));
+  padding: 0.75rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: var(--surface); border-top: 2px solid var(--rail);
+}
+.bulk-tally { flex: 1; min-width: 10rem; color: var(--muted); font-size: var(--step--1); }
+.bulk-foot[data-over='true'] .bulk-tally { color: var(--danger); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .bulk-tile button { transition: none; } .bulk-tile button:active { transform: none; } }

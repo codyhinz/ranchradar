@@ -54,7 +54,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
   }
 
   /** Several rows (and their outbox marks) in one transaction, then one change notice. */
-  async function writeAll(rows: RosterEntry[]): Promise<void> {
+  async function writeAll(rows: RosterEntry[], areNewRows = false): Promise<void> {
     if (rows.length === 0) return;
     const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
     for (const entry of rows) {
@@ -62,7 +62,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
       if (syncEnabled) {
         const outbox = tx.objectStore('outbox');
         const pending = await outbox.get(['roster_entries', entry.id]);
-        await outbox.put({ table: 'roster_entries', rowId: entry.id, isNew: pending ? pending.isNew : false, queuedAt: pending?.queuedAt ?? now().toISOString() });
+        await outbox.put({ table: 'roster_entries', rowId: entry.id, isNew: pending ? pending.isNew : areNewRows, queuedAt: pending?.queuedAt ?? now().toISOString() });
       }
     }
     await tx.done;
@@ -91,12 +91,17 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
     },
 
     async add(input) {
-      const live = (await this.list()).length;
-      if (live >= MAX_ROSTER_ENTRIES) {
+      const [entry] = await this.addMany([input]);
+      return entry!;
+    },
+
+    async addMany(inputs) {
+      if (inputs.length === 0) return [];
+      if ((await this.list()).length + inputs.length > MAX_ROSTER_ENTRIES) {
         throw new StorageError('row_cap_reached', `Roster is limited to ${MAX_ROSTER_ENTRIES} entries`);
       }
       const timestamp = now();
-      const entry = validate({
+      const entries = inputs.map((input) => validate({
         id: newId(),
         user_id: userId,
         form_id: input.form_id,
@@ -114,9 +119,10 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
         created_at: timestamp.toISOString(),
         updated_at: timestamp.toISOString(),
         deleted_at: null,
-      });
-      await write(entry, true);
-      return entry;
+      }));
+      if (entries.length === 1) await write(entries[0]!, true);
+      else await writeAll(entries, true);
+      return entries;
     },
 
     async update(id, patch) {

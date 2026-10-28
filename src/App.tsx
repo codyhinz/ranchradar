@@ -2,10 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { currentRegulation, displayName, regulationAt, searchForms } from './catalog';
 import { boxCapacity } from './app/box';
 import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
+import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
+import { BulkAddSheet } from './components/BulkAddSheet';
 import { expiresAfter } from './components/EntryFields';
 import { FormSheet } from './components/FormSheet';
 import { Header } from './components/Header';
@@ -13,6 +15,7 @@ import { Mascot, type Mood } from './components/Mascot';
 import { ResultRow } from './components/ResultRow';
 import { RosterList } from './components/RosterList';
 import { SettingsDialog } from './components/SettingsDialog';
+import { TabBar } from './components/TabBar';
 import { Toast, type ToastMessage } from './components/Toast';
 import { UpdatePrompt } from './components/UpdatePrompt';
 import { BackupError, MAX_BACKUP_BYTES, backupFileName, parseBackup, toBackup } from './data/backup';
@@ -35,6 +38,8 @@ export function App() {
   const [addingFormId, setAddingFormId] = useState<string | null>(null);
   const [openFormId, setOpenFormId] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [tab, setTab] = useTab();
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -76,6 +81,8 @@ export function App() {
     setOpenFormId(null);
     setSettingsOpen(false);
     setAccountOpen(false);
+    setBulkOpen(false);
+    if (tab !== DEFAULT_TAB) setTab(DEFAULT_TAB);
     window.scrollTo({ top: 0 });
   };
 
@@ -97,6 +104,14 @@ export function App() {
         void store.remove(entry.id);
       }, 'cheer');
     });
+
+  const addMany = (picks: Array<{ formId: string; status: RosterStatus }>) => guard(async () => {
+    if (!store || picks.length === 0) return;
+    const added = await store.addMany(picks.map(({ formId, status }) => ({ form_id: formId, status })));
+    requestPersistentStorage();
+    setBulkOpen(false);
+    say(t('bulk.added', { count: added.length }), () => { void store.removeMany(added.map((e) => e.id)); }, 'cheer');
+  });
 
   const exportRoster = () => {
     const live = (entries ?? []).filter((e) => !e.deleted_at);
@@ -132,6 +147,7 @@ export function App() {
     <div className="app">
       <Header auth={auth} onOpenAccount={() => setAccountOpen(true)} onOpenSettings={() => setSettingsOpen(true)} onHome={goHome} />
 
+      {tab === 'roster' && (<>
       <div className="search-bar">
         <label htmlFor="search" className="visually-hidden">{t('search.label')}</label>
         <svg className="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
@@ -198,9 +214,10 @@ export function App() {
             if (ids.length === 0) return;
             await store.removeMany(ids);
             say(t('expired.cleared', { count: ids.length }), () => { void store.restore(ids); });
-          })} boxUsed={boxUsed} boxCapacity={capacity} />
+          })} onBulkAdd={() => setBulkOpen(true)} boxUsed={boxUsed} boxCapacity={capacity} />
         )}
       </main>
+      </>)}
 
       <footer className="app-footer">
         <nav aria-label={t('legal.nav')}>
@@ -263,6 +280,17 @@ export function App() {
         />
       )}
 
+      {bulkOpen && (
+        <BulkAddSheet
+          locale={locale}
+          summaries={summaries}
+          slotsFree={Math.max(0, capacity - boxUsed)}
+          onAdd={addMany}
+          onOpenSettings={() => { setBulkOpen(false); setSettingsOpen(true); }}
+          onClose={() => setBulkOpen(false)}
+        />
+      )}
+
       {settingsOpen && (
         <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)} onClose={() => setSettingsOpen(false)} />
       )}
@@ -278,6 +306,7 @@ export function App() {
         />
       )}
 
+      <TabBar tab={tab} onChange={setTab} />
       <Toast toast={toast} onDismiss={dismissToast} />
       <UpdatePrompt seasonStarted={liveRegulation.id !== currentRegulation.id ? liveRegulation.id : null} />
     </div>

@@ -4,6 +4,7 @@
 import type { NameLocale } from './catalog';
 
 const en = {
+  'tab.nav': "Sections", 'tab.roster': "Roster", 'bulk.open': "Add several at once", 'bulk.title': "Add several", 'bulk.hint': "Tap everything in your box, then press Add. Nothing is saved until then.", 'bulk.tapAs': "Tap adds as", 'bulk.tapPermanent': "Tap: permanent", 'bulk.tapTrial': "Tap: trial", 'bulk.longTrial': "Long-press adds a trial instead.", 'bulk.longPermanent': "Long-press adds a permanent one instead.", 'bulk.filter': "Filter by name", 'bulk.owned': "Own {count}", 'bulk.pickedPermanent': "adding as permanent", 'bulk.pickedTrial': "adding as trial", 'bulk.none': "{free} box slots free", 'bulk.tally': "{count} picked, {free} slots left", 'bulk.over': "{count} picked, only {free} slots free", 'bulk.submit': "Add {count}", 'bulk.added': "Added {count} Pokémon",
   'app.tagline': 'Check today’s recruits against your roster.',
   'home': 'RanchRadar, back to your roster',
   'search.label': 'Search Pokémon',
@@ -92,6 +93,7 @@ export type MessageKey = keyof typeof en;
 type Messages = Partial<Record<MessageKey, string>>;
 
 const ja: Messages = {
+  'tab.nav': "セクション", 'tab.roster': "ロースター", 'bulk.open': "まとめて追加", 'bulk.title': "まとめて追加", 'bulk.hint': "ボックスにいるポケモンをすべてタップしてから「追加」を押してください。押すまでは保存されません。", 'bulk.tapAs': "タップで追加する種類", 'bulk.tapPermanent': "タップ：正式加入", 'bulk.tapTrial': "タップ：お試し", 'bulk.longTrial': "長押しでお試しとして追加します。", 'bulk.longPermanent': "長押しで正式加入として追加します。", 'bulk.filter': "名前で絞り込む", 'bulk.owned': "所持{count}", 'bulk.pickedPermanent': "正式加入で追加", 'bulk.pickedTrial': "お試しで追加", 'bulk.none': "ボックスの空き{free}", 'bulk.tally': "{count}匹選択中、残り{free}枠", 'bulk.over': "{count}匹選択中、空きは{free}枠だけです", 'bulk.submit': "{count}匹を追加", 'bulk.added': "{count}匹を追加しました",
   'trial.days': '残り{count}日', 'trial.hours': '残り{count}時間', 'trial.soon': '残り1時間未満', 'trial.expired': '期限切れ', 'trial.leftLong': 'お試し終了まで{time}',
   'trial.timeLeft': '残り時間', 'trial.daysUnit': '日', 'trial.hoursUnit': '時間', 'trial.timeHint': 'ゲーム内の残り時間に合わせてください。',
   'variant.label': '見た目', 'variant.none': '未設定',
@@ -135,6 +137,7 @@ const ja: Messages = {
 };
 
 const ko: Messages = {
+  'tab.nav': "섹션", 'tab.roster': "로스터", 'bulk.open': "한 번에 여러 마리 추가", 'bulk.title': "여러 마리 추가", 'bulk.hint': "박스에 있는 포켓몬을 모두 탭한 뒤 추가를 누르세요. 그 전에는 저장되지 않습니다.", 'bulk.tapAs': "탭하면 추가되는 상태", 'bulk.tapPermanent': "탭: 정식", 'bulk.tapTrial': "탭: 체험", 'bulk.longTrial': "길게 누르면 체험으로 추가됩니다.", 'bulk.longPermanent': "길게 누르면 정식으로 추가됩니다.", 'bulk.filter': "이름으로 찾기", 'bulk.owned': "보유 {count}", 'bulk.pickedPermanent': "정식으로 추가", 'bulk.pickedTrial': "체험으로 추가", 'bulk.none': "박스 빈칸 {free}개", 'bulk.tally': "{count}마리 선택, 남은 칸 {free}개", 'bulk.over': "{count}마리 선택, 빈칸은 {free}개뿐입니다", 'bulk.submit': "{count}마리 추가", 'bulk.added': "{count}마리를 추가했습니다",
   'trial.days': '{count}일 남음', 'trial.hours': '{count}시간 남음', 'trial.soon': '1시간 미만', 'trial.expired': '만료됨', 'trial.leftLong': '체험 종료까지 {time}',
   'trial.timeLeft': '남은 시간', 'trial.daysUnit': '일', 'trial.hoursUnit': '시간', 'trial.timeHint': '게임에 표시된 남은 시간에 맞춰 주세요.',
   'variant.label': '모습', 'variant.none': '미설정',
@@ -178,6 +181,7 @@ const ko: Messages = {
 };
 
 const zhHant: Messages = {
+  'tab.nav': "區塊", 'tab.roster': "陣容", 'bulk.open': "一次新增多隻", 'bulk.title': "新增多隻", 'bulk.hint': "點選箱子裡的每隻寶可夢，再按「新增」。按下前不會儲存。", 'bulk.tapAs': "點一下新增為", 'bulk.tapPermanent': "點一下：正式", 'bulk.tapTrial': "點一下：試用", 'bulk.longTrial': "長按改為新增試用。", 'bulk.longPermanent': "長按改為新增正式。", 'bulk.filter': "依名稱篩選", 'bulk.owned': "擁有{count}", 'bulk.pickedPermanent': "新增為正式", 'bulk.pickedTrial': "新增為試用", 'bulk.none': "箱子還有{free}格", 'bulk.tally': "已選{count}隻，剩{free}格", 'bulk.over': "已選{count}隻，只剩{free}格", 'bulk.submit': "新增{count}隻", 'bulk.added': "已新增{count}隻寶可夢",
   'trial.days': '剩 {count} 天', 'trial.hours': '剩 {count} 小時', 'trial.soon': '不到 1 小時', 'trial.expired': '已過期', 'trial.leftLong': '試用結束：{time}',
   'trial.timeLeft': '剩餘時間', 'trial.daysUnit': '天', 'trial.hoursUnit': '小時', 'trial.timeHint': '請與遊戲中顯示的剩餘時間一致。',
   'variant.label': '樣子', 'variant.none': '未設定',
@@ -221,6 +225,7 @@ const zhHant: Messages = {
 };
 
 const zhHans: Messages = {
+  'tab.nav': "区块", 'tab.roster': "阵容", 'bulk.open': "一次添加多只", 'bulk.title': "添加多只", 'bulk.hint': "点选箱子里的每只宝可梦，再按“添加”。按下前不会保存。", 'bulk.tapAs': "点一下添加为", 'bulk.tapPermanent': "点一下：正式", 'bulk.tapTrial': "点一下：试用", 'bulk.longTrial': "长按改为添加试用。", 'bulk.longPermanent': "长按改为添加正式。", 'bulk.filter': "按名称筛选", 'bulk.owned': "拥有{count}", 'bulk.pickedPermanent': "添加为正式", 'bulk.pickedTrial': "添加为试用", 'bulk.none': "箱子还有{free}格", 'bulk.tally': "已选{count}只，剩{free}格", 'bulk.over': "已选{count}只，只剩{free}格", 'bulk.submit': "添加{count}只", 'bulk.added': "已添加{count}只宝可梦",
   'trial.days': '剩 {count} 天', 'trial.hours': '剩 {count} 小时', 'trial.soon': '不到 1 小时', 'trial.expired': '已过期', 'trial.leftLong': '试用结束：{time}',
   'trial.timeLeft': '剩余时间', 'trial.daysUnit': '天', 'trial.hoursUnit': '小时', 'trial.timeHint': '请与游戏中显示的剩余时间一致。',
   'variant.label': '样子', 'variant.none': '未设置',
@@ -264,6 +269,7 @@ const zhHans: Messages = {
 };
 
 const fr: Messages = {
+  'tab.nav': "Sections", 'tab.roster': "Équipe", 'bulk.open': "Ajouter plusieurs d’un coup", 'bulk.title': "Ajouter plusieurs", 'bulk.hint': "Touchez tout ce qui est dans votre boîte, puis appuyez sur Ajouter. Rien n’est enregistré avant.", 'bulk.tapAs': "Toucher ajoute en", 'bulk.tapPermanent': "Toucher : permanent", 'bulk.tapTrial': "Toucher : essai", 'bulk.longTrial': "Un appui long ajoute plutôt un essai.", 'bulk.longPermanent': "Un appui long ajoute plutôt un permanent.", 'bulk.filter': "Filtrer par nom", 'bulk.owned': "{count} possédés", 'bulk.pickedPermanent': "ajout en permanent", 'bulk.pickedTrial': "ajout en essai", 'bulk.none': "{free} places libres", 'bulk.tally': "{count} choisis, {free} places restantes", 'bulk.over': "{count} choisis, seulement {free} places libres", 'bulk.submit': "Ajouter {count}", 'bulk.added': "{count} Pokémon ajoutés",
   'trial.days': '{count} j restants', 'trial.hours': '{count} h restantes', 'trial.soon': '< 1 h', 'trial.expired': 'Expiré', 'trial.leftLong': 'Fin de l’essai : {time}',
   'trial.timeLeft': 'Temps restant', 'trial.daysUnit': 'jours', 'trial.hoursUnit': 'heures', 'trial.timeHint': 'Reprenez le compte à rebours affiché en jeu.',
   'variant.label': 'Variante', 'variant.none': 'Non définie',
@@ -307,6 +313,7 @@ const fr: Messages = {
 };
 
 const de: Messages = {
+  'tab.nav': "Bereiche", 'tab.roster': "Team", 'bulk.open': "Mehrere auf einmal hinzufügen", 'bulk.title': "Mehrere hinzufügen", 'bulk.hint': "Tippe alles in deiner Box an und drücke dann Hinzufügen. Vorher wird nichts gespeichert.", 'bulk.tapAs': "Antippen fügt hinzu als", 'bulk.tapPermanent': "Tippen: fest", 'bulk.tapTrial': "Tippen: Probe", 'bulk.longTrial': "Langes Drücken fügt stattdessen eine Probe hinzu.", 'bulk.longPermanent': "Langes Drücken fügt stattdessen ein festes hinzu.", 'bulk.filter': "Nach Name filtern", 'bulk.owned': "{count} im Besitz", 'bulk.pickedPermanent': "wird fest hinzugefügt", 'bulk.pickedTrial': "wird als Probe hinzugefügt", 'bulk.none': "{free} Boxplätze frei", 'bulk.tally': "{count} gewählt, {free} Plätze übrig", 'bulk.over': "{count} gewählt, nur {free} Plätze frei", 'bulk.submit': "{count} hinzufügen", 'bulk.added': "{count} Pokémon hinzugefügt",
   'trial.days': 'noch {count} T.', 'trial.hours': 'noch {count} Std.', 'trial.soon': '< 1 Std.', 'trial.expired': 'Abgelaufen', 'trial.leftLong': 'Probe endet: {time}',
   'trial.timeLeft': 'Verbleibende Zeit', 'trial.daysUnit': 'Tage', 'trial.hoursUnit': 'Stunden', 'trial.timeHint': 'Übernimm den Countdown aus dem Spiel.',
   'variant.label': 'Variante', 'variant.none': 'Nicht festgelegt',
@@ -350,6 +357,7 @@ const de: Messages = {
 };
 
 const es: Messages = {
+  'tab.nav': "Secciones", 'tab.roster': "Equipo", 'bulk.open': "Añadir varios a la vez", 'bulk.title': "Añadir varios", 'bulk.hint': "Toca todo lo que tienes en la caja y luego pulsa Añadir. No se guarda nada hasta entonces.", 'bulk.tapAs': "Tocar añade como", 'bulk.tapPermanent': "Tocar: permanente", 'bulk.tapTrial': "Tocar: prueba", 'bulk.longTrial': "Mantén pulsado para añadir una prueba.", 'bulk.longPermanent': "Mantén pulsado para añadir uno permanente.", 'bulk.filter': "Filtrar por nombre", 'bulk.owned': "Tienes {count}", 'bulk.pickedPermanent': "se añade como permanente", 'bulk.pickedTrial': "se añade como prueba", 'bulk.none': "{free} huecos libres en la caja", 'bulk.tally': "{count} elegidos, quedan {free} huecos", 'bulk.over': "{count} elegidos, solo hay {free} huecos libres", 'bulk.submit': "Añadir {count}", 'bulk.added': "{count} Pokémon añadidos",
   'trial.days': 'quedan {count} d', 'trial.hours': 'quedan {count} h', 'trial.soon': '< 1 h', 'trial.expired': 'Caducado', 'trial.leftLong': 'Fin de la prueba: {time}',
   'trial.timeLeft': 'Tiempo restante', 'trial.daysUnit': 'días', 'trial.hoursUnit': 'horas', 'trial.timeHint': 'Copia la cuenta atrás que muestra el juego.',
   'variant.label': 'Variante', 'variant.none': 'Sin definir',
@@ -393,6 +401,7 @@ const es: Messages = {
 };
 
 const it: Messages = {
+  'tab.nav': "Sezioni", 'tab.roster': "Squadra", 'bulk.open': "Aggiungi più Pokémon insieme", 'bulk.title': "Aggiungi più Pokémon", 'bulk.hint': "Tocca tutto ciò che hai nel box, poi premi Aggiungi. Fino ad allora non viene salvato nulla.", 'bulk.tapAs': "Il tocco aggiunge come", 'bulk.tapPermanent': "Tocco: permanente", 'bulk.tapTrial': "Tocco: prova", 'bulk.longTrial': "Una pressione prolungata aggiunge invece una prova.", 'bulk.longPermanent': "Una pressione prolungata aggiunge invece un permanente.", 'bulk.filter': "Filtra per nome", 'bulk.owned': "{count} posseduti", 'bulk.pickedPermanent': "aggiunto come permanente", 'bulk.pickedTrial': "aggiunto come prova", 'bulk.none': "{free} posti liberi nel box", 'bulk.tally': "{count} scelti, restano {free} posti", 'bulk.over': "{count} scelti, solo {free} posti liberi", 'bulk.submit': "Aggiungi {count}", 'bulk.added': "{count} Pokémon aggiunti",
   'trial.days': '{count} g rimasti', 'trial.hours': '{count} h rimaste', 'trial.soon': '< 1 h', 'trial.expired': 'Scaduto', 'trial.leftLong': 'Fine prova: {time}',
   'trial.timeLeft': 'Tempo rimanente', 'trial.daysUnit': 'giorni', 'trial.hoursUnit': 'ore', 'trial.timeHint': 'Copia il conto alla rovescia mostrato nel gioco.',
   'variant.label': 'Variante', 'variant.none': 'Non impostata',

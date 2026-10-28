@@ -9,6 +9,8 @@ export interface RosterStore {
   list(options?: { includeDeleted?: boolean }): Promise<RosterEntry[]>;
   get(id: string): Promise<RosterEntry | undefined>;
   add(input: NewRosterEntry): Promise<RosterEntry>;
+  /** Adds several at once, in one write (bulk add). All or nothing. */
+  addMany(inputs: NewRosterEntry[]): Promise<RosterEntry[]>;
   update(id: string, patch: RosterPatch): Promise<RosterEntry>;
   /** Soft delete: sets deleted_at so other devices learn it was removed. */
   remove(id: string): Promise<void>;

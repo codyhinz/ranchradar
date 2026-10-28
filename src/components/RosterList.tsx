@@ -25,6 +25,8 @@ interface RosterListProps {
   onRemoveForms: (formIds: string[]) => void;
   /** Returns every expired trial to the Ranch (with Undo). */
   onClearExpired: () => void;
+  /** Opens the grid of every legal Pokémon for adding several at once. */
+  onBulkAdd: () => void;
 }
 
 /** Everything you own, as a dense sprite grid (see it all at once) or a detailed list. */
@@ -33,7 +35,7 @@ const typeLabel = (type: string, locale: NameLocale) => {
   return names?.[locale] ?? names?.en ?? type;
 };
 
-export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, onRemoveForms, onClearExpired, boxUsed, boxCapacity }: RosterListProps) {
+export function RosterList({ summaries, now, locale, view, onViewChange, onOpen, onRemoveForms, onClearExpired, onBulkAdd, boxUsed, boxCapacity }: RosterListProps) {
   const [sort, setSort] = useRosterSort();
   const [filters, setFilters] = useState<RosterFilters>(NO_FILTERS);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -72,6 +74,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
         <Mascot mood="sleeping" size={144} />
         <h2>{t('roster.empty.title')}</h2>
         <p>{t('roster.empty.body')}</p>
+        <button type="button" className="button button-primary empty-bulk" onClick={onBulkAdd}>{t('bulk.open')}</button>
       </div>
     );
   }
@@ -236,6 +239,14 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
               </li>
             );
           })}
+          {!selecting && (
+            <li className="tile tile-bulk">
+              <button type="button" onClick={onBulkAdd}>
+                <BulkIcon />
+                <span className="tile-name">{t('bulk.title')}</span>
+              </button>
+            </li>
+          )}
         </ul>
       ) : (
         <ul className="rows fence" key="list">
@@ -268,6 +279,14 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
               </li>
             );
           })}
+          {!selecting && (
+            <li className="row row-bulk">
+              <button type="button" className="row-main" onClick={onBulkAdd}>
+                <BulkIcon />
+                <span className="row-name">{t('bulk.title')}</span>
+              </button>
+            </li>
+          )}
         </ul>
       )}
       {selecting && (
@@ -295,4 +314,8 @@ function SelectMark() {
 
 function TimerIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8" /><path d="M12 9v4l2.5 2.5M9 2h6" /></svg>;
+}
+
+function BulkIcon() {
+  return <svg className="bulk-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="13.5" y="3.5" width="7" height="7" rx="1.5" /><rect x="3.5" y="13.5" width="7" height="7" rx="1.5" /><path d="M17 13.5v7M13.5 17h7" /></svg>;
 }
