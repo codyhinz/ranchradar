@@ -202,6 +202,15 @@ export function App() {
         )}
       </main>
 
+      <footer className="app-footer">
+        <nav aria-label={t('legal.nav')}>
+          <a href="/privacy">{t('legal.privacy')}</a>
+          <a href="/terms">{t('legal.terms')}</a>
+          <a href="https://github.com/codyhinz/ranchradar" target="_blank" rel="noopener noreferrer">{t('legal.source')}</a>
+        </nav>
+        <p>{t('legal.fan')}</p>
+      </footer>
+
       {addingFormId && (
         <AddSheet
           formId={addingFormId}

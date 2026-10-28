@@ -889,3 +889,13 @@ body::after {
 .account-who { display: grid; min-width: 0; }
 .account-email { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .account-signed-in > .hint { margin: 0; }
+
+/* Footer: legal links and the fan-project notice, quiet under the roster */
+.app-footer { margin-top: 3rem; padding-top: 1rem; border-top: 2px solid var(--rail); color: var(--muted); font-size: var(--step--1); }
+.app-footer nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+.app-footer a { display: inline-flex; align-items: center; min-height: 32px; color: var(--coal); text-underline-offset: 0.2em; text-decoration-color: var(--rail); }
+.app-footer a:hover { text-decoration-color: var(--ember); }
+.app-footer p { margin: 0.5rem 0 0; max-width: 36rem; }
+.auth-legal { margin: 0.25rem 0 0; color: var(--muted); font-size: var(--step--1); text-align: center; line-height: 1.5; }
+.auth-legal a { color: inherit; text-underline-offset: 0.15em; }
+.auth-legal a:hover { color: var(--coal); }

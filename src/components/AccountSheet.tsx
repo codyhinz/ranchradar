@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { Fragment, useState, type FormEvent } from 'react';
 import { authErrorKey } from '../app/authErrors';
 import type { AuthState } from '../app/useAuth';
 import { supabase } from '../data/cloud/supabase';
@@ -209,6 +209,7 @@ export function AccountSheet({ auth, recovering, onRecovered, initialError, say,
             </button>
           ))}
         </div>
+        <p className="auth-legal"><AgreeLine /></p>
       </div>
     );
   }
@@ -248,3 +249,14 @@ function BrandMark({ provider }: { provider: Provider }) {
 export function initialOf(email: string): string {
   return (email.trim()[0] ?? '?').toLocaleUpperCase();
 }
+
+/** "By continuing, you agree to the Terms and Privacy Policy…" with both names as links, in any word order. */
+function AgreeLine() {
+  const links = {
+    terms: <a href="/terms" target="_blank" rel="noopener">{t('auth.agree.terms')}</a>,
+    privacy: <a href="/privacy" target="_blank" rel="noopener">{t('auth.agree.privacy')}</a>,
+  };
+  const parts = t('auth.agree', { terms: '\u0000terms\u0000', privacy: '\u0000privacy\u0000' }).split('\u0000');
+  return <>{parts.map((part, i) => (part === 'terms' || part === 'privacy' ? <Fragment key={i}>{links[part]}</Fragment> : part))}</>;
+}
+

@@ -1,5 +1,6 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { fillHeaders } from './scripts/lib/headers';
 import react from '@vitejs/plugin-react';
@@ -24,10 +25,27 @@ function securityHeaders(): Plugin {
   };
 }
 
+/** /privacy and /terms are their own pages. Cloudflare serves them without the .html; this does
+ *  the same for the dev and preview servers, which would otherwise hand back the app instead. */
+const LEGAL_PAGES = /^\/(privacy|terms)\/?(\?.*)?$/;
+function legalPages(): Plugin {
+  const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
+    const match = req.url?.match(LEGAL_PAGES);
+    if (match) req.url = `/${match[1]}.html${match[2] ?? ''}`;
+    next();
+  };
+  return {
+    name: 'ranchradar-legal-pages',
+    configureServer(server) { server.middlewares.use(rewrite); },
+    configurePreviewServer(server) { server.middlewares.use(rewrite); },
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
     securityHeaders(),
+    legalPages(),
     VitePWA({
       // Ask before swapping in a new build, so a new regulation never lands mid-check.
       registerType: 'prompt',
@@ -50,8 +68,19 @@ export default defineConfig({
         // Cache the app, fonts and every sprite so the installed app opens with no signal.
         globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,ico}'],
         navigateFallback: '/index.html',
+        // The legal pages are real pages, not app routes: let them load from the network.
+        navigateFallbackDenylist: [/^\/(privacy|terms)(\.html)?\/?$/],
       },
     }),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        privacy: fileURLToPath(new URL('./privacy.html', import.meta.url)),
+        terms: fileURLToPath(new URL('./terms.html', import.meta.url)),
+      },
+    },
+  },
   test: { globals: true, environment: 'node' },
 });

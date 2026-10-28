@@ -1,0 +1,38 @@
+/* Privacy policy and terms: a plain reading page under the same sunset sky as the app. */
+.legal { max-width: 40rem; margin: 0 auto; padding: 1.25rem 1.25rem 4rem; }
+
+.legal .legal-home {
+  display: inline-flex; align-items: center; gap: 0.6rem; margin-bottom: 2rem;
+  color: var(--coal); text-decoration: none; border-radius: 12px;
+}
+.legal-home img { width: 48px; height: 48px; filter: drop-shadow(0 4px 10px var(--glow)); }
+.legal-home span { font: 700 var(--step-2) / 1 var(--font-sign); }
+.legal-home:hover span { text-decoration: underline 3px var(--ember); text-underline-offset: 0.2em; }
+.legal-home:focus-visible { outline: 3px solid var(--focus); outline-offset: 4px; }
+
+.legal h1 { margin: 0; font: 700 var(--step-3) / 1.05 var(--font-sign); }
+.legal-date { margin: 0.5rem 0 2rem; color: var(--muted); }
+.legal h2 { margin: 2.25rem 0 0.5rem; font: 600 var(--step-1) / 1.25 var(--font-sign); }
+.legal p, .legal li { line-height: 1.65; }
+.legal p { margin: 0 0 0.85rem; }
+.legal ul { margin: 0 0 0.85rem; padding-left: 1.25rem; }
+.legal li { margin-bottom: 0.35rem; }
+.legal a { color: var(--ember-strong); text-underline-offset: 0.15em; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .legal a:not(.legal-back, .legal-home) { color: var(--ember); } }
+:root[data-theme='dark'] .legal a:not(.legal-back, .legal-home) { color: var(--ember); }
+.legal-summary {
+  margin: 0 0 2rem; padding: 1rem 1.15rem; border-radius: var(--radius-row);
+  background: color-mix(in srgb, var(--surface) 75%, transparent); border: 1px solid var(--rail);
+}
+.legal-summary p:last-child { margin-bottom: 0; }
+.legal-foot { margin-top: 3rem; padding-top: 1.25rem; border-top: 2px solid var(--rail); color: var(--muted); font-size: var(--step--1); }
+.legal-foot p { margin: 1rem 0 0; }
+/* the way home: a full-size button, not a footnote link */
+.legal .legal-back {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 1.4rem;
+  border-radius: 999px; background: var(--ember-strong); color: #fff;
+  font: 600 var(--step-0) / 1 var(--font-body); text-decoration: none;
+  box-shadow: 0 4px 14px var(--glow);
+}
+.legal .legal-back:hover { filter: brightness(1.08); }
+.legal .legal-back:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
