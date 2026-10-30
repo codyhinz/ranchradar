@@ -50,10 +50,12 @@ describe('box space', () => {
 });
 
 describe('out-of-season filter', () => {
-  it('hides Pokémon not in the current regulation and counts as a filter', () => {
+  it('shows only in-season or only out-of-season Pokémon, and counts as a filter', () => {
     const owned = [own('garchomp'), own('bouffalant')];
     expect(outOfSeasonCount(owned)).toBe(1);
-    expect(applyRosterView(owned, { ...NO_FILTERS, hideOutOfSeason: true }, 'az', 'en').map((s) => s.form_id)).toEqual(['garchomp']);
-    expect(activeFilterCount({ ...NO_FILTERS, hideOutOfSeason: true })).toBe(1);
+    expect(ids(applyRosterView(owned, NO_FILTERS, 'az', 'en'))).toEqual(['bouffalant', 'garchomp']);
+    expect(ids(applyRosterView(owned, { ...NO_FILTERS, season: 'in' }, 'az', 'en'))).toEqual(['garchomp']);
+    expect(ids(applyRosterView(owned, { ...NO_FILTERS, season: 'out' }, 'az', 'en'))).toEqual(['bouffalant']);
+    expect(activeFilterCount({ ...NO_FILTERS, season: 'out' })).toBe(1);
   });
 });

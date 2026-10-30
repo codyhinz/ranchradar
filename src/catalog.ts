@@ -1,6 +1,7 @@
 import forms from '../data/generated/forms.json';
 import formNames from '../data/generated/form-names.json';
 import variantData from '../data/generated/variants.json';
+import availableIds from '../data/generated/available.json';
 
 export const NAME_LOCALES = ['en', 'ja', 'ko', 'zh-Hant', 'zh-Hans', 'fr', 'de', 'es', 'it'] as const;
 export type NameLocale = (typeof NAME_LOCALES)[number];
@@ -55,16 +56,24 @@ export function isInSeason(formId: string): boolean {
   return legal.has(formId);
 }
 
-export const catalog: CatalogForm[] = forms
-  .filter((f) => legal.has(f.id))
-  .map((f) => ({
-    id: f.id,
-    dexNumber: f.dex_number,
-    types: f.types,
-    names: names[f.id] ?? {},
-  }));
+const toCatalogForm = (f: (typeof forms)[number]): CatalogForm => ({
+  id: f.id,
+  dexNumber: f.dex_number,
+  types: f.types,
+  names: names[f.id] ?? {},
+});
 
-export const catalogById = new Map(catalog.map((f) => [f.id, f]));
+/**
+ * Everything you can add: this season's Pokémon plus every fully evolved or non-evolving form
+ * (data/pool.json). Search offers all of these; ones outside the season are marked.
+ */
+const available = new Set(availableIds as string[]);
+export const addableCatalog: CatalogForm[] = forms.filter((f) => available.has(f.id) || legal.has(f.id)).map(toCatalogForm);
+
+/** Only this season's Pokémon, for adding several at once. */
+export const catalog: CatalogForm[] = addableCatalog.filter((f) => legal.has(f.id));
+
+export const catalogById = new Map(addableCatalog.map((f) => [f.id, f]));
 
 /** Every form ever shipped, including ones not in this season, for sorting and filtering a roster. */
 const allFormsById = new Map(forms.map((f) => [f.id, f]));
@@ -140,8 +149,9 @@ function searchKey(form: CatalogForm, locale: NameLocale): string {
  * Searches the name shown in the chosen language only, like a normal search box:
  * names starting with the query first ("z" → Zoroark), then names with a word starting
  * with it ("nine" → Alolan Ninetales). Matches inside a word only kick in from 3 letters.
+ * Within each of those, this season's Pokémon come before ones outside it.
  */
-export function searchForms(query: string, locale: NameLocale, pool: CatalogForm[] = catalog): CatalogForm[] {
+export function searchForms(query: string, locale: NameLocale, pool: CatalogForm[] = addableCatalog): CatalogForm[] {
   const q = normalize(query);
   if (!q) return [];
   const starts: CatalogForm[] = [];
@@ -153,7 +163,8 @@ export function searchForms(query: string, locale: NameLocale, pool: CatalogForm
     else if (key.split(' ').some((word) => word.startsWith(q))) wordStarts.push(form);
     else if (q.length >= 3 && key.includes(q)) inside.push(form);
   }
-  const byName = (a: CatalogForm, b: CatalogForm) => searchKey(a, locale).localeCompare(searchKey(b, locale), locale);
+  const byName = (a: CatalogForm, b: CatalogForm) =>
+    Number(!legal.has(a.id)) - Number(!legal.has(b.id)) || searchKey(a, locale).localeCompare(searchKey(b, locale), locale);
   return [...starts.sort(byName), ...wordStarts.sort(byName), ...inside.sort(byName)];
 }
 

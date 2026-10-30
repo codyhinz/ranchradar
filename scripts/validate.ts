@@ -103,6 +103,15 @@ export function validateData(dataDir: string = DATA_DIR): ValidationResult {
     }
   }
 
+  // The addable pool: real forms, and every regulation's Pokémon can always be added
+  const available = new Set(generated.available);
+  const unknownAvailable = generated.available.filter((id) => !formIds.has(id));
+  if (unknownAvailable.length) errors.push(`generated: addable forms missing from forms.json: ${unknownAvailable.join(', ')}`);
+  for (const reg of regulations) {
+    const notAddable = reg.forms.filter((id) => formIds.has(id) && !available.has(id));
+    if (notAddable.length) errors.push(`regulations/${reg.id}: not addable (run "npm run seed"): ${notAddable.join(', ')}`);
+  }
+
   // Every generated record has English and stays consistent
   for (const form of generated.forms) {
     if (!generated.formNames[form.id]?.en) errors.push(`generated: form "${form.id}" has no English name`);

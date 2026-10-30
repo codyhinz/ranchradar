@@ -5,18 +5,25 @@ import type { RosterSort } from './preferences';
 export const STATUS_FILTERS = ['all', 'permanent', 'trial', 'expired'] as const;
 export type StatusFilter = (typeof STATUS_FILTERS)[number];
 
+export const SEASON_FILTERS = ['all', 'in', 'out'] as const;
+export type SeasonFilter = (typeof SEASON_FILTERS)[number];
+
 export interface RosterFilters {
   status: StatusFilter;
   /** Matches a Pokémon with any of these types; empty means every type. */
   types: string[];
-  /** Hides Pokémon that aren't legal in the current regulation (they stay in the box). */
-  hideOutOfSeason: boolean;
+  /** Only Pokémon legal in the current regulation, only ones that aren't (they stay in the box), or both. */
+  season: SeasonFilter;
 }
 
-export const NO_FILTERS: RosterFilters = { status: 'all', types: [], hideOutOfSeason: false };
+export const NO_FILTERS: RosterFilters = { status: 'all', types: [], season: 'all' };
 
 export function activeFilterCount(filters: RosterFilters): number {
-  return (filters.status === 'all' ? 0 : 1) + filters.types.length + (filters.hideOutOfSeason ? 1 : 0);
+  return (filters.status === 'all' ? 0 : 1) + filters.types.length + (filters.season === 'all' ? 0 : 1);
+}
+
+function matchesSeason(formId: string, season: SeasonFilter): boolean {
+  return season === 'all' || isInSeason(formId) === (season === 'in');
 }
 
 function matchesStatus(summary: FormOwnership, status: StatusFilter): boolean {
@@ -49,7 +56,7 @@ export function applyRosterView(
   };
   return summaries
     .filter((s) => matchesStatus(s, filters.status))
-    .filter((s) => !filters.hideOutOfSeason || isInSeason(s.form_id))
+    .filter((s) => matchesSeason(s.form_id, filters.season))
     .filter((s) => filters.types.length === 0 || typesOf(s.form_id).some((type) => filters.types.includes(type)))
     .sort(compare[sort]);
 }

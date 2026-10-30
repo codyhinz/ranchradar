@@ -30,6 +30,7 @@ function setup(options: {
   registry?: IdRegistry;
   forms?: FormRecord[];
   formNames?: NameMap;
+  available?: string[];
 } = {}): string {
   const dir = mkdtempSync(join(tmpdir(), 'rr-data-'));
   mkdirSync(join(dir, 'regulations'));
@@ -40,6 +41,7 @@ function setup(options: {
   write('generated/forms.json', f);
   write('generated/items.json', items);
   write('generated/form-names.json', options.formNames ?? Object.fromEntries(f.map((x) => [x.id, { en: x.id }])));
+  write('generated/available.json', options.available ?? f.map((x) => x.id));
   write('generated/item-names.json', Object.fromEntries(items.map((x) => [x.id, { en: x.id }])));
   write('id-registry.json', options.registry ?? { forms: f.map((x) => x.id), items: items.map((x) => x.id) });
   return dir;
@@ -67,6 +69,11 @@ describe('validateData', () => {
   it('flags ids that were never seeded', () => {
     const dir = setup({ regulations: [{ ...baseRegulation, forms: [...baseRegulation.forms, 'rillaboom'], expected_forms: 3 }] });
     expect(validateData(dir).errors.join()).toMatch(/run "npm run seed".*rillaboom/);
+  });
+
+  it('keeps every regulation Pokémon addable and every addable id real', () => {
+    expect(validateData(setup({ available: ['garchomp'] })).errors.join()).toMatch(/not addable.*ninetales-alola/);
+    expect(validateData(setup({ available: ['garchomp', 'ninetales-alola', 'mewtwo'] })).errors.join()).toMatch(/missing from forms\.json: mewtwo/);
   });
 
   it('enforces the published count only once final', () => {

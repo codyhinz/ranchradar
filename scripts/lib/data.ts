@@ -73,6 +73,16 @@ export function readVariantFile(dataDir = DATA_DIR): VariantFile {
   return existsSync(path) ? readJson<VariantFile>(path) : { variants: {} };
 }
 
+/** data/pool.json: ids to leave out of the always-addable pool, hand-maintained. */
+export interface PoolFile {
+  exclude: string[];
+}
+
+export function readPoolFile(dataDir = DATA_DIR): PoolFile {
+  const path = join(dataDir, 'pool.json');
+  return existsSync(path) ? readJson<PoolFile>(path) : { exclude: [] };
+}
+
 export function readJson<T>(path: string): T {
   return JSON.parse(readFileSync(path, 'utf8')) as T;
 }
@@ -95,6 +105,7 @@ export function readGenerated(dataDir = DATA_DIR) {
     formNames: load<NameMap>('form-names.json', {}),
     itemNames: load<NameMap>('item-names.json', {}),
     variants: load<VariantRecords>('variants.json', {}),
+    available: load<string[]>('available.json', []),
   };
 }
 

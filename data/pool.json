@@ -1,0 +1,15 @@
+{
+  "_about": "Pokémon you can add even when they aren't in the current regulation. npm run seed takes every form that doesn't evolve any further (fully evolved, or never evolves), skips battle-only forms (Mega, Gigantamax, Primal, Totem and the like), cosmetic looks (those live in variants.json) and anything not in a released game, then drops the ids below. Every regulation's own forms are always addable on top of this. Use our ids (Showdown naming, lowercase with dashes). Adding an id here hides it from search; anyone who already owns it keeps it.",
+  "exclude": [
+    "arceus-bug", "arceus-dark", "arceus-dragon", "arceus-electric", "arceus-fairy", "arceus-fighting",
+    "arceus-fire", "arceus-flying", "arceus-ghost", "arceus-grass", "arceus-ground", "arceus-ice",
+    "arceus-poison", "arceus-psychic", "arceus-rock", "arceus-steel", "arceus-water",
+    "silvally-bug", "silvally-dark", "silvally-dragon", "silvally-electric", "silvally-fairy", "silvally-fighting",
+    "silvally-fire", "silvally-flying", "silvally-ghost", "silvally-grass", "silvally-ground", "silvally-ice",
+    "silvally-poison", "silvally-psychic", "silvally-rock", "silvally-steel", "silvally-water",
+    "genesect-burn", "genesect-chill", "genesect-douse", "genesect-shock",
+    "pikachu-cosplay", "pikachu-belle", "pikachu-libre", "pikachu-phd", "pikachu-pop-star", "pikachu-rock-star",
+    "eternatus-eternamax", "floette-eternal",
+    "vivillon-fancy", "vivillon-pokeball"
+  ]
+}

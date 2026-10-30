@@ -19,6 +19,7 @@ import {
   readRegistry,
   readVariantFile,
   type VariantRecords,
+  readPoolFile,
   readRegulations,
   slug,
   type FormRecord,
@@ -48,6 +49,22 @@ const POKEAPI_ALIASES: Record<string, string> = {
   'tauros-paldea-combat': 'tauros-paldea-combat-breed',
   'tauros-paldea-blaze': 'tauros-paldea-blaze-breed',
   'tauros-paldea-aqua': 'tauros-paldea-aqua-breed',
+  'oinkologne-f': 'oinkologne-female',
+  'darmanitan-galar': 'darmanitan-galar-standard',
+  'necrozma-dusk-mane': 'necrozma-dusk',
+  'necrozma-dawn-wings': 'necrozma-dawn',
+  'greninja-bond': 'greninja-battle-bond',
+  'ogerpon-wellspring': 'ogerpon-wellspring-mask',
+  'ogerpon-hearthflame': 'ogerpon-hearthflame-mask',
+  'ogerpon-cornerstone': 'ogerpon-cornerstone-mask',
+  'pikachu-original': 'pikachu-original-cap',
+  'pikachu-hoenn': 'pikachu-hoenn-cap',
+  'pikachu-sinnoh': 'pikachu-sinnoh-cap',
+  'pikachu-unova': 'pikachu-unova-cap',
+  'pikachu-kalos': 'pikachu-kalos-cap',
+  'pikachu-alola': 'pikachu-alola-cap',
+  'pikachu-partner': 'pikachu-partner-cap',
+  'pikachu-world': 'pikachu-world-cap',
 };
 const pokeapiIdentifier = (id: string) => POKEAPI_ALIASES[id] ?? id;
 
@@ -96,6 +113,30 @@ async function downloadSprites(ids: string[], pokemonIdByForm: Map<string, strin
       .toFile(target);
   }
   return missing;
+}
+
+/** Showdown flags for forms that aren't in any released game (fan-made, LGPE-only, unreleased). */
+const UNRELEASED = new Set(['CAP', 'Custom', 'LGPE', 'Future']);
+
+/**
+ * Every form that doesn't evolve any further: fully evolved Pokémon and ones that never evolve,
+ * with their regional and alternate forms. Battle-only forms, cosmetic looks and non-base
+ * forms of species whose looks live in variants.json are left out, then the hand-kept excludes.
+ */
+function poolForms(exclude: string[], variantSpecies: string[]): string[] {
+  const all = Dex.species.all();
+  const cosmetic = new Set(all.flatMap((s) => s.cosmeticFormes ?? []));
+  const skip = new Set(exclude);
+  const ids: string[] = [];
+  for (const s of all) {
+    if (s.num <= 0 || UNRELEASED.has(String(s.isNonstandard)) || (s.evos?.length ?? 0) > 0) continue;
+    if (s.battleOnly || s.isMega || s.isPrimal || /Gmax|Totem/.test(s.forme) || cosmetic.has(s.name)) continue;
+    const id = slug(s.name);
+    const base = slug(s.baseSpecies);
+    if (id !== base && variantSpecies.includes(base)) continue;
+    if (!skip.has(id)) ids.push(id);
+  }
+  return ids;
 }
 
 async function fetchCsv(file: string): Promise<string[][]> {
@@ -163,6 +204,11 @@ async function main() {
 
   // Showdown lookups by our slug ids
   const speciesBySlug = new Map<string, Species>(Dex.species.all().map((s) => [slug(s.name), s]));
+
+  // The always-addable pool: Pokémon you can own outside the current season (see data/pool.json).
+  const pool = poolForms(readPoolFile().exclude, Object.keys(readVariantFile().variants));
+  pool.forEach((id) => formIds.add(id));
+  const available = [...new Set([...pool, ...regulations.flatMap((r) => r.forms)])].sort();
   const itemsBySlug = new Map(Dex.items.all().map((item) => [slug(item.name), item]));
 
   const problems: string[] = [];
@@ -321,6 +367,7 @@ async function main() {
   mkdirSync(generatedDir, { recursive: true });
   const write = (path: string, value: unknown) => writeFileSync(path, JSON.stringify(value, null, 2) + '\n');
   write(join(generatedDir, 'forms.json'), forms);
+  write(join(generatedDir, 'available.json'), available);
   write(join(generatedDir, 'items.json'), items);
   write(join(generatedDir, 'form-names.json'), formNames);
   write(join(generatedDir, 'item-names.json'), itemNames);
@@ -348,7 +395,7 @@ async function main() {
   }
 
   const missingLocales = forms.filter((f) => Object.keys(formNames[f.id]!).length < LOCALES.length).length;
-  console.log(`✓ ${forms.length} forms, ${items.length} items from ${regulations.length} regulation file(s)`);
+  console.log(`✓ ${forms.length} forms (${available.length} addable), ${items.length} items from ${regulations.length} regulation file(s)`);
   if (missingLocales) console.log(`  ${missingLocales} form(s) are missing some translations (English is used instead)`);
   if (missingSprites.length) console.log(`  No sprite yet for: ${missingSprites.join(', ')} (the app shows a placeholder)`);
 }

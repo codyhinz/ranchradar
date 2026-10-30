@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { catalog, displayName, searchForms, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import type { RosterStatus } from '../data/types';
@@ -6,8 +6,8 @@ import { t } from '../i18n';
 import { Dialog } from './Dialog';
 import { OwnIcon } from './ResultRow';
 import { Sprite } from './Sprite';
+import { usePressAndHold } from './usePressAndHold';
 
-const LONG_PRESS_MS = 450;
 const byDex = [...catalog].sort((a, b) => a.dexNumber - b.dexNumber);
 
 /**
@@ -107,34 +107,15 @@ function BulkTile({ formId, name, owned, picked, onTap, onLongPress }: {
   onTap: () => void;
   onLongPress: () => void;
 }) {
-  const timer = useRef<number | null>(null);
-  const longPressed = useRef(false);
-  const cancel = () => { if (timer.current !== null) { window.clearTimeout(timer.current); timer.current = null; } };
+  const press = usePressAndHold(onLongPress);
   const state = picked ? t(picked === 'permanent' ? 'bulk.pickedPermanent' : 'bulk.pickedTrial') : '';
   return (
     <li className="bulk-tile" data-picked={picked ?? undefined}>
       <button
         type="button"
         aria-pressed={picked !== null}
-        onPointerDown={(event) => {
-          if (event.button !== 0) return;
-          longPressed.current = false;
-          cancel();
-          timer.current = window.setTimeout(() => {
-            timer.current = null;
-            longPressed.current = true;
-            navigator.vibrate?.(12);
-            onLongPress();
-          }, LONG_PRESS_MS);
-        }}
-        onPointerUp={cancel}
-        onPointerLeave={cancel}
-        onPointerCancel={cancel}
-        onContextMenu={(event) => event.preventDefault()}
-        onClick={() => {
-          if (longPressed.current) { longPressed.current = false; return; }
-          onTap();
-        }}
+        {...press.bind(formId)}
+        onClick={() => { if (!press.wasHeld()) onTap(); }}
       >
         {picked && <span className="bulk-mark" aria-hidden="true"><OwnIcon state={picked} /></span>}
         {owned > 0 && <span className="bulk-owned" aria-hidden="true">{t('bulk.owned', { count: owned })}</span>}

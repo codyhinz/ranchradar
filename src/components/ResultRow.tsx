@@ -1,10 +1,11 @@
 import type React from 'react';
 import type { CatalogForm, NameLocale } from '../catalog';
-import { displayName, variantName } from '../catalog';
+import { currentRegulation, displayName, isInSeason, variantName } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import type { RosterStatus } from '../data/types';
 import { ownershipText, t } from '../i18n';
 import { Sprite } from './Sprite';
+import { StopSign } from './StopSign';
 import { TypeTags } from './TypeTags';
 
 interface ResultRowProps {
@@ -21,12 +22,13 @@ export function ownershipState(o: FormOwnership | undefined): 'none' | 'trial' |
   return o.permanent > 0 ? 'permanent' : 'trial';
 }
 
-/** A search result: who it is, whether you own it, and the three add buttons. */
+/** A search result: who it is, whether you own it, whether it's legal this season, and the three add buttons. */
 export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAddWithDetails, onOpen }: ResultRowProps & { index?: number }) {
   const name = displayName(form.id, locale);
   const state = ownershipState(ownership);
+  const inSeason = isInSeason(form.id);
   return (
-    <li className="row enter" data-own={state} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
+    <li className="row enter" data-own={state} data-season={inSeason ? undefined : 'out'} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
       <button type="button" className="row-main" onClick={onOpen} disabled={state === 'none'}>
         <Sprite id={form.id} />
         <span className="row-text">
@@ -36,6 +38,7 @@ export function ResultRow({ form, ownership, locale, index = 0, onQuickAdd, onAd
               {state !== 'none' && <OwnIcon state={state} />}
               {state === 'none' ? t('own.none') : ownershipText(ownership)}
             </span>
+            {!inSeason && <span className="season-tag"><StopSign />{t('season.out', { id: currentRegulation.id })}</span>}
             <TypeTags types={form.types} />
             {ownership && ownership.variants.length > 0 && (
               <span className="row-variants">{ownership.variants.map((v) => variantName(v, locale)).join(', ')}</span>

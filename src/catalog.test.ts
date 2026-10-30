@@ -1,4 +1,4 @@
-import { guessLocale, isInSeason, isKnownForm, normalize, regulationAt, regulations, searchForms } from './catalog';
+import { addableCatalog, catalog, guessLocale, isInSeason, isKnownForm, normalize, regulationAt, regulations, searchForms } from './catalog';
 
 describe('normalize', () => {
   it('folds accents, width and hiragana', () => {
@@ -36,6 +36,23 @@ describe('searchForms', () => {
   it('lists names that start with the query before word matches', () => {
     const ids = searchForms('nine', 'en').map((f) => f.id);
     expect(ids.indexOf('ninetales')).toBeLessThan(ids.indexOf('ninetales-alola'));
+  });
+
+  it('offers Pokémon outside the season, after this season’s ones', () => {
+    expect(searchForms('mewtwo', 'en')[0]?.id).toBe('mewtwo');
+    expect(isInSeason('mewtwo')).toBe(false);
+    const ids = searchForms('gar', 'en').map((f) => f.id);
+    const firstOut = ids.findIndex((id) => !isInSeason(id));
+    expect(firstOut).toBeGreaterThan(-1);
+    expect(ids.slice(firstOut).every((id) => !isInSeason(id))).toBe(true);
+  });
+
+  it('adds every fully evolved or non-evolving form, but no battle-only or pre-evolved ones', () => {
+    const ids = new Set(addableCatalog.map((f) => f.id));
+    for (const id of ['mewtwo', 'necrozma-dusk-mane', 'rotom-wash', 'urshifu-rapid-strike', 'bouffalant']) expect(ids, id).toContain(id);
+    for (const id of ['charmander', 'charizard-mega-x', 'venusaur-gmax', 'arceus-fire', 'floette']) expect(ids, id).not.toContain(id);
+    expect(ids).toContain('pikachu'); // in a regulation, so addable even though it evolves
+    expect(catalog.every((f) => isInSeason(f.id))).toBe(true);
   });
 
   it('returns nothing for an empty query', () => {

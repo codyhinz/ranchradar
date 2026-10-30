@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
+import { readGenerated, readRegulations } from './scripts/lib/data';
 import { fillHeaders } from './scripts/lib/headers';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -41,6 +42,13 @@ function legalPages(): Plugin {
   };
 }
 
+/**
+ * Sprites of Pokémon that have never been in a regulation: addable, but most people never see
+ * them, so they're cached the first time they show up instead of downloaded with every install.
+ */
+const everLegal = new Set(readRegulations().flatMap((r) => r.forms));
+const poolOnlySprites = readGenerated().available.filter((id) => !everLegal.has(id)).map((id) => `sprites/${id}.webp`);
+
 export default defineConfig({
   plugins: [
     react(),
@@ -65,8 +73,14 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // Cache the app, fonts and every sprite so the installed app opens with no signal.
+        // Cache the app, fonts and every sprite that's been in a season so the installed app opens with no signal.
         globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,ico}'],
+        globIgnores: ['**/node_modules/**', ...poolOnlySprites],
+        runtimeCaching: [{
+          urlPattern: ({ url }) => url.pathname.startsWith('/sprites/'),
+          handler: 'CacheFirst',
+          options: { cacheName: 'sprites', expiration: { maxEntries: 1000 } },
+        }],
         navigateFallback: '/index.html',
         // The legal pages are real pages, not app routes: let them load from the network.
         navigateFallbackDenylist: [/^\/(privacy|terms)(\.html)?\/?$/],

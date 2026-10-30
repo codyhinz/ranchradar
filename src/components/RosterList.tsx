@@ -2,13 +2,15 @@ import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import typeNames from '../../data/generated/type-names.json';
 import { ROSTER_SORTS, useRosterSort, type RosterView } from '../app/preferences';
-import { activeFilterCount, applyRosterView, NO_FILTERS, outOfSeasonCount, ownedTypes, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
+import { activeFilterCount, applyRosterView, NO_FILTERS, outOfSeasonCount, ownedTypes, SEASON_FILTERS, STATUS_FILTERS, type RosterFilters } from '../app/rosterFilters';
 import { currentRegulation, displayName, isInSeason, typesOf, variantName, type NameLocale } from '../catalog';
 import type { FormOwnership } from '../data/ownership';
 import { ownershipText, t, trialTimeLeft, type MessageKey } from '../i18n';
 import { OwnIcon, ownershipState } from './ResultRow';
 import { Sprite } from './Sprite';
 import { Mascot } from './Mascot';
+import { StopSign } from './StopSign';
+import { usePressAndHold } from './usePressAndHold';
 import { TypeTags } from './TypeTags';
 
 interface RosterListProps {
@@ -42,12 +44,20 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   // Select mode: tap Pokémon to pick them, then remove them from the box in one go.
   const [selecting, setSelecting] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const toggleSelected = (formId: string) => setSelected((prev) => {
-    const next = new Set(prev);
+  /** Unpicking the last one ends select mode, so a long-press in and a tap out is one round trip. */
+  const toggleSelected = (formId: string) => {
+    const next = new Set(selected);
     if (next.has(formId)) next.delete(formId); else next.add(formId);
-    return next;
-  });
+    setSelected(next);
+    if (next.size === 0) setSelecting(false);
+  };
   const stopSelecting = () => { setSelecting(false); setSelected(new Set()); };
+  // Long-press any Pokémon to start select mode with it already picked.
+  const press = usePressAndHold((formId) => {
+    if (selecting) { toggleSelected(formId); return; }
+    setSelecting(true);
+    setSelected(new Set([formId]));
+  });
   const [panelClosing, setPanelClosing] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
@@ -97,7 +107,10 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
   const pickedSummaries = sorted.filter((s) => selected.has(s.form_id));
   const pickedCopies = pickedSummaries.reduce((sum, s) => sum + s.total, 0);
   const allShownPicked = sorted.length > 0 && pickedSummaries.length === sorted.length;
-  const tap = (formId: string) => (selecting ? toggleSelected(formId) : onOpen(formId));
+  const tap = (formId: string) => {
+    if (press.wasHeld()) return;
+    if (selecting) toggleSelected(formId); else onOpen(formId);
+  };
   const removePicked = () => {
     const ids = pickedSummaries.map((s) => s.form_id);
     stopSelecting();
@@ -137,11 +150,19 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
                   </label>
                 ))}
               </fieldset>
-              {(outCount > 0 || filters.hideOutOfSeason) && (
-                <label className="check season-check">
-                  <input type="checkbox" checked={filters.hideOutOfSeason} onChange={(event) => setFilters({ ...filters, hideOutOfSeason: event.target.checked })} />
-                  <span>{t('filter.hideOutOfSeason', { id: currentRegulation.id, count: outCount })}</span>
-                </label>
+              {(outCount > 0 || filters.season !== 'all') && (
+                <fieldset className="chips">
+                  <legend>{t('filter.season')}</legend>
+                  {SEASON_FILTERS.map((season) => (
+                    <label key={season} className="chip">
+                      <input type="radio" name="roster-season" checked={filters.season === season} onChange={() => setFilters({ ...filters, season })} />
+                      <span>
+                        {season === 'out' && <StopSign />}
+                        {season === 'all' ? t('filter.status.all') : t(season === 'in' ? 'filter.season.in' : 'filter.season.out', { id: currentRegulation.id, count: outCount })}
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
               )}
               {expiredCount > 0 && (
                 <button type="button" className="button button-quiet button-small clear-expired" onClick={onClearExpired}>
@@ -223,8 +244,9 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
             const name = displayName(summary.form_id, locale);
             return (
               <li key={summary.form_id} className="tile enter" data-own={ownershipState(summary)} data-season={isInSeason(summary.form_id) ? undefined : 'out'} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 18) } as React.CSSProperties}>
-                <button type="button" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined} title={`${name}: ${ownershipText(summary)}`}>
+                <button type="button" className="pressable" {...press.bind(summary.form_id)} onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined} title={`${name}: ${ownershipText(summary)}`}>
                   {selecting && <SelectMark />}
+                  {!selecting && !isInSeason(summary.form_id) && <StopSign className="tile-stop" />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} size={64} />
                   <span className="tile-name">{name}</span>
                   {!isInSeason(summary.form_id) && <span className="season-tag">{seasonTag}</span>}
@@ -253,7 +275,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
           {sorted.map((summary, index) => {
             return (
               <li key={summary.form_id} className="row enter" data-own={ownershipState(summary)} data-season={isInSeason(summary.form_id) ? undefined : 'out'} data-selected={selecting && selected.has(summary.form_id)} style={{ '--i': Math.min(index, 12) } as React.CSSProperties}>
-                <button type="button" className="row-main" onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined}>
+                <button type="button" className="row-main pressable" {...press.bind(summary.form_id)} onClick={() => tap(summary.form_id)} aria-pressed={selecting ? selected.has(summary.form_id) : undefined}>
                   {selecting && <SelectMark />}
                   <Sprite id={summary.form_id} variant={summary.variants.length === 1 ? summary.variants[0] : null} />
                   <span className="row-text">
@@ -268,7 +290,7 @@ export function RosterList({ summaries, now, locale, view, onViewChange, onOpen,
                           <TimerIcon />{timer(summary)!.left}
                         </span>
                       )}
-                      {!isInSeason(summary.form_id) && <span className="season-tag">{seasonTag}</span>}
+                      {!isInSeason(summary.form_id) && <span className="season-tag"><StopSign />{seasonTag}</span>}
                       <TypeTags types={typesOf(summary.form_id)} />
                       {summary.variants.length > 0 && (
                         <span className="row-variants">{summary.variants.map((v) => variantName(v, locale)).join(', ')}</span>

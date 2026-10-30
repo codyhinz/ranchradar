@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { currentRegulation, isInSeason } from '../catalog';
 import { t } from '../i18n';
 import { Dialog } from './Dialog';
 import { EntryFields, newDraft, type EntryDraft } from './EntryFields';
@@ -23,6 +24,7 @@ export function AddSheet({ formId, name, onAdd, onClose }: AddSheetProps) {
     <Dialog title={t('add.title', { name })} onClose={onClose}>
       <form onSubmit={submit}>
         <div className="sheet-hero"><Sprite id={formId} variant={draft.variant} size={88} /></div>
+        {!isInSeason(formId) && <p className="season-note">{t('season.outLong', { name, id: currentRegulation.id })}</p>}
         <EntryFields formId={formId} draft={draft} onChange={setDraft} idPrefix="add" />
         <div className="sheet-actions">
           <button type="button" className="button button-quiet" onClick={onClose}>{t('cancel')}</button>
