@@ -1,12 +1,11 @@
 -- RLS + sync behaviour tests. Run after migrations. Fails loudly on any violation.
 \set ON_ERROR_STOP on
 
-insert into regulations values ('M-C','Regulation Set M-C','2026-09-09 02:00Z','2026-12-02 01:59Z');
-insert into forms values ('garchomp','garchomp',445,'{dragon,ground}','445'),
-                         ('ninetales-alola','ninetales',38,'{ice,fairy}','38-alola');
-insert into form_names values ('garchomp','en','Garchomp'),('garchomp','ja','ガブリアス');
-insert into items values ('focus-sash','held',null,null,'focus-sash');
-insert into regulation_forms values ('M-C','garchomp');
+-- Reference data (forms, names, M-C) comes from the generated reference migration.
+do $$ begin
+  assert (select count(*) from forms where id in ('garchomp', 'ninetales-alola', 'mewtwo')) = 3, 'reference forms missing';
+  assert exists (select 1 from regulation_forms where regulation_id = 'M-C' and form_id = 'garchomp'), 'M-C list missing';
+end $$;
 insert into auth.users values ('00000000-0000-0000-0000-00000000000a'),
                               ('00000000-0000-0000-0000-00000000000b');
 
@@ -75,15 +74,13 @@ end $$;
 reset role;
 
 -- Variants: an entry's variant must belong to its form; anyone can read the reference rows
-insert into forms values ('alcremie','alcremie',869,'{fairy}','869');
-insert into form_variants values ('alcremie-vanilla-cream','alcremie',0),('alcremie-ruby-cream','alcremie',1);
 set role authenticated;
 set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
 insert into roster_entries (id, user_id, form_id, status, variant)
   values ('22222222-2222-2222-2222-222222222222','00000000-0000-0000-0000-00000000000a',
           'alcremie','permanent','alcremie-ruby-cream');
 do $$ begin
-  assert (select count(*) from form_variants) = 2, 'variants should be readable';
+  assert (select count(*) from form_variants where form_id = 'alcremie') = 9, 'variants should be readable';
   begin
     update roster_entries set variant = 'alcremie-ruby-cream' where form_id = 'garchomp';
     raise exception 'a variant from another form was accepted';

@@ -10,12 +10,14 @@
  * Run it after editing a regulation file, then commit the regulation file and the output together.
  */
 import sharp from 'sharp';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Dex, type Species } from '@pkmn/dex';
+import { latestReferenceMigration, MIGRATIONS_DIR, nextMigrationName, referenceSql } from './lib/referenceSql';
 import {
   DATA_DIR,
   LOCALES,
+  readGenerated,
   readRegistry,
   readVariantFile,
   type VariantRecords,
@@ -383,6 +385,14 @@ async function main() {
   });
   write(join(DATA_DIR, 'generated', 'variants.json'), variants);
 
+  // Supabase's copy of the reference data: a new migration only when something changed.
+  const sql = referenceSql({ regulations, ...readGenerated() });
+  let migration: string | null = null;
+  if (latestReferenceMigration()?.sql !== sql) {
+    migration = nextMigrationName(readdirSync(MIGRATIONS_DIR));
+    writeFileSync(join(MIGRATIONS_DIR, migration), sql);
+  }
+
   // Base forms PokeAPI files under a gendered or default identifier fall back to the dex number.
   for (const form of forms) {
     if (form.id === form.species_id && !pokemonIdByForm.has(form.id)) pokemonIdByForm.set(form.id, String(form.dex_number));
@@ -398,6 +408,7 @@ async function main() {
   console.log(`✓ ${forms.length} forms (${available.length} addable), ${items.length} items from ${regulations.length} regulation file(s)`);
   if (missingLocales) console.log(`  ${missingLocales} form(s) are missing some translations (English is used instead)`);
   if (missingSprites.length) console.log(`  No sprite yet for: ${missingSprites.join(', ')} (the app shows a placeholder)`);
+  if (migration) console.log(`  Reference data changed: wrote supabase/migrations/${migration}. Run "npx supabase db push" to apply it.`);
 }
 
 main().catch((error: unknown) => {

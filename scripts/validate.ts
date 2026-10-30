@@ -5,6 +5,7 @@
  */
 import { pathToFileURL } from 'node:url';
 import { DATA_DIR, readGenerated, readRegistry, readRegulations } from './lib/data';
+import { latestReferenceMigration, MIGRATIONS_DIR, referenceSql } from './lib/referenceSql';
 
 export interface ValidationResult {
   errors: string[];
@@ -13,6 +14,18 @@ export interface ValidationResult {
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+/**
+ * Supabase gets reference data through generated migrations, so the newest one has to match
+ * data/ exactly, or the app and the database disagree about which Pokémon exist.
+ */
+export function validateReferenceMigration(dataDir: string = DATA_DIR, migrationsDir: string = MIGRATIONS_DIR): string[] {
+  const expected = referenceSql({ regulations: readRegulations(dataDir), ...readGenerated(dataDir) });
+  const latest = latestReferenceMigration(migrationsDir);
+  if (!latest) return ['supabase/migrations: no reference data migration yet (run "npm run seed")'];
+  if (latest.sql !== expected) return [`supabase/migrations/${latest.file} doesn't match data/ (run "npm run seed", then "npx supabase db push")`];
+  return [];
+}
 
 export function validateData(dataDir: string = DATA_DIR): ValidationResult {
   const errors: string[] = [];
@@ -129,6 +142,7 @@ export function validateData(dataDir: string = DATA_DIR): ValidationResult {
 // CLI
 if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const { errors, warnings } = validateData();
+  errors.push(...validateReferenceMigration());
   warnings.forEach((w) => console.warn(`! ${w}`));
   errors.forEach((e) => console.error(`✗ ${e}`));
   if (errors.length) {
