@@ -93,4 +93,71 @@ do $$ begin
   end;
 end $$;
 reset role;
+-- Hardening: storage limits, caps, column limits and explicit privileges
+insert into public.discord_webhooks (id, user_id, label, enabled, disabled_reason)
+  values ('33333333-3333-3333-3333-333333333333','00000000-0000-0000-0000-00000000000a','Server',false,'Discord deleted it');
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000a';
+do $$
+declare ok boolean;
+begin
+  begin
+    update roster_entries set spread = jsonb_build_object('x', repeat('A', 5000)) where form_id = 'garchomp';
+    raise exception 'an oversized spread was accepted';
+  exception when check_violation then null;
+  end;
+  update roster_entries set spread = '{"hp": 252, "atk": 252}' where form_id = 'garchomp';  -- a real spread fits
+  begin
+    update profiles set locale = repeat('B', 100);
+    raise exception 'an oversized locale was accepted';
+  exception when check_violation then null;
+  end;
+  update profiles set locale = 'ja', age_confirmed_at = now();  -- the columns users own still work
+  begin
+    update profiles set created_at = now() - interval '1 year';
+    raise exception 'a client rewrote profiles.created_at';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into reminders (user_id, kind, fire_at)
+      select '00000000-0000-0000-0000-00000000000a', 'ranch_refresh', now() from generate_series(1, 501);
+    raise exception 'the reminder cap let 501 rows in';
+  exception when raise_exception then
+    if sqlerrm not like 'row_cap_reached%' then raise; end if;
+  end;
+  begin
+    insert into push_subscriptions (user_id, endpoint, p256dh, auth)
+      values ('00000000-0000-0000-0000-00000000000a', 'http://169.254.169.254/latest', 'k', 'a');
+    raise exception 'a non-https push endpoint was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update discord_webhooks set enabled = true;
+    raise exception 'a server-disabled webhook was switched back on';
+  exception when insufficient_privilege then null;  -- the update policy's check
+  end;
+  update discord_webhooks set label = 'Renamed';
+  begin
+    update discord_webhooks set disabled_reason = null;
+    raise exception 'a client cleared disabled_reason';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    truncate roster_entries;
+    raise exception 'a client truncated a table';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+set role anon;
+do $$ begin
+  assert (select count(*) from forms) > 0, 'anon should read reference data';
+  begin
+    perform * from roster_entries;
+    raise exception 'anon read roster_entries';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+
 select 'ALL TESTS PASSED' as result;

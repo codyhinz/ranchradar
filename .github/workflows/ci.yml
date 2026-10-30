@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+# Checks only read the repo; nothing in CI needs to write to it.
+permissions:
+  contents: read
+
 jobs:
   app:
     runs-on: ubuntu-latest
