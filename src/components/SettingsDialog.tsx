@@ -1,6 +1,7 @@
 import { LOCALE_LABELS, NAME_LOCALES, type NameLocale } from '../catalog';
 import { THEMES, type Theme } from '../app/preferences';
 import { boxCapacity, type BoxSettings } from '../app/box';
+import { currentDiagnostics, feedbackEmailUrl, feedbackIssueUrl } from '../app/feedback';
 import { t } from '../i18n';
 import { useRef } from 'react';
 import { Dialog } from './Dialog';
@@ -105,6 +106,20 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
             />
           </div>
         </fieldset>
+        <section className="backup" aria-labelledby="feedback-heading">
+          <h3 id="feedback-heading" className="section-label">{t('settings.feedback')}</h3>
+          <small className="hint">{t('settings.feedback.hint')}</small>
+          <div className="backup-actions">
+            <a className="button button-quiet" href={feedbackEmailUrl(currentDiagnostics(locale))}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4zM4.5 7l7.5 6 7.5-6" /></svg>
+              {t('feedback.email')}
+            </a>
+            <a className="button button-quiet" href={feedbackIssueUrl(currentDiagnostics(locale))} target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 100 16 8 8 0 000-16zM12 8v5M12 16h.01" /></svg>
+              {t('feedback.github')}
+            </a>
+          </div>
+        </section>
       </div>
       <p className="fine-print">{t('settings.disclaimer')}</p>
     </Dialog>

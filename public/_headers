@@ -1,10 +1,10 @@
 # Security headers for every response, applied by Cloudflare's static asset hosting.
 # CSP: only this site's own scripts, styles and fonts run. React's inline style attributes
-# (e.g. --i for the cascade animation) need style-src-attr. The placeholder in connect-src is filled
-# in at build time with this project's Supabase origin (scripts/lib/headers.ts); ad networks
+# (e.g. --i for the cascade animation) need style-src-attr. The placeholders in connect-src are filled
+# in at build time with this project's Supabase and Sentry origins (scripts/lib/headers.ts); ad networks
 # will need their own entries later.
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' {{SUPABASE}}; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' {{SUPABASE}} {{SENTRY}}; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()

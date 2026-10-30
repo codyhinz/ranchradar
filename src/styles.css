@@ -835,6 +835,14 @@ body::after {
 /* Settings: roster backup */
 .backup { display: grid; gap: 0.45rem; margin: 0; padding: 0; border: 0; }
 .backup legend { font-weight: 600; margin-bottom: 0.35rem; padding: 0; }
+.backup .section-label { font: inherit; font-weight: 600; margin: 0 0 0.35rem; }
+.backup-actions a.button { text-decoration: none; color: inherit; }
+/* Shown instead of a blank page if the app crashes */
+.crash { display: grid; justify-items: center; gap: 0.75rem; max-width: 26rem; margin: 18vh auto 0; padding: 1.5rem; text-align: center; }
+.crash h1 { margin: 0; font-family: 'Zilla Slab', serif; }
+.crash p { margin: 0; color: var(--muted); }
+.crash-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; margin-top: 0.5rem; }
+.crash-actions a.button { text-decoration: none; color: inherit; }
 .backup-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .backup-actions .button { display: inline-flex; align-items: center; gap: 0.45rem; }
 .backup-actions svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }

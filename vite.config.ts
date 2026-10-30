@@ -3,25 +3,26 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { readGenerated, readRegulations } from './scripts/lib/data';
-import { fillHeaders } from './scripts/lib/headers';
+import { fillHeaders, type HeaderSources } from './scripts/lib/headers';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-/** Fills the Supabase origin into dist/_headers' CSP once the build has copied it over. */
+/** Fills the Supabase and Sentry origins into dist/_headers' CSP once the build has copied it over. */
 function securityHeaders(): Plugin {
   let outDir = 'dist';
-  let supabaseUrl: string | undefined;
+  let sources: HeaderSources = {};
   return {
     name: 'ranchradar-security-headers',
     apply: 'build',
     configResolved(config) {
       outDir = resolve(config.root, config.build.outDir);
       // loadEnv reads .env files and real environment variables (Cloudflare's build settings).
-      supabaseUrl = loadEnv(config.mode, config.root, 'VITE_').VITE_SUPABASE_URL || undefined;
+      const env = loadEnv(config.mode, config.root, 'VITE_');
+      sources = { supabaseUrl: env.VITE_SUPABASE_URL || undefined, sentryDsn: env.VITE_SENTRY_DSN || undefined };
     },
     writeBundle() {
       const file = join(outDir, '_headers');
-      writeFileSync(file, fillHeaders(readFileSync(file, 'utf8'), supabaseUrl));
+      writeFileSync(file, fillHeaders(readFileSync(file, 'utf8'), sources));
     },
   };
 }
@@ -49,7 +50,11 @@ function legalPages(): Plugin {
 const everLegal = new Set(readRegulations().flatMap((r) => r.forms));
 const poolOnlySprites = readGenerated().available.filter((id) => !everLegal.has(id)).map((id) => `sprites/${id}.webp`);
 
+/** Which build this is, for error reports and Report a problem: Cloudflare's commit, else "dev". */
+const APP_VERSION = (process.env.WORKERS_CI_COMMIT_SHA ?? process.env.GITHUB_SHA ?? 'dev').slice(0, 7);
+
 export default defineConfig({
+  define: { __APP_VERSION__: JSON.stringify(APP_VERSION) },
   plugins: [
     react(),
     securityHeaders(),

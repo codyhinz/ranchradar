@@ -55,6 +55,12 @@ VITE_SUPABASE_URL=https://your-project-ref.supabase.co      # Project Settings �
 VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...            # Project Settings → API Keys
 ```
 
+Crash reports are optional too. Create a free Sentry project (platform: Browser JavaScript) and add its DSN; builds without one send nothing and don't include the SDK:
+
+```bash
+VITE_SENTRY_DSN=https://...@o0.ingest.us.sentry.io/0           # Sentry project → Settings → Client Keys (DSN)
+```
+
 Then apply the schema in `supabase/migrations/` to your project, and under Authentication → URL Configuration add `http://localhost:5173/**` as a redirect URL. Restart `npm run dev` after editing `.env.local`.
 
 For Google and Discord sign-in, turn each provider on under Authentication → Sign In / Providers and paste in its client ID and secret. In the Google Cloud console (an OAuth client of type Web application) and the Discord Developer Portal (OAuth2), set the redirect URL to `https://your-project-ref.supabase.co/auth/v1/callback`. The buttons always show, so enable both providers before deploying. For the button icons, save Google’s and Discord’s official marks from their brand kits as `public/icons/brands/google.svg` and `public/icons/brands/discord.svg`; without them the buttons show text only.
@@ -98,7 +104,7 @@ The full steps are in [`data/README.md`](data/README.md). In short: copy the lat
 
 ## Deployment
 
-Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase origin into the Content-Security-Policy in `public/_headers`.
+Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` and `VITE_SENTRY_DSN` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins into the Content-Security-Policy in `public/_headers`.
 
 A scheduled GitHub Action pings Supabase every few days so the free-plan project never pauses. It needs the `SUPABASE_URL` and `SUPABASE_ANON_KEY` repository secrets.
 
