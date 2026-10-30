@@ -38,6 +38,11 @@ describe('searchForms', () => {
     expect(ids.indexOf('ninetales')).toBeLessThan(ids.indexOf('ninetales-alola'));
   });
 
+  it('puts Pokémon outside the season below every in-season match', () => {
+    const ids = searchForms('ro', 'en').map((f) => f.id);
+    expect(ids.indexOf('roaring-moon')).toBeGreaterThan(ids.indexOf('rotom-fan'));
+  });
+
   it('offers Pokémon outside the season, after this season’s ones', () => {
     expect(searchForms('mewtwo', 'en')[0]?.id).toBe('mewtwo');
     expect(isInSeason('mewtwo')).toBe(false);

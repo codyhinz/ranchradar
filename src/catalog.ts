@@ -149,7 +149,7 @@ function searchKey(form: CatalogForm, locale: NameLocale): string {
  * Searches the name shown in the chosen language only, like a normal search box:
  * names starting with the query first ("z" → Zoroark), then names with a word starting
  * with it ("nine" → Alolan Ninetales). Matches inside a word only kick in from 3 letters.
- * Within each of those, this season's Pokémon come before ones outside it.
+ * Pokémon outside this season always come after every in-season match.
  */
 export function searchForms(query: string, locale: NameLocale, pool: CatalogForm[] = addableCatalog): CatalogForm[] {
   const q = normalize(query);
@@ -163,9 +163,9 @@ export function searchForms(query: string, locale: NameLocale, pool: CatalogForm
     else if (key.split(' ').some((word) => word.startsWith(q))) wordStarts.push(form);
     else if (q.length >= 3 && key.includes(q)) inside.push(form);
   }
-  const byName = (a: CatalogForm, b: CatalogForm) =>
-    Number(!legal.has(a.id)) - Number(!legal.has(b.id)) || searchKey(a, locale).localeCompare(searchKey(b, locale), locale);
-  return [...starts.sort(byName), ...wordStarts.sort(byName), ...inside.sort(byName)];
+  const byName = (a: CatalogForm, b: CatalogForm) => searchKey(a, locale).localeCompare(searchKey(b, locale), locale);
+  const ranked = [...starts.sort(byName), ...wordStarts.sort(byName), ...inside.sort(byName)];
+  return [...ranked.filter((f) => legal.has(f.id)), ...ranked.filter((f) => !legal.has(f.id))];
 }
 
 export function guessLocale(languages: readonly string[]): NameLocale {
