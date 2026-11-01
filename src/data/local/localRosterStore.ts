@@ -14,11 +14,14 @@ import type { RanchDB } from './db';
 
 export interface LocalRosterStoreOptions {
   db: RanchDB;
-  /** null in guest mode. */
+  /**
+   * Whose roster this is: an account's id, or null for the guest roster. The device can hold
+   * several (the guest's and any account that signed in here); a store only ever sees its own.
+   */
   userId: string | null;
   /**
-   * When true, every write also lands in the outbox for upload. Guests run with this off:
-   * at sign-up their whole local roster is uploaded in one go, so no queue is needed.
+   * When true, every write also lands in the outbox for upload. Guests run with this off: when
+   * they sign in, their roster moves into the account in one go (see sync/guestUpload.ts).
    */
   syncEnabled: boolean;
   now?: () => Date;
@@ -69,10 +72,11 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
     notify();
   }
   const live = (rows: RosterEntry[]) => rows.length;
+  const mine = (entry: RosterEntry | undefined): entry is RosterEntry => entry !== undefined && entry.user_id === userId;
 
   async function getLive(id: string): Promise<RosterEntry> {
     const entry = await db.get('roster_entries', id);
-    if (!entry || entry.deleted_at) {
+    if (!mine(entry) || entry.deleted_at) {
       throw new StorageError('not_found', `No roster entry ${id}`);
     }
     return entry;
@@ -82,12 +86,13 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
     async list({ includeDeleted = false } = {}) {
       const all = await db.getAll('roster_entries');
       return all
-        .filter((entry) => includeDeleted || !entry.deleted_at)
+        .filter((entry) => entry.user_id === userId && (includeDeleted || !entry.deleted_at))
         .sort((a, b) => a.created_at.localeCompare(b.created_at));
     },
 
-    get(id) {
-      return db.get('roster_entries', id);
+    async get(id) {
+      const entry = await db.get('roster_entries', id);
+      return mine(entry) ? entry : undefined;
     },
 
     async add(input) {
@@ -150,7 +155,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
       const rows: RosterEntry[] = [];
       for (const id of ids) {
         const row = await db.get('roster_entries', id);
-        if (row?.deleted_at) rows.push({ ...row, deleted_at: null, updated_at: timestamp });
+        if (mine(row) && row.deleted_at) rows.push({ ...row, deleted_at: null, updated_at: timestamp });
       }
       if (live(await this.list()) + rows.length > MAX_ROSTER_ENTRIES) {
         throw new StorageError('row_cap_reached', `Roster is limited to ${MAX_ROSTER_ENTRIES} entries`);
@@ -161,8 +166,12 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
     async importEntries(rows: ImportedRosterEntry[]): Promise<ImportResult> {
       const result: ImportResult = { added: 0, updated: 0, unchanged: 0 };
       const existing = new Map((await this.list({ includeDeleted: true })).map((e) => [e.id, e]));
+      // A backup saved while signed in, imported as a guest (or the reverse), holds ids that
+      // already belong to the other roster here. Those copies are already on this device.
+      const elsewhere = new Set((await db.getAllKeys('roster_entries')).filter((id) => !existing.has(id)));
       const toWrite: Array<{ entry: RosterEntry; isNew: boolean }> = [];
       for (const row of rows) {
+        if (elsewhere.has(row.id)) { result.unchanged++; continue; }
         const current = existing.get(row.id);
         const imported = {
           form_id: row.form_id,
@@ -215,7 +224,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
       const outbox = tx.objectStore('outbox');
       let purged = 0;
       for (const entry of await tx.objectStore('roster_entries').getAll()) {
-        if (!entry.deleted_at || entry.deleted_at >= cutoff) continue;
+        if (entry.user_id !== userId || !entry.deleted_at || entry.deleted_at >= cutoff) continue;
         if (await outbox.get(['roster_entries', entry.id])) continue; // the server hasn't heard yet
         await tx.objectStore('roster_entries').delete(entry.id);
         purged++;

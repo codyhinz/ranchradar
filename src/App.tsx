@@ -4,7 +4,9 @@ import { boxCapacity } from './app/box';
 import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
-import { requestPersistentStorage, useRosterEntries, useRosterStore } from './app/useRoster';
+import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
+import { useAccountUpload } from './app/useAccountUpload';
+import { GuestOffer } from './components/GuestOffer';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
 import { BulkAddSheet } from './components/BulkAddSheet';
@@ -24,7 +26,11 @@ import type { RosterStatus } from './data/types';
 import { setUiLocale, t } from './i18n';
 
 export function App() {
-  const store = useRosterStore();
+  const { auth, recovering, endRecovery, returnError, clearReturnError } = useAuth();
+  const db = useRanchDB();
+  // Whose roster to show: the account's when signed in, the guest's otherwise, nothing while unsure.
+  const owner = auth.status === 'signedIn' ? auth.userId : auth.status === 'loading' ? undefined : null;
+  const store = useRosterStore(db, owner);
   const entries = useRosterEntries(store);
   const [locale, setLocale] = useNameLocale();
   setUiLocale(locale); // interface text follows the same language setting as Pokémon names
@@ -43,7 +49,6 @@ export function App() {
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const [accountOpen, setAccountOpen] = useState(false);
-  const { auth, recovering, endRecovery, returnError, clearReturnError } = useAuth();
   // Back from a password-reset link, or a Google/Discord sign-in that didn't finish: open the
   // account sheet, where the new-password form or the reason is waiting.
   useEffect(() => { if (recovering || returnError) setAccountOpen(true); }, [recovering, returnError]);
@@ -61,6 +66,7 @@ export function App() {
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
   const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
+  const upload = useAccountUpload(db, auth, (text) => say(text));
 
   // "/" jumps to search from anywhere, the way it does on most search-first sites.
   useEffect(() => {
@@ -298,11 +304,23 @@ export function App() {
       {accountOpen && (
         <AccountSheet
           auth={auth}
+          guestPokemon={upload.guestPokemon}
+          onAddGuestPokemon={() => void upload.addGuestPokemon()}
           recovering={recovering}
           onRecovered={endRecovery}
           initialError={returnError}
           say={(text) => say(text)}
           onClose={() => { setAccountOpen(false); clearReturnError(); }}
+        />
+      )}
+
+      {upload.offerOpen && auth.status === 'signedIn' && !accountOpen && (
+        <GuestOffer
+          count={upload.guestPokemon}
+          email={auth.email}
+          onAdd={() => void upload.addGuestPokemon()}
+          onKeep={() => void upload.keepSeparate()}
+          onClose={upload.dismissOffer}
         />
       )}
 

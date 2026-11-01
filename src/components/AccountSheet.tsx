@@ -15,10 +15,14 @@ const SIGNED_IN_WITH = { email: 'auth.with.email', google: 'auth.with.google', d
 /**
  * Its own sheet, opened from the account button in the masthead. Google and Discord are one tap;
  * email and password sit underneath for anyone who'd rather not link either.
- * Signing out never deletes the roster on this device.
+ * Signing out never deletes anything: the account's roster stays on this device, hidden until it
+ * signs in again, and the guest roster comes back.
  */
-export function AccountSheet({ auth, recovering, onRecovered, initialError, say, onClose }: {
+export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, recovering, onRecovered, initialError, say, onClose }: {
   auth: AuthState;
+  /** Pokémon in this device's guest roster, which a signed-in person can still add to their account. */
+  guestPokemon: number;
+  onAddGuestPokemon: () => void;
   /** Arrived from a password-reset link: ask for the new password first. */
   recovering: boolean;
   onRecovered: () => void;
@@ -152,6 +156,11 @@ export function AccountSheet({ auth, recovering, onRecovered, initialError, say,
           </div>
         </div>
         <p className="hint">{t('auth.localForNow')}</p>
+        {guestPokemon > 0 && (
+          <button type="button" className="button button-quiet" onClick={() => { onAddGuestPokemon(); onClose(); }}>
+            {t('guest.addLater', { count: guestPokemon })}
+          </button>
+        )}
         {errorLine}
         <button type="button" className="button button-quiet" disabled={busy !== null} onClick={signOut}>{t('auth.signOut')}</button>
       </div>

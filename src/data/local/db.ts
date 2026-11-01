@@ -10,6 +10,12 @@ export interface OutboxItem {
   /** true until the server has seen the row: upload as insert, otherwise as a versioned update. */
   isNew: boolean;
   queuedAt: string;
+  /**
+   * Set when the upload can't go ahead without the person's say, e.g. the server already has a
+   * row with this id (only possible from a restored backup). The conflict prompt resolves it;
+   * until then the uploader skips the row.
+   */
+  held?: 'duplicate_id';
 }
 
 export interface MetaRecord {

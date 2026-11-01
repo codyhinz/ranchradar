@@ -838,6 +838,10 @@ body::after {
 .backup .section-label { font: inherit; font-weight: 600; margin: 0 0 0.35rem; }
 .backup-actions a.button { text-decoration: none; color: inherit; }
 /* Shown instead of a blank page if the app crashes */
+/* Offer to add a guest roster to the account just signed in to */
+.guest-offer { display: grid; justify-items: center; gap: 0.9rem; text-align: center; }
+.guest-offer p { margin: 0; }
+.guest-offer-actions { display: grid; gap: 0.5rem; width: 100%; }
 .crash { display: grid; justify-items: center; gap: 0.75rem; max-width: 26rem; margin: 18vh auto 0; padding: 1.5rem; text-align: center; }
 .crash h1 { margin: 0; font-family: 'Zilla Slab', serif; }
 .crash p { margin: 0; color: var(--muted); }
