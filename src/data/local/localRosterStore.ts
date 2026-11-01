@@ -238,6 +238,10 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
+
+    refresh() {
+      notify();
+    },
   };
 }
 

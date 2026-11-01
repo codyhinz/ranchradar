@@ -5,7 +5,7 @@ import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/pr
 import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
-import { useAccountUpload } from './app/useAccountUpload';
+import { useAccountSync } from './app/useAccountSync';
 import { GuestOffer } from './components/GuestOffer';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
@@ -66,7 +66,7 @@ export function App() {
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
   const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
-  const upload = useAccountUpload(db, auth, (text) => say(text));
+  const account = useAccountSync(db, store, auth, (text) => say(text));
 
   // "/" jumps to search from anywhere, the way it does on most search-first sites.
   useEffect(() => {
@@ -304,8 +304,8 @@ export function App() {
       {accountOpen && (
         <AccountSheet
           auth={auth}
-          guestPokemon={upload.guestPokemon}
-          onAddGuestPokemon={() => void upload.addGuestPokemon()}
+          guestPokemon={account.guestPokemon}
+          onAddGuestPokemon={() => void account.addGuestPokemon()}
           recovering={recovering}
           onRecovered={endRecovery}
           initialError={returnError}
@@ -314,13 +314,13 @@ export function App() {
         />
       )}
 
-      {upload.offerOpen && auth.status === 'signedIn' && !accountOpen && (
+      {account.offerOpen && auth.status === 'signedIn' && !accountOpen && (
         <GuestOffer
-          count={upload.guestPokemon}
+          count={account.guestPokemon}
           email={auth.email}
-          onAdd={() => void upload.addGuestPokemon()}
-          onKeep={() => void upload.keepSeparate()}
-          onClose={upload.dismissOffer}
+          onAdd={() => void account.addGuestPokemon()}
+          onKeep={() => void account.keepSeparate()}
+          onClose={account.dismissOffer}
         />
       )}
 

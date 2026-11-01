@@ -11,11 +11,14 @@ export interface OutboxItem {
   isNew: boolean;
   queuedAt: string;
   /**
-   * Set when the upload can't go ahead without the person's say, e.g. the server already has a
-   * row with this id (only possible from a restored backup). The conflict prompt resolves it;
-   * until then the uploader skips the row.
+   * Set when the upload can't go ahead without the person's say. duplicate_id: the server
+   * already has a row with this id (only possible from a restored backup). conflict: another
+   * device changed the row since this one last synced. The conflict prompt resolves both;
+   * until then sync skips the row and this device keeps showing its own version.
    */
-  held?: 'duplicate_id';
+  held?: 'duplicate_id' | 'conflict';
+  /** For a conflict: the server's copy at the time, to show beside this device's. */
+  theirs?: RosterEntry;
 }
 
 export interface MetaRecord {

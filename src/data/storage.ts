@@ -30,6 +30,8 @@ export interface RosterStore {
   purgeDeleted(before: Date): Promise<number>;
   /** Called after any change; returns an unsubscribe function. */
   subscribe(listener: () => void): () => void;
+  /** Tells subscribers that rows changed underneath the store, e.g. sync pulled another device's edits. */
+  refresh(): void;
 }
 
 export interface ImportResult {
