@@ -975,6 +975,18 @@ body::after {
 .account-who { display: grid; min-width: 0; }
 .account-email { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 .account-signed-in > .hint { margin: 0; }
+.account-delete-open { justify-self: center; min-height: 40px; color: var(--muted); font-size: var(--step--1); }
+.account-delete-open:hover { color: var(--danger); }
+.account-delete-copy { display: grid; gap: 0.5rem; padding: 0.75rem; border-radius: var(--radius-row); background: var(--smoke); border: 1px solid var(--rail); }
+.account-delete-submit { width: 100%; min-height: 48px; background: var(--danger); border-color: var(--danger); color: var(--smoke); }
+.account-delete-submit:disabled { background: transparent; color: var(--danger); opacity: 0.6; }
+
+/* Age question: two answers of equal weight, so neither looks like the "right" one */
+.age-check { display: grid; gap: 0.75rem; }
+.age-check p { margin: 0; }
+.age-check-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.5rem; }
+.age-check-actions .button { min-height: 48px; }
+.age-check > .hint { color: var(--muted); }
 
 /* Footer: legal links and the fan-project notice, quiet under the roster */
 .app-footer { padding-top: 0.5rem; border-top: 1px solid var(--rail); color: var(--muted); font-size: var(--step--1); text-align: center; }

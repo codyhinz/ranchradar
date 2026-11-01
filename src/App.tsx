@@ -6,6 +6,11 @@ import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
 import { useAccountSync } from './app/useAccountSync';
+import { forgetAgeAnswer, useAgeCheck } from './app/useAgeCheck';
+import { deleteMyAccount, downloadJson, exportFileName, fetchAccountExport } from './app/accountData';
+import { AgeCheck, AgeRemoved } from './components/AgeCheck';
+import { supabase } from './data/cloud/supabase';
+import { forgetAccount } from './data/local/forgetAccount';
 import { GuestOffer } from './components/GuestOffer';
 import { ConflictPrompt } from './components/ConflictPrompt';
 import { AccountSheet } from './components/AccountSheet';
@@ -70,6 +75,43 @@ export function App() {
   const dismissToast = useCallback(() => setToast(null), []);
   const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
   const account = useAccountSync(db, store, auth, (text) => say(text));
+  const age = useAgeCheck(auth);
+  // Prompts that act on the account wait until it has answered the age question.
+  const ageOk = age.status === 'ok';
+  const [ageRemoved, setAgeRemoved] = useState(false);
+
+  const downloadMyData = async () => {
+    if (!supabase || auth.status !== 'signedIn') return;
+    const data = await fetchAccountExport(supabase, entries ?? []);
+    downloadJson(data, exportFileName());
+    say(t('account.downloaded'));
+  };
+
+  /** Deletes the account on the server, then everything this device kept for it. */
+  const removeAccount = async () => {
+    if (!supabase || auth.status !== 'signedIn') return;
+    const userId = auth.userId;
+    await deleteMyAccount(supabase);
+    // The user is gone, so the server may refuse the sign-out; the local session is cleared either way.
+    await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
+    forgetAgeAnswer(userId);
+    if (db) await forgetAccount(db, userId);
+  };
+
+  const deleteAccount = async () => {
+    await removeAccount();
+    say(t('account.deleted'));
+  };
+
+  const underThirteen = async () => {
+    await removeAccount();
+    setAgeRemoved(true);
+  };
+
+  const leaveAgeCheck = () => {
+    void supabase?.auth.signOut({ scope: 'local' }).catch(() => undefined);
+    say(t('auth.signedOut'));
+  };
 
   // "/" jumps to search from anywhere, the way it does on most search-first sites.
   useEffect(() => {
@@ -311,6 +353,8 @@ export function App() {
           conflicts={account.conflicts.length}
           onReviewConflicts={() => setConflictsLater(false)}
           onAddGuestPokemon={() => void account.addGuestPokemon()}
+          onDownloadData={downloadMyData}
+          onDeleteAccount={deleteAccount}
           recovering={recovering}
           onRecovered={endRecovery}
           initialError={returnError}
@@ -319,7 +363,13 @@ export function App() {
         />
       )}
 
-      {account.conflicts.length > 0 && !conflictsLater && !account.offerOpen && !accountOpen && (
+      {age.status === 'ask' && auth.status === 'signedIn' && !accountOpen && (
+        <AgeCheck onYes={age.confirm} onNo={underThirteen} onClose={leaveAgeCheck} />
+      )}
+
+      {ageRemoved && <AgeRemoved onClose={() => setAgeRemoved(false)} />}
+
+      {ageOk && account.conflicts.length > 0 && !conflictsLater && !account.offerOpen && !accountOpen && (
         <ConflictPrompt
           conflicts={account.conflicts}
           name={name}
@@ -328,7 +378,7 @@ export function App() {
         />
       )}
 
-      {account.offerOpen && auth.status === 'signedIn' && !accountOpen && (
+      {ageOk && account.offerOpen && auth.status === 'signedIn' && !accountOpen && (
         <GuestOffer
           count={account.guestPokemon}
           email={auth.email}

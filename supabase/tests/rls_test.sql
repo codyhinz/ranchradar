@@ -160,4 +160,59 @@ do $$ begin
 end $$;
 reset role;
 
+-- Account export and deletion: C and D are fresh accounts
+insert into auth.users values ('00000000-0000-0000-0000-00000000000c'),
+                              ('00000000-0000-0000-0000-00000000000d');
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+insert into roster_entries (id, user_id, form_id, status)
+  values ('33333333-3333-3333-3333-333333333333','00000000-0000-0000-0000-00000000000c','garchomp','permanent');
+set request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
+insert into roster_entries (id, user_id, form_id, status)
+  values ('44444444-4444-4444-4444-444444444444','00000000-0000-0000-0000-00000000000d','mewtwo','permanent');
+do $$
+declare data jsonb := export_my_data();
+begin
+  assert jsonb_array_length(data->'roster_entries') = 1, 'export should hold exactly D''s roster';
+  assert data->'roster_entries'->0->>'id' = '44444444-4444-4444-4444-444444444444', 'export returned someone else''s row';
+  assert not (data->'roster_entries'->0 ? 'user_id'), 'export should drop user_id';
+  assert data->'profile' is not null, 'export should include the profile';
+end $$;
+-- D deletes their account: only D's rows go
+select delete_my_account();
+reset role;
+do $$ begin
+  assert not exists (select 1 from auth.users where id = '00000000-0000-0000-0000-00000000000d'), 'D''s auth user survived';
+  assert not exists (select 1 from roster_entries where user_id = '00000000-0000-0000-0000-00000000000d'), 'D''s roster survived';
+  assert not exists (select 1 from profiles where user_id = '00000000-0000-0000-0000-00000000000d'), 'D''s profile survived';
+  assert exists (select 1 from roster_entries where user_id = '00000000-0000-0000-0000-00000000000c'), 'deleting D removed C''s roster';
+  assert exists (select 1 from auth.users where id = '00000000-0000-0000-0000-00000000000c'), 'deleting D removed C';
+end $$;
+-- Signed out, neither function runs
+set role anon;
+do $$ begin
+  begin
+    perform delete_my_account();
+    raise exception 'anon called delete_my_account';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform export_my_data();
+    raise exception 'anon called export_my_data';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+-- An authenticated role with no user id can't delete anything
+set role authenticated;
+reset request.jwt.claim.sub;
+do $$ begin
+  begin
+    perform delete_my_account();
+    raise exception 'delete_my_account ran with no user';
+  exception when insufficient_privilege then null;
+  end;
+end $$;
+reset role;
+
 select 'ALL TESTS PASSED' as result;

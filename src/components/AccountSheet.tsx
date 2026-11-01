@@ -18,7 +18,7 @@ const SIGNED_IN_WITH = { email: 'auth.with.email', google: 'auth.with.google', d
  * Signing out never deletes anything: the account's roster stays on this device, hidden until it
  * signs in again, and the guest roster comes back.
  */
-export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts, onReviewConflicts, recovering, onRecovered, initialError, say, onClose }: {
+export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts, onReviewConflicts, onDownloadData, onDeleteAccount, recovering, onRecovered, initialError, say, onClose }: {
   auth: AuthState;
   /** Pokémon in this device's guest roster, which a signed-in person can still add to their account. */
   guestPokemon: number;
@@ -26,6 +26,10 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
   /** Pokémon changed on two sides that are waiting for a choice. */
   conflicts: number;
   onReviewConflicts: () => void;
+  /** Saves everything the account holds to a file, which also works as a roster backup. */
+  onDownloadData: () => Promise<void>;
+  /** Deletes the account on the server and signs this device out. */
+  onDeleteAccount: () => Promise<void>;
   /** Arrived from a password-reset link: ask for the new password first. */
   recovering: boolean;
   onRecovered: () => void;
@@ -43,6 +47,9 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
   const [error, setError] = useState<MessageKey | null>(initialError);
   // Shown after sign-up or a reset request: the next step happens in their inbox.
   const [sent, setSent] = useState<string | null>(null);
+  // Delete account asks first, on its own screen inside the sheet.
+  const [deleting, setDeleting] = useState(false);
+  const [understood, setUnderstood] = useState(false);
 
   if (!supabase || auth.status === 'unavailable') return null;
   const client = supabase;
@@ -108,6 +115,13 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
     onClose();
   });
 
+  const downloadData = () => void run('email', onDownloadData);
+  const deleteAccount = () => void run('email', async () => {
+    await onDeleteAccount();
+    onClose();
+  });
+  const leaveDelete = () => { setDeleting(false); setUnderstood(false); setError(null); };
+
   const pickMode = (next: Mode) => { setMode(next); setError(null); };
   const backToSignIn = () => { setResetting(false); setSent(null); setError(null); setMode('signIn'); };
   const errorLine = error && <p className="auth-error" role="alert">{t(error)}</p>;
@@ -148,6 +162,26 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
         <button type="submit" className="button button-primary" disabled={busy !== null}>{t('auth.savePassword')}</button>
       </form>
     );
+  } else if (auth.status === 'signedIn' && deleting) {
+    body = (
+      <div className="account-signed-in account-delete">
+        <p className="auth-lede">{t('account.delete.body', { email: auth.email })}</p>
+        <p className="hint">{t('account.delete.keepGuest')}</p>
+        <div className="account-delete-copy">
+          <small className="hint">{t('account.delete.downloadFirst')}</small>
+          <button type="button" className="button button-quiet" disabled={busy !== null} onClick={downloadData}>{t('account.download')}</button>
+        </div>
+        <label className="check">
+          <input type="checkbox" checked={understood} onChange={(e) => setUnderstood(e.target.checked)} />
+          <span>{t('account.delete.confirm')}</span>
+        </label>
+        {errorLine}
+        <button type="button" className="button account-delete-submit" disabled={!understood || busy !== null} aria-busy={busy !== null} onClick={deleteAccount}>
+          {t('account.delete.submit')}
+        </button>
+        <button type="button" className="link-button auth-back" onClick={leaveDelete}>{t('account.delete.cancel')}</button>
+      </div>
+    );
   } else if (auth.status === 'signedIn') {
     body = (
       <div className="account-signed-in">
@@ -169,8 +203,10 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
             {t('guest.addLater', { count: guestPokemon })}
           </button>
         )}
+        <button type="button" className="button button-quiet" disabled={busy !== null} onClick={downloadData}>{t('account.download')}</button>
         {errorLine}
         <button type="button" className="button button-quiet" disabled={busy !== null} onClick={signOut}>{t('auth.signOut')}</button>
+        <button type="button" className="link-button account-delete-open" onClick={() => { setDeleting(true); setError(null); }}>{t('account.delete.open')}</button>
       </div>
     );
   } else if (sent) {
@@ -233,7 +269,8 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
     );
   }
 
-  const title: MessageKey = auth.status === 'signedIn' && !recovering ? 'settings.account'
+  const title: MessageKey = auth.status === 'signedIn' && deleting && !recovering ? 'account.delete.title'
+    : auth.status === 'signedIn' && !recovering ? 'settings.account'
     : recovering ? 'auth.newPassword'
     : resetting ? 'auth.resetTitle'
     : mode === 'signUp' ? 'auth.createAccount' : 'auth.signIn';
