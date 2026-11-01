@@ -1,7 +1,8 @@
 import 'fake-indexeddb/auto';
 import { openRanchDB, type RanchDB } from '../local/db';
 import { createLocalRosterStore } from '../local/localRosterStore';
-import { syncRoster, type RosterChanges, type RosterRemote, type ServerRow } from '../sync/syncEngine';
+import { claimGuestRoster } from '../sync/guestUpload';
+import { listConflicts, resolveConflict, syncRoster, type RosterChanges, type RosterRemote, type ServerRow } from '../sync/syncEngine';
 
 const ME = '00000000-0000-0000-0000-00000000000a';
 let db: RanchDB;
@@ -214,6 +215,102 @@ describe('conflicts', () => {
   it('doesn’t ask when both devices removed it', async () => {
     const { server } = await bothEdited({ deleted_at: new Date().toISOString() }, 'remove');
     expect(await sync(server)).toMatchObject({ conflicts: 0 });
+    expect(await queue()).toEqual([]);
+  });
+});
+
+describe('choosing a version', () => {
+  async function conflicted() {
+    const server = fakeServer();
+    const entry = await mine().add({ form_id: 'garchomp', status: 'permanent' });
+    await sync(server);
+    server.otherDevice.change(entry.id, { nature: 'timid' });
+    await mine().update(entry.id, { nature: 'jolly' });
+    await sync(server);
+    return { server, entry };
+  }
+
+  it('lists the held row with both versions', async () => {
+    const { entry } = await conflicted();
+    expect(await listConflicts(db, ME)).toEqual([expect.objectContaining({
+      kind: 'changed',
+      mine: expect.objectContaining({ id: entry.id, nature: 'jolly' }),
+      theirs: expect.objectContaining({ id: entry.id, nature: 'timid' }),
+    })]);
+  });
+
+  it('keeping this device’s version sends it over the server’s', async () => {
+    const { server, entry } = await conflicted();
+    await resolveConflict(db, entry.id, 'mine');
+    expect(await listConflicts(db, ME)).toEqual([]);
+    expect(await sync(server)).toMatchObject({ sent: 1, conflicts: 0 });
+    expect(server.rows.get(entry.id)).toMatchObject({ nature: 'jolly', version: 3 });
+  });
+
+  it('keeping the other version shows it now and takes any later change too', async () => {
+    const { server, entry } = await conflicted();
+    await resolveConflict(db, entry.id, 'theirs');
+    expect(await mine().get(entry.id)).toMatchObject({ nature: 'timid' });
+    server.otherDevice.change(entry.id, { notes: 'changed again meanwhile' });
+    await sync(server);
+    expect(await mine().get(entry.id)).toMatchObject({ nature: 'timid', notes: 'changed again meanwhile', version: 3 });
+    expect(await queue()).toEqual([]);
+  });
+
+  it('an edit right after keeping the other version is sent as a normal update', async () => {
+    const { server, entry } = await conflicted();
+    await resolveConflict(db, entry.id, 'theirs');
+    await mine().update(entry.id, { notes: 'scarf' });
+    await sync(server);
+    expect(server.rows.get(entry.id)).toMatchObject({ nature: 'timid', notes: 'scarf', version: 3 });
+  });
+
+  it('keeping this device’s version asks again if the server moved on once more', async () => {
+    const { server, entry } = await conflicted();
+    await resolveConflict(db, entry.id, 'mine');
+    server.otherDevice.change(entry.id, { nature: 'bold' });
+    expect(await sync(server)).toMatchObject({ conflicts: 1 });
+    expect((await listConflicts(db, ME))[0]?.theirs).toMatchObject({ nature: 'bold' });
+  });
+});
+
+describe('restored backup rows the account already has', () => {
+  async function restored(serverCopy: Partial<ServerRow> | null) {
+    const server = fakeServer();
+    const guest = createLocalRosterStore({ db, userId: null, syncEnabled: false });
+    const entry = await guest.add({ form_id: 'garchomp', status: 'permanent', nature: 'jolly' });
+    if (serverCopy) {
+      const row = server.otherDevice.add('garchomp');
+      server.rows.delete(row.id);
+      server.rows.set(entry.id, { ...row, id: entry.id, ...serverCopy });
+    }
+    await claimGuestRoster(db, ME);
+    return { server, entry };
+  }
+
+  it('offers the choice when the details differ', async () => {
+    const { server, entry } = await restored({ nature: 'timid' });
+    expect(await sync(server)).toMatchObject({ conflicts: 1 });
+    expect(await listConflicts(db, ME)).toEqual([expect.objectContaining({ kind: 'duplicate', theirs: expect.objectContaining({ id: entry.id, nature: 'timid' }) })]);
+  });
+
+  it('settles quietly when both copies match', async () => {
+    const { server, entry } = await restored({ nature: 'jolly' });
+    expect(await sync(server)).toMatchObject({ conflicts: 0 });
+    expect(await mine().get(entry.id)).toMatchObject({ nature: 'jolly' });
+    expect(await queue()).toEqual([]);
+  });
+
+  it('uploads under a new id when the id belongs to a row this account can’t see', async () => {
+    const { server, entry } = await restored({ user_id: '00000000-0000-0000-0000-00000000000b', nature: 'timid' });
+    const realFetch = server.remote.fetch;
+    server.remote.fetch = async (id) => { const r = await realFetch(id); return r.ok ? { ok: true, rows: r.rows.filter((x) => x.user_id === ME) } : r; };
+    await sync(server);
+    await sync(server);
+    const [copy] = await mine().list();
+    expect(copy).toMatchObject({ form_id: 'garchomp', nature: 'jolly' });
+    expect(copy!.id).not.toBe(entry.id);
+    expect(server.rows.get(copy!.id)).toMatchObject({ user_id: ME, nature: 'jolly' });
     expect(await queue()).toEqual([]);
   });
 });

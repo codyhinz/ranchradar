@@ -7,6 +7,7 @@ import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
 import { useAccountSync } from './app/useAccountSync';
 import { GuestOffer } from './components/GuestOffer';
+import { ConflictPrompt } from './components/ConflictPrompt';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
 import { BulkAddSheet } from './components/BulkAddSheet';
@@ -43,6 +44,8 @@ export function App() {
   const [query, setQuery] = useState('');
   const [addingFormId, setAddingFormId] = useState<string | null>(null);
   const [openFormId, setOpenFormId] = useState<string | null>(null);
+  // "Decide later" on the conflict prompt holds for this visit; Settings → Account reopens it.
+  const [conflictsLater, setConflictsLater] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [tab, setTab] = useTab();
@@ -305,12 +308,23 @@ export function App() {
         <AccountSheet
           auth={auth}
           guestPokemon={account.guestPokemon}
+          conflicts={account.conflicts.length}
+          onReviewConflicts={() => setConflictsLater(false)}
           onAddGuestPokemon={() => void account.addGuestPokemon()}
           recovering={recovering}
           onRecovered={endRecovery}
           initialError={returnError}
           say={(text) => say(text)}
           onClose={() => { setAccountOpen(false); clearReturnError(); }}
+        />
+      )}
+
+      {account.conflicts.length > 0 && !conflictsLater && !account.offerOpen && !accountOpen && (
+        <ConflictPrompt
+          conflicts={account.conflicts}
+          name={name}
+          onKeep={(id, keep) => void account.resolve(id, keep)}
+          onLater={() => setConflictsLater(true)}
         />
       )}
 

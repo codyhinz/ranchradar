@@ -18,11 +18,14 @@ const SIGNED_IN_WITH = { email: 'auth.with.email', google: 'auth.with.google', d
  * Signing out never deletes anything: the account's roster stays on this device, hidden until it
  * signs in again, and the guest roster comes back.
  */
-export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, recovering, onRecovered, initialError, say, onClose }: {
+export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts, onReviewConflicts, recovering, onRecovered, initialError, say, onClose }: {
   auth: AuthState;
   /** Pokémon in this device's guest roster, which a signed-in person can still add to their account. */
   guestPokemon: number;
   onAddGuestPokemon: () => void;
+  /** Pokémon changed on two sides that are waiting for a choice. */
+  conflicts: number;
+  onReviewConflicts: () => void;
   /** Arrived from a password-reset link: ask for the new password first. */
   recovering: boolean;
   onRecovered: () => void;
@@ -156,6 +159,11 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, recovering
           </div>
         </div>
         <p className="hint">{t('auth.localForNow')}</p>
+        {conflicts > 0 && (
+          <button type="button" className="button button-primary" onClick={() => { onReviewConflicts(); onClose(); }}>
+            {t('conflict.review', { count: conflicts })}
+          </button>
+        )}
         {guestPokemon > 0 && (
           <button type="button" className="button button-quiet" onClick={() => { onAddGuestPokemon(); onClose(); }}>
             {t('guest.addLater', { count: guestPokemon })}

@@ -838,6 +838,20 @@ body::after {
 .backup .section-label { font: inherit; font-weight: 600; margin: 0 0 0.35rem; }
 .backup-actions a.button { text-decoration: none; color: inherit; }
 /* Shown instead of a blank page if the app crashes */
+/* Choosing between two versions of a Pokémon changed on two sides */
+.conflict { display: grid; gap: 0.9rem; }
+.conflict p { margin: 0; }
+.conflict-count { color: var(--muted); }
+.conflict-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+.conflict-side { display: grid; grid-template-rows: auto auto 1fr auto; justify-items: center; gap: 0.45rem; padding: 0.7rem 0.6rem 0.75rem; text-align: center; min-width: 0; }
+.conflict-side[data-badge='removed'] { --copy-color: var(--muted); }
+.conflict-side-label { margin: 0; font: 600 var(--step-0) / 1.2 var(--font-sign); }
+.conflict-sprite .sprite { width: 66px; height: 66px; }
+.conflict-sprite[data-removed='true'] { filter: grayscale(1); opacity: 0.45; }
+.conflict-fields { display: grid; gap: 0.2rem; align-content: start; width: 100%; color: var(--muted); font-size: var(--step--1); overflow-wrap: anywhere; }
+.conflict-field[data-differs='true'] { color: var(--coal); font-weight: 600; background: color-mix(in srgb, var(--hay) 30%, transparent); border-radius: 6px; padding: 0.05rem 0.3rem; }
+.conflict-side .button { width: 100%; padding-inline: 0.35rem; white-space: nowrap; font-size: var(--step--1); }
+
 /* Offer to add a guest roster to the account just signed in to */
 .guest-offer { display: grid; justify-items: center; gap: 0.9rem; text-align: center; }
 .guest-offer p { margin: 0; }

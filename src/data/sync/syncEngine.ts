@@ -13,7 +13,7 @@
  * an update is checked against.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { RanchDB } from '../local/db';
+import type { OutboxItem, RanchDB } from '../local/db';
 import type { RosterEntry } from '../types';
 import { supabaseInserter, uploadPendingInserts, type RosterInserter } from './guestUpload';
 
@@ -141,6 +141,12 @@ async function sync(db: RanchDB, remote: RosterRemote, userId: string): Promise<
   result.sent += inserted.uploaded;
   if (inserted.status !== 'done') return finish(inserted.status);
 
+  const checked = await prepareDuplicates(db, remote, userId);
+  if (checked !== 'done') return finish(checked);
+
+  const refetched = await refetchChosen(db, remote, userId);
+  if (refetched !== 'done') return finish(refetched);
+
   const pushed = await pushUpdates(db, remote, userId);
   result.sent += pushed.sent;
   if (pushed.status !== 'done') return finish(pushed.status);
@@ -159,10 +165,73 @@ async function heldCount(db: RanchDB, userId: string): Promise<number> {
   return count;
 }
 
+/** This account's outbox items, with their rows. */
+async function pending(db: RanchDB, userId: string, keep: (item: OutboxItem) => boolean) {
+  const found: Array<{ item: OutboxItem; entry: RosterEntry }> = [];
+  for (const item of await db.getAll('outbox')) {
+    if (item.table !== 'roster_entries' || !keep(item)) continue;
+    const entry = await db.get('roster_entries', item.rowId);
+    if (entry?.user_id === userId) found.push({ item, entry });
+  }
+  return found;
+}
+
+/**
+ * A row held because the server already has its id (a restored backup) gets the server's copy
+ * for the prompt. If both copies match there's nothing to ask; if the id belongs to someone
+ * else's row, this one simply takes a new id and uploads as a new Pokémon.
+ */
+async function prepareDuplicates(db: RanchDB, remote: RosterRemote, userId: string): Promise<SyncResult['status']> {
+  for (const { entry } of await pending(db, userId, (i) => i.held === 'duplicate_id' && !i.theirs)) {
+    const lookup = await remote.fetch(entry.id);
+    if (!lookup.ok) return lookup.reason;
+    const theirs = lookup.rows[0] ? fromServer(lookup.rows[0]) : undefined;
+    const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+    const rows = tx.objectStore('roster_entries');
+    const outbox = tx.objectStore('outbox');
+    const key: [string, string] = ['roster_entries', entry.id];
+    const item = await outbox.get(key);
+    if (item) {
+      if (!theirs) {
+        const fresh = { ...entry, id: crypto.randomUUID() };
+        await rows.delete(entry.id);
+        await outbox.delete(key);
+        await rows.put(fresh);
+        await outbox.put({ table: 'roster_entries', rowId: fresh.id, isNew: true, queuedAt: item.queuedAt });
+      } else if (sameContent(entry, theirs)) {
+        await rows.put(theirs);
+        await outbox.delete(key);
+      } else {
+        await outbox.put({ ...item, theirs });
+      }
+    }
+    await tx.done;
+  }
+  return 'done';
+}
+
+/** Rows where the person kept the server's copy: take the server's latest, then they're settled. */
+async function refetchChosen(db: RanchDB, remote: RosterRemote, userId: string): Promise<SyncResult['status']> {
+  for (const { item } of await pending(db, userId, (i) => i.refetch === true)) {
+    const lookup = await remote.fetch(item.rowId);
+    if (!lookup.ok) return lookup.reason;
+    const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+    const key: [string, string] = ['roster_entries', item.rowId];
+    const still = await tx.objectStore('outbox').get(key);
+    // An edit since the choice turned this into an ordinary update; leave that to the push.
+    if (still?.refetch) {
+      if (lookup.rows[0]) await tx.objectStore('roster_entries').put(fromServer(lookup.rows[0]));
+      await tx.objectStore('outbox').delete(key);
+    }
+    await tx.done;
+  }
+  return 'done';
+}
+
 async function pushUpdates(db: RanchDB, remote: RosterRemote, userId: string): Promise<{ sent: number; status: SyncResult['status'] }> {
   const queue: RosterEntry[] = [];
   for (const item of await db.getAll('outbox')) {
-    if (item.table !== 'roster_entries' || item.isNew || item.held) continue;
+    if (item.table !== 'roster_entries' || item.isNew || item.held || item.refetch) continue;
     const entry = await db.get('roster_entries', item.rowId);
     if (entry?.user_id === userId) queue.push(entry);
   }
@@ -276,4 +345,46 @@ async function apply(db: RanchDB, userId: string, incoming: RosterEntry[]): Prom
   }
   await tx.done;
   return written;
+}
+
+/** A Pokémon that changed on two sides, waiting for the person to pick a version. */
+export interface Conflict {
+  /** changed: edited on another device too. duplicate: a restored backup row the account already has. */
+  kind: 'changed' | 'duplicate';
+  mine: RosterEntry;
+  theirs: RosterEntry;
+}
+
+/** Rows waiting on the prompt, oldest first. Duplicates still being looked up aren't ready yet. */
+export async function listConflicts(db: RanchDB, userId: string): Promise<Conflict[]> {
+  const held = await pending(db, userId, (i) => Boolean(i.held && i.theirs));
+  return held
+    .sort((a, b) => a.item.queuedAt.localeCompare(b.item.queuedAt))
+    .map(({ item, entry }) => ({ kind: item.held === 'conflict' ? 'changed' : 'duplicate', mine: entry, theirs: item.theirs! }));
+}
+
+/**
+ * Settles a conflict. mine: this device's version goes up next sync, replacing the server's.
+ * theirs: the server's copy replaces this device's now, and is re-fetched next sync in case it
+ * changed again meanwhile. Either way the row is an ordinary queued update afterwards.
+ */
+export async function resolveConflict(db: RanchDB, id: string, keep: 'mine' | 'theirs', now: Date = new Date()): Promise<void> {
+  const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+  const rows = tx.objectStore('roster_entries');
+  const outbox = tx.objectStore('outbox');
+  const key: [string, string] = ['roster_entries', id];
+  const item = await outbox.get(key);
+  const mine = await rows.get(id);
+  if (item?.held && item.theirs && mine) {
+    const base = { table: 'roster_entries' as const, rowId: id, isNew: false, queuedAt: now.toISOString() };
+    if (keep === 'mine') {
+      // Based on the server's version, so the update applies unless it moved on yet again.
+      await rows.put({ ...mine, version: item.theirs.version });
+      await outbox.put(base);
+    } else {
+      await rows.put(item.theirs);
+      await outbox.put({ ...base, refetch: true });
+    }
+  }
+  await tx.done;
 }

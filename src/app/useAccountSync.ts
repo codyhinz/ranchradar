@@ -4,7 +4,7 @@ import type { RanchDB } from '../data/local/db';
 import { StorageError, type RosterStore } from '../data/storage';
 import { MAX_ROSTER_ENTRIES } from '../data/types';
 import { claimGuestRoster, declineGuestUpload, guestCount, guestUploadDeclined } from '../data/sync/guestUpload';
-import { supabaseRemote, syncRoster, type SyncResult } from '../data/sync/syncEngine';
+import { listConflicts, resolveConflict, supabaseRemote, syncRoster, type Conflict, type SyncResult } from '../data/sync/syncEngine';
 import { t } from '../i18n';
 import type { AuthState } from './useAuth';
 
@@ -24,7 +24,7 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
   const accountStore = userId && store ? store : null;
   const [guestPokemon, setGuestPokemon] = useState(0);
   const [offerOpen, setOfferOpen] = useState(false);
-  const [conflicts, setConflicts] = useState(0);
+  const [conflicts, setConflicts] = useState<Conflict[]>([]);
 
   // The caller's toast function changes every render; reading it through a ref keeps the
   // sync effects from re-running each time.
@@ -50,7 +50,7 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
           accountStore.refresh();
           ourRefresh.current = false;
         }
-        setConflicts(result.conflicts);
+        setConflicts(result.conflicts > 0 ? await listConflicts(db, userId) : []);
         if (result.status === 'full' && lastStatus.current !== 'full') full(); // say it once, not every minute
         lastStatus.current = result.status;
       } while (again.current);
@@ -61,7 +61,7 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
 
   // On sign-in: catch up, then make the offer if there's a guest roster.
   useEffect(() => {
-    if (!db || !userId || !accountStore) { setOfferOpen(false); return; }
+    if (!db || !userId || !accountStore) { setOfferOpen(false); setConflicts([]); return; }
     let alive = true;
     lastStatus.current = 'done';
     void (async () => {
@@ -119,8 +119,16 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
     if (db && userId) await declineGuestUpload(db, userId);
   }, [db, userId]);
 
+  /** Picks one version of a Pokémon changed on two sides; the change listener sends it shortly. */
+  const resolve = useCallback(async (id: string, keep: 'mine' | 'theirs') => {
+    if (!db || !userId) return;
+    await resolveConflict(db, id, keep);
+    setConflicts(await listConflicts(db, userId));
+    accountStore?.refresh();
+  }, [db, userId, accountStore]);
+
   /** Closed without choosing (Esc): ask again next time they sign in. */
   const dismissOffer = useCallback(() => setOfferOpen(false), []);
 
-  return { guestPokemon, offerOpen, addGuestPokemon, keepSeparate, dismissOffer, conflicts };
+  return { guestPokemon, offerOpen, addGuestPokemon, keepSeparate, dismissOffer, conflicts, resolve };
 }

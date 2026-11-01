@@ -17,8 +17,13 @@ export interface OutboxItem {
    * until then sync skips the row and this device keeps showing its own version.
    */
   held?: 'duplicate_id' | 'conflict';
-  /** For a conflict: the server's copy at the time, to show beside this device's. */
+  /** The server's copy at the time, to show beside this device's in the conflict prompt. */
   theirs?: RosterEntry;
+  /**
+   * Set after the person keeps the server's copy: the next sync fetches the row once more, in
+   * case another device changed it again while the choice was waiting.
+   */
+  refetch?: true;
 }
 
 export interface MetaRecord {

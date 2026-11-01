@@ -122,7 +122,7 @@ export function FormSheet({ formId, name, entries, onSave, onRemove, onMakePerma
   );
 }
 
-function natureLabel(nature: string | null): string {
+export function natureLabel(nature: string | null): string {
   return nature && (NATURES as readonly string[]).includes(nature) ? natureName(nature as Nature) : t('nature.none');
 }
 
