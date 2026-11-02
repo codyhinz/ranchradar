@@ -967,6 +967,9 @@ body::after {
 }
 .reveal-password:hover { color: var(--coal); }
 .auth-back { justify-self: center; }
+/* Turnstile stays empty unless Cloudflare wants a tick, so the form doesn't jump */
+.captcha:empty { display: none; }
+.captcha iframe { max-width: 100%; }
 .auth-error { margin: 0; color: var(--danger); font-weight: 600; font-size: var(--step--1); }
 .auth-sent { display: grid; gap: 0.5rem; justify-items: start; padding: 0.75rem; border-radius: var(--radius-row); background: var(--rail); }
 .auth-sent p { margin: 0; }

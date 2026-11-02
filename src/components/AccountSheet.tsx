@@ -1,6 +1,7 @@
 import { Fragment, useState, type FormEvent } from 'react';
 import { authErrorKey } from '../app/authErrors';
 import { rememberOAuthChoice } from '../app/signInHint';
+import { useTurnstile } from '../app/turnstile';
 import type { AuthState } from '../app/useAuth';
 import { supabase } from '../data/cloud/supabase';
 import { t, type MessageKey } from '../i18n';
@@ -50,6 +51,9 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
   // Delete account asks first, on its own screen inside the sheet.
   const [deleting, setDeleting] = useState(false);
   const [understood, setUnderstood] = useState(false);
+  // The bot check sits in whichever email form is showing; Google and Discord don't need it.
+  const formView = auth.status === 'signedOut' && !sent ? (resetting ? 'reset' : mode) : null;
+  const captcha = useTurnstile(formView);
 
   if (!supabase || auth.status === 'unavailable') return null;
   const client = supabase;
@@ -74,17 +78,20 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
     event.preventDefault();
     void run('email', async () => {
       if (resetting) {
-        const { error: err } = await client.auth.resetPasswordForEmail(email, { redirectTo });
+        const captchaToken = await captcha.take();
+        const { error: err } = await client.auth.resetPasswordForEmail(email, { redirectTo, captchaToken });
         if (err) throw err;
         setSent(t('auth.resetSent', { email }));
       } else if (mode === 'signIn') {
-        const { error: err } = await client.auth.signInWithPassword({ email, password });
+        const captchaToken = await captcha.take();
+        const { error: err } = await client.auth.signInWithPassword({ email, password, options: { captchaToken } });
         if (err) throw err;
         setPassword('');
         say(t('auth.signedIn'));
         onClose();
       } else {
-        const { data, error: err } = await client.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
+        const captchaToken = await captcha.take();
+        const { data, error: err } = await client.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo, captchaToken } });
         if (err) throw err;
         setPassword('');
         // With email confirmation on (the default) there's no session until they click the link.
@@ -221,6 +228,7 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
       <form className="auth-form" onSubmit={submit}>
         <p className="auth-lede">{t('auth.resetHint')}</p>
         <EmailField value={email} onChange={setEmail} />
+        <div ref={captcha.ref} className="captcha" />
         {errorLine}
         <button type="submit" className="button button-primary auth-submit" disabled={busy !== null}>{t('auth.sendReset')}</button>
         <button type="button" className="link-button auth-back" onClick={backToSignIn}>{t('auth.backToSignIn')}</button>
@@ -237,6 +245,7 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
           {!signingUp && (
             <button type="button" className="link-button auth-forgot" onClick={() => { setResetting(true); setError(null); }}>{t('auth.forgot')}</button>
           )}
+          <div ref={captcha.ref} className="captcha" />
           {errorLine}
           <button type="submit" className="button button-primary auth-submit" disabled={busy !== null}>
             {t(signingUp ? 'auth.createAccount' : 'auth.signIn')}

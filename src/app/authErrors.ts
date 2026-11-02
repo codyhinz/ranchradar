@@ -15,6 +15,7 @@ const KNOWN: Record<string, MessageKey> = {
   signup_disabled: 'auth.error.signupOff',
   email_provider_disabled: 'auth.error.signupOff',
   provider_disabled: 'auth.error.provider',
+  captcha_failed: 'auth.error.captcha',
 };
 
 export function authErrorKey(error: unknown): MessageKey {

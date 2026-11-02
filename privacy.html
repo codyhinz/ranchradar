@@ -41,7 +41,8 @@
       <ul>
         <li><strong>Supabase</strong> runs our database and sign-in, and sends account emails.</li>
         <li><strong>Sentry</strong> receives crash reports when something breaks in the app: the error, the app version, your browser and device type, and the last few screens and buttons you used. Reports never include your roster, notes or email address, and links are trimmed of any sign-in codes first.</li>
-        <li><strong>Cloudflare</strong> hosts the site. Like any web host, it processes your IP address and browser details to deliver pages and block attacks. It also runs our visit counting (see below).</li>
+        <li><strong>Cloudflare</strong> hosts the site. Like any web host, it processes your IP address and browser details to deliver pages and block attacks. It also runs our visit counting (see below), and its Turnstile check runs on the email sign-in, sign-up and password-reset forms to keep bots out, looking at your browser and device signals for that one check.</li>
+        <li><strong>Resend</strong> delivers the emails your account needs, like confirming your address and resetting your password. It receives your email address and the message.</li>
         <li><strong>Google and Discord</strong> handle sign-in if you choose them. Their own privacy policies apply to your accounts with them.</li>
       </ul>
       <p>These providers may store data on servers outside your country, including in the United States.</p>
