@@ -10,7 +10,7 @@
 
 1. Copy the latest file in `regulations/` to a new one (e.g. `M-D.json`) and set its id, name, dates (UTC), and `expected_forms` from the official announcement.
 2. List ids in Showdown's naming, lowercased with dashes: `Ninetales-Alola` → `ninetales-alola`, `Garchompite Z` → `garchompite-z`.
-3. Put every allowed Mega Stone in both `items` and `megas`; its base Pokémon must be in `forms`.
+3. `forms` is the Roster Ranch list (Recruit → Roster Info), one entry per form. `items` is every held item allowed in battle, and every allowed Mega Stone goes in both `items` and `megas`. A Mega whose base Pokémon isn't recruitable (Mega Floette, from the gift-only Eternal Floette) is fine: validation only warns.
 4. Run `npm run seed`, then `npm run validate:data`.
 5. Keep `"status": "draft"` until the list is complete, then switch to `"final"` so the count is enforced.
 6. Commit the regulation file and everything `seed` changed in one pull request, including any new `supabase/migrations/*_reference_data.sql`.

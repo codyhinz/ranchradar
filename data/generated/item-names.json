@@ -1,4 +1,26 @@
 {
+  "abomasite": {
+    "en": "Abomasite",
+    "ja": "ユキノオナイト",
+    "ko": "눈설왕나이트",
+    "zh-Hant": "暴雪王進化石",
+    "zh-Hans": "暴雪王进化石",
+    "fr": "Blizzarite",
+    "de": "Rexblisarnit",
+    "es": "Abomasnowita",
+    "it": "Abomasnowite"
+  },
+  "absolite": {
+    "en": "Absolite",
+    "ja": "アブソルナイト",
+    "ko": "앱솔나이트",
+    "zh-Hant": "阿勃梭魯進化石",
+    "zh-Hans": "阿勃梭鲁进化石",
+    "fr": "Absolite",
+    "de": "Absolnit",
+    "es": "Absolita",
+    "it": "Absolite"
+  },
   "absolite-z": {
     "en": "Absolite Z",
     "ja": "アブソルナイトZ",
@@ -32,6 +54,17 @@
     "es": "Aggronita",
     "it": "Aggronite"
   },
+  "air-balloon": {
+    "en": "Air Balloon",
+    "ja": "ふうせん",
+    "ko": "풍선",
+    "zh-Hant": "氣球",
+    "zh-Hans": "气球",
+    "fr": "Ballon",
+    "de": "Luftballon",
+    "es": "Globo Helio",
+    "it": "Palloncino"
+  },
   "alakazite": {
     "en": "Alakazite",
     "ja": "フーディナイト",
@@ -42,6 +75,28 @@
     "de": "Simsalanit",
     "es": "Alakazamita",
     "it": "Alakazamite"
+  },
+  "altarianite": {
+    "en": "Altarianite",
+    "ja": "チルタリスナイト",
+    "ko": "파비코리나이트",
+    "zh-Hant": "七夕青鳥進化石",
+    "zh-Hans": "七夕青鸟进化石",
+    "fr": "Altarite",
+    "de": "Altarianit",
+    "es": "Altarianita",
+    "it": "Altarite"
+  },
+  "ampharosite": {
+    "en": "Ampharosite",
+    "ja": "デンリュウナイト",
+    "ko": "전룡나이트",
+    "zh-Hant": "電龍進化石",
+    "zh-Hans": "电龙进化石",
+    "fr": "Pharampite",
+    "de": "Ampharosnit",
+    "es": "Ampharosita",
+    "it": "Ampharosite"
   },
   "aspear-berry": {
     "en": "Aspear Berry",
@@ -54,6 +109,17 @@
     "es": "Baya Perasi",
     "it": "Baccaperina"
   },
+  "audinite": {
+    "en": "Audinite",
+    "ja": "タブンネナイト",
+    "ko": "다부니나이트",
+    "zh-Hant": "差不多娃娃進化石",
+    "zh-Hans": "差不多娃娃进化石",
+    "fr": "Nanméouïte",
+    "de": "Ohrdochnit",
+    "es": "Audinita",
+    "it": "Audinite"
+  },
   "babiri-berry": {
     "en": "Babiri Berry",
     "ja": "リリバのみ",
@@ -64,6 +130,17 @@
     "de": "Babiribeere",
     "es": "Baya Baribá",
     "it": "Baccababiri"
+  },
+  "banettite": {
+    "en": "Banettite",
+    "ja": "ジュペッタナイト",
+    "ko": "다크펫나이트",
+    "zh-Hant": "詛咒娃娃進化石",
+    "zh-Hans": "诅咒娃娃进化石",
+    "fr": "Branettite",
+    "de": "Banetteonit",
+    "es": "Banettita",
+    "it": "Banettite"
   },
   "barbaracite": {
     "en": "Barbaracite",
@@ -86,6 +163,39 @@
     "de": "Espinodonit",
     "es": "Baxcaliburita",
     "it": "Baxcaliburite"
+  },
+  "beedrillite": {
+    "en": "Beedrillite",
+    "ja": "スピアナイト",
+    "ko": "독침붕나이트",
+    "zh-Hant": "大針蜂進化石",
+    "zh-Hans": "大针蜂进化石",
+    "fr": "Dardargnite",
+    "de": "Bibornit",
+    "es": "Beedrillita",
+    "it": "Beedrillite"
+  },
+  "big-root": {
+    "en": "Big Root",
+    "ja": "おおきなねっこ",
+    "ko": "큰뿌리",
+    "zh-Hant": "大根莖",
+    "zh-Hans": "大根茎",
+    "fr": "Grosse Racine",
+    "de": "Großwurzel",
+    "es": "Raíz Grande",
+    "it": "Granradice"
+  },
+  "binding-band": {
+    "en": "Binding Band",
+    "ja": "しめつけバンド",
+    "ko": "조임밴드",
+    "zh-Hant": "緊綁束帶",
+    "zh-Hans": "紧绑束带",
+    "fr": "Bande Étreinte",
+    "de": "Klammerband",
+    "es": "Banda Atadura",
+    "it": "Legafascia"
   },
   "black-belt": {
     "en": "Black Belt",
@@ -241,6 +351,17 @@
     "es": "Baya Chilan",
     "it": "Baccacinlan"
   },
+  "chimechite": {
+    "en": "Chimechite",
+    "ja": "チリーンナイト",
+    "ko": "치렁나이트",
+    "zh-Hant": "風鈴鈴進化石",
+    "zh-Hans": "风铃铃进化石",
+    "fr": "Éokite",
+    "de": "Palimpalimonit",
+    "es": "Chimechita",
+    "it": "Chimechite"
+  },
   "chople-berry": {
     "en": "Chople Berry",
     "ja": "ヨプのみ",
@@ -295,6 +416,17 @@
     "de": "Krawellonit",
     "es": "Crabominablita",
     "it": "Crabominablite"
+  },
+  "damp-rock": {
+    "en": "Damp Rock",
+    "ja": "しめったいわ",
+    "ko": "축축한바위",
+    "zh-Hant": "潮濕岩石",
+    "zh-Hans": "潮湿岩石",
+    "fr": "Roche Humide",
+    "de": "Nassbrocken",
+    "es": "Roca Lluvia",
+    "it": "Rocciaumida"
   },
   "delphoxite": {
     "en": "Delphoxite",
@@ -362,6 +494,61 @@
     "es": "Eelektrossita",
     "it": "Eelektrossite"
   },
+  "eject-button": {
+    "en": "Eject Button",
+    "ja": "だっしゅつボタン",
+    "ko": "탈출버튼",
+    "zh-Hant": "逃脫按鍵",
+    "zh-Hans": "逃脱按键",
+    "fr": "Bouton Fuite",
+    "de": "Fluchtknopf",
+    "es": "Botón Escape",
+    "it": "Pulsantefuga"
+  },
+  "electric-seed": {
+    "en": "Electric Seed",
+    "ja": "エレキシード",
+    "ko": "일렉트릭시드",
+    "zh-Hant": "電氣種子",
+    "zh-Hans": "电气种子",
+    "fr": "Graine Électrik",
+    "de": "Elektro-Samen",
+    "es": "Semilla Electro",
+    "it": "Elettroseme"
+  },
+  "emboarite": {
+    "en": "Emboarite",
+    "ja": "エンブオナイト",
+    "ko": "염무왕나이트",
+    "zh-Hant": "炎武王進化石",
+    "zh-Hans": "炎武王进化石",
+    "fr": "Roitiflamite",
+    "de": "Flambirexonit",
+    "es": "Emboarita",
+    "it": "Emboarite"
+  },
+  "excadrite": {
+    "en": "Excadrite",
+    "ja": "ドリュウズナイト",
+    "ko": "몰드류나이트",
+    "zh-Hant": "龍頭地鼠進化石",
+    "zh-Hans": "龙头地鼠进化石",
+    "fr": "Minotaupite",
+    "de": "Stalobornit",
+    "es": "Excadrillita",
+    "it": "Excadrillite"
+  },
+  "expert-belt": {
+    "en": "Expert Belt",
+    "ja": "たつじんのおび",
+    "ko": "달인의띠",
+    "zh-Hant": "達人帶",
+    "zh-Hans": "达人带",
+    "fr": "Ceinture Pro",
+    "de": "Expertengurt",
+    "es": "Cinta Experto",
+    "it": "Abilcintura"
+  },
   "fairy-feather": {
     "en": "Fairy Feather",
     "ja": "ようせいのハネ",
@@ -394,6 +581,17 @@
     "de": "Impergatornit",
     "es": "Feraligatrita",
     "it": "Feraligatrite"
+  },
+  "floettite": {
+    "en": "Floettite",
+    "ja": "フラエッテナイト",
+    "ko": "플라베베나이트",
+    "zh-Hant": "花葉蒂進化石",
+    "zh-Hans": "花叶蒂进化石",
+    "fr": "Floettite",
+    "de": "Floetteonit",
+    "es": "Floettita",
+    "it": "Floettite"
   },
   "focus-sash": {
     "en": "Focus Sash",
@@ -428,6 +626,17 @@
     "es": "Galladita",
     "it": "Galladite"
   },
+  "garchompite": {
+    "en": "Garchompite",
+    "ja": "ガブリアスナイト",
+    "ko": "한카리아스나이트",
+    "zh-Hant": "烈咬陸鯊進化石",
+    "zh-Hans": "烈咬陆鲨进化石",
+    "fr": "Carchacrokite",
+    "de": "Knakracknit",
+    "es": "Garchompita",
+    "it": "Garchompite"
+  },
   "garchompite-z": {
     "en": "Garchompite Z",
     "ja": "ガブリアスナイトZ",
@@ -461,6 +670,17 @@
     "es": "Gengarita",
     "it": "Gengarite"
   },
+  "glalitite": {
+    "en": "Glalitite",
+    "ja": "オニゴーリナイト",
+    "ko": "얼음귀신나이트",
+    "zh-Hant": "冰鬼護進化石",
+    "zh-Hans": "冰鬼护进化石",
+    "fr": "Oniglalite",
+    "de": "Firnontornit",
+    "es": "Glalita",
+    "it": "Glalite"
+  },
   "glimmoranite": {
     "en": "Glimmoranite",
     "ja": "キラフロルナイト",
@@ -493,6 +713,17 @@
     "de": "Golgantesnit",
     "es": "Golurkita",
     "it": "Golurkite"
+  },
+  "grassy-seed": {
+    "en": "Grassy Seed",
+    "ja": "グラスシード",
+    "ko": "그래스시드",
+    "zh-Hant": "青草種子",
+    "zh-Hans": "青草种子",
+    "fr": "Graine Herbe",
+    "de": "Gras-Samen",
+    "es": "Semilla Hierba",
+    "it": "Erbaseme"
   },
   "greninjite": {
     "en": "Greninjite",
@@ -549,6 +780,61 @@
     "es": "Hawluchanita",
     "it": "Hawluchite"
   },
+  "heat-rock": {
+    "en": "Heat Rock",
+    "ja": "あついいわ",
+    "ko": "뜨거운바위",
+    "zh-Hant": "熾熱岩石",
+    "zh-Hans": "炽热岩石",
+    "fr": "Roche Chaude",
+    "de": "Heißbrocken",
+    "es": "Roca Calor",
+    "it": "Rocciacalda"
+  },
+  "heracronite": {
+    "en": "Heracronite",
+    "ja": "ヘラクロスナイト",
+    "ko": "헤라크로스나이트",
+    "zh-Hant": "赫拉克羅斯進化石",
+    "zh-Hans": "赫拉克罗斯进化石",
+    "fr": "Scarhinoïte",
+    "de": "Skarabornit",
+    "es": "Heracrossita",
+    "it": "Heracrossite"
+  },
+  "houndoominite": {
+    "en": "Houndoominite",
+    "ja": "ヘルガナイト",
+    "ko": "헬가나이트",
+    "zh-Hant": "黑魯加進化石",
+    "zh-Hans": "黑鲁加进化石",
+    "fr": "Démolossite",
+    "de": "Hundemonit",
+    "es": "Houndoomita",
+    "it": "Houndoomite"
+  },
+  "icy-rock": {
+    "en": "Icy Rock",
+    "ja": "つめたいいわ",
+    "ko": "차가운바위",
+    "zh-Hant": "冰冷岩石",
+    "zh-Hans": "冰冷岩石",
+    "fr": "Roche Glace",
+    "de": "Eisbrocken",
+    "es": "Roca Helada",
+    "it": "Rocciafredda"
+  },
+  "iron-ball": {
+    "en": "Iron Ball",
+    "ja": "くろいてっきゅう",
+    "ko": "검은철구",
+    "zh-Hant": "黑色鐵球",
+    "zh-Hans": "黑色铁球",
+    "fr": "Balle Fer",
+    "de": "Eisenkugel",
+    "es": "Bola Férrea",
+    "it": "Ferropalla"
+  },
   "kangaskhanite": {
     "en": "Kangaskhanite",
     "ja": "ガルーラナイト",
@@ -582,6 +868,9 @@
     "es": "Baya Kebia",
     "it": "Baccakebia"
   },
+  "leek": {
+    "en": "Leek"
+  },
   "leftovers": {
     "en": "Leftovers",
     "ja": "たべのこし",
@@ -604,6 +893,17 @@
     "es": "Baya Zanama",
     "it": "Baccamela"
   },
+  "life-orb": {
+    "en": "Life Orb",
+    "ja": "いのちのたま",
+    "ko": "생명의구슬",
+    "zh-Hant": "生命寶珠",
+    "zh-Hans": "生命宝珠",
+    "fr": "Orbe Vie",
+    "de": "Leben-Orb",
+    "es": "Vidasfera",
+    "it": "Assorbisfera"
+  },
   "light-ball": {
     "en": "Light Ball",
     "ja": "でんきだま",
@@ -615,6 +915,17 @@
     "es": "Bola Luminosa",
     "it": "Elettropalla"
   },
+  "light-clay": {
+    "en": "Light Clay",
+    "ja": "ひかりのねんど",
+    "ko": "빛의점토",
+    "zh-Hant": "光之黏土",
+    "zh-Hans": "光之黏土",
+    "fr": "Lumargile",
+    "de": "Lichtlehm",
+    "es": "Refleluz",
+    "it": "Creta Luce"
+  },
   "lopunnite": {
     "en": "Lopunnite",
     "ja": "ミミロップナイト",
@@ -625,6 +936,17 @@
     "de": "Schlapornit",
     "es": "Lopunnita",
     "it": "Lopunnite"
+  },
+  "lucarionite": {
+    "en": "Lucarionite",
+    "ja": "ルカリオナイト",
+    "ko": "루카리오나이트",
+    "zh-Hant": "路卡利歐進化石",
+    "zh-Hans": "路卡利欧进化石",
+    "fr": "Lucarite",
+    "de": "Lucarionit",
+    "es": "Lucarita",
+    "it": "Lucarite"
   },
   "lucarionite-z": {
     "en": "Lucarionite Z",
@@ -681,6 +1003,17 @@
     "es": "Mawilita",
     "it": "Mawilite"
   },
+  "medichamite": {
+    "en": "Medichamite",
+    "ja": "チャーレムナイト",
+    "ko": "요가램나이트",
+    "zh-Hant": "恰雷姆進化石",
+    "zh-Hans": "恰雷姆进化石",
+    "fr": "Charminite",
+    "de": "Meditalisnit",
+    "es": "Medichamita",
+    "it": "Medichamite"
+  },
   "meganiumite": {
     "en": "Meganiumite",
     "ja": "メガニウムナイト",
@@ -702,6 +1035,17 @@
     "de": "Mentalkraut",
     "es": "Hierba Mental",
     "it": "Mentalerba"
+  },
+  "meowsticite": {
+    "en": "Meowsticite",
+    "ja": "ニャオニクスナイト",
+    "ko": "냐오닉스나이트",
+    "zh-Hant": "超能妙喵進化石",
+    "zh-Hans": "超能妙喵进化石",
+    "fr": "Mistigrixite",
+    "de": "Psiaugonit",
+    "es": "Meowsticita",
+    "it": "Meowsticite"
   },
   "metagrossite": {
     "en": "Metagrossite",
@@ -725,6 +1069,17 @@
     "es": "Revest. Metálico",
     "it": "Metalcoperta"
   },
+  "metronome": {
+    "en": "Metronome",
+    "ja": "メトロノーム",
+    "ko": "메트로놈",
+    "zh-Hant": "節拍器",
+    "zh-Hans": "节拍器",
+    "fr": "Métronome",
+    "de": "Metronom",
+    "es": "Metrónomo",
+    "it": "Plessimetro"
+  },
   "miracle-seed": {
     "en": "Miracle Seed",
     "ja": "きせきのタネ",
@@ -735,6 +1090,28 @@
     "de": "Wundersaat",
     "es": "Semilla Milagro",
     "it": "Miracolseme"
+  },
+  "misty-seed": {
+    "en": "Misty Seed",
+    "ja": "ミストシード",
+    "ko": "미스트시드",
+    "zh-Hant": "薄霧種子",
+    "zh-Hans": "薄雾种子",
+    "fr": "Graine Brume",
+    "de": "Nebel-Samen",
+    "es": "Semilla Bruma",
+    "it": "Nebbiaseme"
+  },
+  "muscle-band": {
+    "en": "Muscle Band",
+    "ja": "ちからのハチマキ",
+    "ko": "힘의머리띠",
+    "zh-Hant": "力量頭帶",
+    "zh-Hans": "力量头带",
+    "fr": "Bandeau Muscle",
+    "de": "Muskelband",
+    "es": "Cinta Fuerte",
+    "it": "Muscolbanda"
   },
   "mystic-water": {
     "en": "Mystic Water",
@@ -757,6 +1134,17 @@
     "de": "Ewiges Eis",
     "es": "Hielo Perpetuo",
     "it": "Gelomai"
+  },
+  "normal-gem": {
+    "en": "Normal Gem",
+    "ja": "ノーマルジュエル",
+    "ko": "노말주얼",
+    "zh-Hant": "一般寶石",
+    "zh-Hans": "一般宝石",
+    "fr": "Joyau Normal",
+    "de": "Normaljuwel",
+    "es": "Gema Normal",
+    "it": "Bijounormale"
   },
   "occa-berry": {
     "en": "Occa Berry",
@@ -857,6 +1245,17 @@
     "es": "Flecha Venenosa",
     "it": "Velenaculeo"
   },
+  "psychic-seed": {
+    "en": "Psychic Seed",
+    "ja": "サイコシード",
+    "ko": "사이코시드",
+    "zh-Hant": "精神種子",
+    "zh-Hans": "精神种子",
+    "fr": "Graine Psychique",
+    "de": "Psycho-Samen",
+    "es": "Semilla Psique",
+    "it": "Psicoseme"
+  },
   "pyroarite": {
     "en": "Pyroarite",
     "ja": "カエンジシナイト",
@@ -901,6 +1300,17 @@
     "es": "Baya Safre",
     "it": "Baccafrago"
   },
+  "red-card": {
+    "en": "Red Card",
+    "ja": "レッドカード",
+    "ko": "레드카드",
+    "zh-Hant": "紅牌",
+    "zh-Hans": "红牌",
+    "fr": "Carton Rouge",
+    "de": "Rote Karte",
+    "es": "Tarjeta Roja",
+    "it": "Cartelrosso"
+  },
   "rindo-berry": {
     "en": "Rindo Berry",
     "ja": "リンドのみ",
@@ -912,8 +1322,30 @@
     "es": "Baya Tamar",
     "it": "Baccarindo"
   },
+  "rocky-helmet": {
+    "en": "Rocky Helmet",
+    "ja": "ゴツゴツメット",
+    "ko": "울퉁불퉁멧",
+    "zh-Hant": "凸凸頭盔",
+    "zh-Hans": "凸凸头盔",
+    "fr": "Casque Brut",
+    "de": "Beulenhelm",
+    "es": "Casco Dentado",
+    "it": "Bitorzolelmo"
+  },
   "roseli-berry": {
     "en": "Roseli Berry"
+  },
+  "sablenite": {
+    "en": "Sablenite",
+    "ja": "ヤミラミナイト",
+    "ko": "깜까미나이트",
+    "zh-Hant": "勾魂眼進化石",
+    "zh-Hans": "勾魂眼进化石",
+    "fr": "Ténéfixite",
+    "de": "Zobirisnit",
+    "es": "Sableynita",
+    "it": "Sableyite"
   },
   "salamencite": {
     "en": "Salamencite",
@@ -1003,6 +1435,28 @@
     "es": "Pico Afilado",
     "it": "Beccaffilato"
   },
+  "sharpedonite": {
+    "en": "Sharpedonite",
+    "ja": "サメハダナイト",
+    "ko": "샤크니아나이트",
+    "zh-Hant": "巨牙鯊進化石",
+    "zh-Hans": "巨牙鲨进化石",
+    "fr": "Sharpedite",
+    "de": "Tohaidonit",
+    "es": "Sharpedonita",
+    "it": "Sharpedite"
+  },
+  "shed-shell": {
+    "en": "Shed Shell",
+    "ja": "きれいなぬけがら",
+    "ko": "아름다운허물",
+    "zh-Hant": "美麗空殼",
+    "zh-Hans": "美丽空壳",
+    "fr": "Carapace Mue",
+    "de": "Wechselhülle",
+    "es": "Muda Concha",
+    "it": "Disfoguscio"
+  },
   "shell-bell": {
     "en": "Shell Bell",
     "ja": "かいがらのすず",
@@ -1080,6 +1534,17 @@
     "es": "Slowbronita",
     "it": "Slowbroite"
   },
+  "smooth-rock": {
+    "en": "Smooth Rock",
+    "ja": "さらさらいわ",
+    "ko": "보송보송바위",
+    "zh-Hant": "沙沙岩石",
+    "zh-Hans": "沙沙岩石",
+    "fr": "Roche Lisse",
+    "de": "Glattbrocken",
+    "es": "Roca Suave",
+    "it": "Roccialiscia"
+  },
   "soft-sand": {
     "en": "Soft Sand",
     "ja": "やわらかいすな",
@@ -1124,6 +1589,17 @@
     "es": "Starmita",
     "it": "Starmite"
   },
+  "steelixite": {
+    "en": "Steelixite",
+    "ja": "ハガネールナイト",
+    "ko": "강철톤나이트",
+    "zh-Hant": "大鋼蛇進化石",
+    "zh-Hans": "大钢蛇进化石",
+    "fr": "Steelixite",
+    "de": "Stahlosnit",
+    "es": "Steelixita",
+    "it": "Steelixite"
+  },
   "swampertite": {
     "en": "Swampertite",
     "ja": "ラグラージナイト",
@@ -1145,6 +1621,17 @@
     "de": "Tanigabeere",
     "es": "Baya Yecana",
     "it": "Baccaitan"
+  },
+  "terrain-extender": {
+    "en": "Terrain Extender",
+    "ja": "グランドコート",
+    "ko": "그라운드코트",
+    "zh-Hant": "大地膜",
+    "zh-Hans": "大地膜",
+    "fr": "Champ’Duit",
+    "de": "Feldbeschichtung",
+    "es": "Cubresuelos",
+    "it": "Fissacampo"
   },
   "twisted-spoon": {
     "en": "Twisted Spoon",
@@ -1201,6 +1688,28 @@
     "es": "Baya Gualot",
     "it": "Baccaparmen"
   },
+  "wide-lens": {
+    "en": "Wide Lens",
+    "ja": "こうかくレンズ",
+    "ko": "광각렌즈",
+    "zh-Hant": "廣角鏡",
+    "zh-Hans": "广角镜",
+    "fr": "Loupe",
+    "de": "Großlinse",
+    "es": "Lupa",
+    "it": "Grandelente"
+  },
+  "wise-glasses": {
+    "en": "Wise Glasses",
+    "ja": "ものしりメガネ",
+    "ko": "박식안경",
+    "zh-Hant": "博識眼鏡",
+    "zh-Hans": "博识眼镜",
+    "fr": "Lunettes Sages",
+    "de": "Schlaubrille",
+    "es": "Gafas Especiales",
+    "it": "Saviocchiali"
+  },
   "yache-berry": {
     "en": "Yache Berry",
     "ja": "ヤチェのみ",
@@ -1211,5 +1720,16 @@
     "de": "Kiroyabeere",
     "es": "Baya Rimoya",
     "it": "Baccamoya"
+  },
+  "zoom-lens": {
+    "en": "Zoom Lens",
+    "ja": "フォーカスレンズ",
+    "ko": "포커스렌즈",
+    "zh-Hant": "對焦鏡",
+    "zh-Hans": "对焦镜",
+    "fr": "Lentille Zoom",
+    "de": "Zoomlinse",
+    "es": "Telescopio",
+    "it": "Zoomlente"
   }
 }

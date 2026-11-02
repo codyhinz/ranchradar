@@ -272,6 +272,7 @@ export function App() {
 
       <footer className="app-footer">
         <nav aria-label={t('legal.nav')}>
+          <a href="/regulations/">{t('legal.regulations')}</a>
           <a href="/privacy">{t('legal.privacy')}</a>
           <a href="/terms">{t('legal.terms')}</a>
           <a href="https://github.com/codyhinz/ranchradar" target="_blank" rel="noopener noreferrer">{t('legal.source')}</a>

@@ -18,8 +18,10 @@ RanchRadar is a mobile-first web app you can install like a native one. It works
 - **Duplicates and variants.** Every owned Pokémon is its own entry, so duplicates with different natures work naturally. Cosmetic variants like Alcremie flavors and Florges colors are tracked too.
 - **Undo everywhere.** Every removal, bulk clear, and status change can be undone from the toast.
 - **Backups.** Export your roster to a JSON file and import it on another device.
+- **Accounts and sync.** Sign in with Google, Discord, or email and password from the account button in the header. Your roster syncs across devices, a guest roster can move into the account when you sign in, and when two devices change the same Pokémon you pick which version to keep.
+- **Your data, your call.** Download everything an account stores, or delete the account and all of it, from the account sheet.
+- **Regulation pages.** Public pages for every season at `/regulations/`, listing its Roster Ranch Pokémon, Mega Evolutions and held items and what it added. Visitors who use the app see which ones they own.
 - **Nine languages.** Interface text, Pokémon names, and search in English, Japanese, Korean, Traditional and Simplified Chinese, French, German, Spanish, and Italian.
-- **Accounts (in progress).** Sign in with Google, Discord, or email and password from the account button in the header; cloud sync across devices is being built.
 
 ## Tech stack
 
@@ -29,6 +31,10 @@ RanchRadar is a mobile-first web app you can install like a native one. It works
 | Offline | Installable PWA (vite-plugin-pwa / Workbox), IndexedDB via `idb` |
 | Backend | Supabase (Postgres, Auth, row-level security) |
 | Hosting | Cloudflare Workers static assets |
+| Email | Resend, as Supabase Auth's SMTP sender |
+| Bot protection | Cloudflare Turnstile on email sign-in, sign-up and password reset |
+| Monitoring | Sentry (crash reports), Cloudflare Web Analytics (cookie-free visit counts) |
+| Backups | Weekly encrypted database dump to Cloudflare R2 (GitHub Actions) |
 | Tests | Vitest, fake-indexeddb, SQL row-level security tests in CI |
 
 The app is local-first: every write lands in IndexedDB first, so guests get the full app with no backend. A storage interface keeps screens unaware of whether data lives on the device or in the cloud.
@@ -108,17 +114,44 @@ Each regulation is one JSON file in `data/regulations/`. Add the new file as soo
 
 The full steps are in [`data/README.md`](data/README.md). In short: copy the latest file, fill in the list from the official announcement, run `npm run seed` and `npm run validate:data`, and commit everything together. CI blocks any pull request with a bad regulation file or a renamed ID.
 
+`forms` is the Roster Ranch list from the in-game Recruit → Roster Info screen. `items` and `megas` are every held item and Mega Stone allowed in battle, which can include Megas of Pokémon the Ranch never offers (Mega Floette needs the gift-only Eternal Floette); validation warns about those but lets them through.
+
+The build turns each file into a public page at `/regulations/<id>/`, plus an index at `/regulations/` and a `sitemap.xml`. The pages are written into `regulations/` (gitignored) when Vite starts, so restart `npm run dev` after editing `data/` to see them change.
+
 ## Deployment
 
 Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN` and `VITE_TURNSTILE_SITE_KEY` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins into the Content-Security-Policy in `public/_headers`.
 
-A scheduled GitHub Action pings Supabase every few days so the free-plan project never pauses. It needs the `SUPABASE_URL` and `SUPABASE_ANON_KEY` repository secrets.
+A scheduled GitHub Action pings Supabase every few days so the free-plan project never pauses. It needs the `SUPABASE_URL` and `SUPABASE_ANON_KEY` repository secrets. GitHub turns off scheduled workflows after 60 days without repository activity, so re-enable them under **Actions** if the repo goes quiet.
+
+### Backups
+
+Supabase's free plan doesn't give you access to its own daily backups (they recommend exporting with `supabase db dump`), so `.github/workflows/backup.yml` makes one every Sunday. It dumps roles, schema and data with the Supabase CLI, encrypts the archive with a passphrase, and uploads it to a private R2 bucket as `weekly/ranchradar-YYYY-MM-DD.tar.gz.gpg`. The data includes account emails and password hashes, so the archive is never stored unencrypted.
+
+To set it up:
+
+1. In Cloudflare, create a private R2 bucket and add a lifecycle rule that deletes objects under `weekly/` after 90 days.
+2. Create an R2 API token with **Object Read & Write** on that bucket only.
+3. Add the repository secrets `SUPABASE_DB_URL` (Supabase → **Connect** → **Session pooler**, password percent-encoded; GitHub's runners can't reach the IPv6-only direct connection), `BACKUP_PASSPHRASE` (a long random passphrase, also saved in your password manager), `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` and `R2_BUCKET`.
+4. Run the workflow once from **Actions → Database backup → Run workflow** and check the file appears in the bucket.
+
+To restore, download a backup and decrypt it, then load it into an empty Supabase project:
+
+```bash
+gpg --decrypt ranchradar-YYYY-MM-DD.tar.gz.gpg | tar -xzf -
+psql --single-transaction --variable ON_ERROR_STOP=1 \
+  --file roles.sql --file schema.sql \
+  --command 'SET session_replication_role = replica' \
+  --file data.sql --dbname "$NEW_PROJECT_DB_URL"
+```
+
+Restore into a scratch project now and then to be sure the backups work.
 
 ## Roadmap
 
-- **Now:** accounts and cloud sync across devices, with guest data merged on sign-in and a side-by-side prompt for conflicting edits. Google and Discord sign-in.
-- **Next:** launch readiness (account deletion, backups, privacy policy and terms), then a public launch.
-- **Later:** trial reminders, Pokémon HOME tracking, item and team tracking, regulation pages, a Champions news feed, and importing your box from screenshots.
+- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, and public regulation pages.
+- **Now:** a public launch, then ads.
+- **Later:** trial reminders, Pokémon HOME tracking, item and team tracking, a Champions news feed, and importing your box from screenshots.
 
 ## Contributing
 

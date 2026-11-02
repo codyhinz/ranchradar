@@ -3,3 +3,6 @@ dist
 .env
 .env.*
 !.env.example
+
+# Built from data/ by vite.config.ts
+/regulations/

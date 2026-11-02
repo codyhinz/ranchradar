@@ -1,8 +1,10 @@
-import { readFileSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
-import { readGenerated, readRegulations } from './scripts/lib/data';
+import { Dex } from '@pkmn/dex';
+import { DATA_DIR, readGenerated, readJson, readRegulations, type NameMap } from './scripts/lib/data';
+import { megaDisplayName, PAGES_DIR, renderRegulationPages, renderSitemap, type GeneratedPage } from './scripts/lib/regulationPages';
 import { fillHeaders, type HeaderSources } from './scripts/lib/headers';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -44,6 +46,51 @@ function legalPages(): Plugin {
 }
 
 /**
+ * The public regulation pages (/regulations/ and /regulations/<id>/) are static HTML built from
+ * data/, so search engines can read them. They're written into regulations/ (gitignored) when the
+ * config loads, then built as pages of their own like privacy.html. Restart the dev server after
+ * changing data/ to see the update.
+ */
+function writeRegulationPages(): GeneratedPage[] {
+  const generated = readGenerated();
+  const pages = renderRegulationPages({
+    regulations: readRegulations(),
+    forms: generated.forms,
+    items: generated.items,
+    formNames: generated.formNames,
+    itemNames: generated.itemNames,
+    typeNames: readJson<NameMap>(join(DATA_DIR, 'generated', 'type-names.json')),
+    megaName: (id) => {
+      const species = Dex.species.get(id);
+      return species.exists ? megaDisplayName(species.baseSpecies, species.forme) : id;
+    },
+  });
+  const root = fileURLToPath(new URL('.', import.meta.url));
+  rmSync(join(root, PAGES_DIR), { recursive: true, force: true });
+  for (const page of pages) {
+    const file = join(root, page.file);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, page.html);
+  }
+  return pages;
+}
+
+// Tests load this config too; they don't need the pages.
+const regulationPages = process.env.VITEST ? [] : writeRegulationPages();
+
+/** sitemap.xml at the site root, listing the app, every regulation page and the legal pages. */
+function sitemap(): Plugin {
+  return {
+    name: 'ranchradar-sitemap',
+    apply: 'build',
+    generateBundle() {
+      const paths = ['/', ...regulationPages.map((page) => page.path).sort(), '/privacy', '/terms'];
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap(paths) });
+    },
+  };
+}
+
+/**
  * Sprites of Pokémon that have never been in a regulation: addable, but most people never see
  * them, so they're cached the first time they show up instead of downloaded with every install.
  */
@@ -59,6 +106,7 @@ export default defineConfig({
     react(),
     securityHeaders(),
     legalPages(),
+    sitemap(),
     VitePWA({
       // Ask before swapping in a new build, so a new regulation never lands mid-check.
       registerType: 'prompt',
@@ -87,8 +135,8 @@ export default defineConfig({
           options: { cacheName: 'sprites', expiration: { maxEntries: 1000 } },
         }],
         navigateFallback: '/index.html',
-        // The legal pages are real pages, not app routes: let them load from the network.
-        navigateFallbackDenylist: [/^\/(privacy|terms)(\.html)?\/?$/],
+        // The legal and regulation pages are real pages, not app routes: never answer them with the app.
+        navigateFallbackDenylist: [/^\/(privacy|terms)(\.html)?\/?$/, /^\/regulations(\/|$)/],
       },
     }),
   ],
@@ -98,6 +146,10 @@ export default defineConfig({
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
         privacy: fileURLToPath(new URL('./privacy.html', import.meta.url)),
         terms: fileURLToPath(new URL('./terms.html', import.meta.url)),
+        ...Object.fromEntries(regulationPages.map((page) => [
+          page.file.replace(/\/index\.html$/, '').replace(/\//g, '-'),
+          fileURLToPath(new URL(`./${page.file}`, import.meta.url)),
+        ])),
       },
     },
   },

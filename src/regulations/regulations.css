@@ -1,0 +1,65 @@
+/* Regulation pages: the legal pages' reading layout, widened for a grid of Pokémon. */
+.legal.reg { max-width: 56rem; }
+.legal.reg h3 { margin: 1.5rem 0 0.6rem; font: 600 var(--step-0) / 1.3 var(--font-sign); color: var(--muted); }
+.reg-crumbs { margin: -1rem 0 0.75rem; color: var(--muted); font-size: var(--step--1); }
+.reg-crumbs a { color: var(--coal); }
+
+.season-status {
+  display: inline-flex; align-items: center; margin-left: 0.4rem; padding: 0.1rem 0.6rem; border-radius: 999px;
+  border: 1px solid var(--rail); color: var(--muted); font-size: var(--step--1); white-space: nowrap;
+}
+.season-status[data-status='current'] { background: var(--ember-strong); border-color: transparent; color: #fff; }
+.season-status[data-status='upcoming'] { background: var(--hay); border-color: transparent; color: var(--hay-ink); }
+
+.legal .reg-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 0 0 1.5rem; padding: 0; list-style: none; }
+.legal .reg-stats li { margin: 0; color: var(--muted); }
+.reg-stats strong { display: block; color: var(--coal); font: 700 var(--step-2) / 1.1 var(--font-sign); }
+
+.legal .reg-mine-text { margin: 0; }
+.legal .reg-mine-count { margin: 0 0 0.5rem; }
+.reg-mine-bar { display: block; width: 100%; height: 0.75rem; margin-bottom: 0.75rem; accent-color: var(--ember); }
+.reg-mine-bar[hidden] { display: none; }
+
+.legal .reg-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 0.5rem;
+  margin: 0 0 1rem; padding: 0; list-style: none;
+}
+.legal .reg-grid li {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.15rem; margin: 0;
+  padding: 0.5rem 0.4rem 0.6rem; border-radius: var(--radius-row); border: 1px solid var(--rail);
+  background: color-mix(in srgb, var(--surface) 70%, transparent); text-align: center; line-height: 1.3;
+}
+.reg-grid img { width: 64px; height: 64px; object-fit: contain; }
+.reg-mon-name { font-weight: 600; font-size: var(--step--1); }
+.reg-mon .types { justify-content: center; font-size: 0.75rem; color: var(--muted); }
+.legal .reg-grid li.is-owned { border-color: var(--ember); box-shadow: 0 0 0 1px var(--ember) inset; }
+.reg-owned {
+  position: absolute; top: 0.35rem; right: 0.35rem; padding: 0 0.4rem; border-radius: 999px;
+  background: var(--ember-strong); color: #fff; font-size: 0.7rem; font-weight: 600;
+}
+
+.legal .reg-megas { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.4rem 1rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.legal .reg-megas li { display: flex; align-items: center; gap: 0.6rem; margin: 0; line-height: 1.3; }
+.reg-megas img { width: 40px; height: 40px; object-fit: contain; flex: none; }
+.reg-sub { display: block; color: var(--muted); font-size: var(--step--1); }
+.reg-note { display: block; color: var(--wood); font-size: 0.75rem; }
+
+.legal .reg-items { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0 0 1rem; padding: 0; list-style: none; }
+.legal .reg-items li {
+  margin: 0; padding: 0.2rem 0.7rem; border-radius: 999px; border: 1px solid var(--rail);
+  background: color-mix(in srgb, var(--surface) 70%, transparent); font-size: var(--step--1);
+}
+
+.reg-neighbours { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; }
+
+.legal .reg-cards { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+.legal .reg-cards li { margin: 0; }
+.legal .reg-card {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.2rem; padding: 1rem 1.15rem;
+  border-radius: var(--radius-row); border: 1px solid var(--rail); color: var(--coal); text-decoration: none;
+  background: color-mix(in srgb, var(--surface) 75%, transparent); box-shadow: var(--lift);
+}
+.legal .reg-card:hover { border-color: var(--ember); }
+.reg-card-title { color: var(--coal); font: 700 var(--step-1) / 1.2 var(--font-sign); }
+.reg-card .reg-sub { color: var(--muted); }
+.reg-card .season-status { margin: 0.4rem 0 0; }

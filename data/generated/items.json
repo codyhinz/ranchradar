@@ -1,5 +1,19 @@
 [
   {
+    "id": "abomasite",
+    "category": "mega_stone",
+    "mega_target": "abomasnow-mega",
+    "mega_base_form": "abomasnow",
+    "sprite_key": "abomasite"
+  },
+  {
+    "id": "absolite",
+    "category": "mega_stone",
+    "mega_target": "absol-mega",
+    "mega_base_form": "absol",
+    "sprite_key": "absolite"
+  },
+  {
     "id": "absolite-z",
     "category": "mega_stone",
     "mega_target": "absol-mega-z",
@@ -21,11 +35,32 @@
     "sprite_key": "aggronite"
   },
   {
+    "id": "air-balloon",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "air-balloon"
+  },
+  {
     "id": "alakazite",
     "category": "mega_stone",
     "mega_target": "alakazam-mega",
     "mega_base_form": "alakazam",
     "sprite_key": "alakazite"
+  },
+  {
+    "id": "altarianite",
+    "category": "mega_stone",
+    "mega_target": "altaria-mega",
+    "mega_base_form": "altaria",
+    "sprite_key": "altarianite"
+  },
+  {
+    "id": "ampharosite",
+    "category": "mega_stone",
+    "mega_target": "ampharos-mega",
+    "mega_base_form": "ampharos",
+    "sprite_key": "ampharosite"
   },
   {
     "id": "aspear-berry",
@@ -35,11 +70,25 @@
     "sprite_key": "aspear-berry"
   },
   {
+    "id": "audinite",
+    "category": "mega_stone",
+    "mega_target": "audino-mega",
+    "mega_base_form": "audino",
+    "sprite_key": "audinite"
+  },
+  {
     "id": "babiri-berry",
     "category": "berry",
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "babiri-berry"
+  },
+  {
+    "id": "banettite",
+    "category": "mega_stone",
+    "mega_target": "banette-mega",
+    "mega_base_form": "banette",
+    "sprite_key": "banettite"
   },
   {
     "id": "barbaracite",
@@ -54,6 +103,27 @@
     "mega_target": "baxcalibur-mega",
     "mega_base_form": "baxcalibur",
     "sprite_key": "baxcalibrite"
+  },
+  {
+    "id": "beedrillite",
+    "category": "mega_stone",
+    "mega_target": "beedrill-mega",
+    "mega_base_form": "beedrill",
+    "sprite_key": "beedrillite"
+  },
+  {
+    "id": "big-root",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "big-root"
+  },
+  {
+    "id": "binding-band",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "binding-band"
   },
   {
     "id": "black-belt",
@@ -154,6 +224,13 @@
     "sprite_key": "chilan-berry"
   },
   {
+    "id": "chimechite",
+    "category": "mega_stone",
+    "mega_target": "chimecho-mega",
+    "mega_base_form": "chimecho",
+    "sprite_key": "chimechite"
+  },
+  {
     "id": "chople-berry",
     "category": "berry",
     "mega_target": null,
@@ -187,6 +264,13 @@
     "mega_target": "crabominable-mega",
     "mega_base_form": "crabominable",
     "sprite_key": "crabominite"
+  },
+  {
+    "id": "damp-rock",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "damp-rock"
   },
   {
     "id": "delphoxite",
@@ -231,6 +315,41 @@
     "sprite_key": "eelektrossite"
   },
   {
+    "id": "eject-button",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "eject-button"
+  },
+  {
+    "id": "electric-seed",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "electric-seed"
+  },
+  {
+    "id": "emboarite",
+    "category": "mega_stone",
+    "mega_target": "emboar-mega",
+    "mega_base_form": "emboar",
+    "sprite_key": "emboarite"
+  },
+  {
+    "id": "excadrite",
+    "category": "mega_stone",
+    "mega_target": "excadrill-mega",
+    "mega_base_form": "excadrill",
+    "sprite_key": "excadrite"
+  },
+  {
+    "id": "expert-belt",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "expert-belt"
+  },
+  {
     "id": "fairy-feather",
     "category": "held",
     "mega_target": null,
@@ -250,6 +369,13 @@
     "mega_target": "feraligatr-mega",
     "mega_base_form": "feraligatr",
     "sprite_key": "feraligite"
+  },
+  {
+    "id": "floettite",
+    "category": "mega_stone",
+    "mega_target": "floette-mega",
+    "mega_base_form": "floette-eternal",
+    "sprite_key": "floettite"
   },
   {
     "id": "focus-sash",
@@ -273,6 +399,13 @@
     "sprite_key": "galladite"
   },
   {
+    "id": "garchompite",
+    "category": "mega_stone",
+    "mega_target": "garchomp-mega",
+    "mega_base_form": "garchomp",
+    "sprite_key": "garchompite"
+  },
+  {
     "id": "garchompite-z",
     "category": "mega_stone",
     "mega_target": "garchomp-mega-z",
@@ -294,6 +427,13 @@
     "sprite_key": "gengarite"
   },
   {
+    "id": "glalitite",
+    "category": "mega_stone",
+    "mega_target": "glalie-mega",
+    "mega_base_form": "glalie",
+    "sprite_key": "glalitite"
+  },
+  {
     "id": "glimmoranite",
     "category": "mega_stone",
     "mega_target": "glimmora-mega",
@@ -313,6 +453,13 @@
     "mega_target": "golurk-mega",
     "mega_base_form": "golurk",
     "sprite_key": "golurkite"
+  },
+  {
+    "id": "grassy-seed",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "grassy-seed"
   },
   {
     "id": "greninjite",
@@ -350,6 +497,41 @@
     "sprite_key": "hawluchanite"
   },
   {
+    "id": "heat-rock",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "heat-rock"
+  },
+  {
+    "id": "heracronite",
+    "category": "mega_stone",
+    "mega_target": "heracross-mega",
+    "mega_base_form": "heracross",
+    "sprite_key": "heracronite"
+  },
+  {
+    "id": "houndoominite",
+    "category": "mega_stone",
+    "mega_target": "houndoom-mega",
+    "mega_base_form": "houndoom",
+    "sprite_key": "houndoominite"
+  },
+  {
+    "id": "icy-rock",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "icy-rock"
+  },
+  {
+    "id": "iron-ball",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "iron-ball"
+  },
+  {
     "id": "kangaskhanite",
     "category": "mega_stone",
     "mega_target": "kangaskhan-mega",
@@ -371,6 +553,13 @@
     "sprite_key": "kebia-berry"
   },
   {
+    "id": "leek",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "leek"
+  },
+  {
     "id": "leftovers",
     "category": "held",
     "mega_target": null,
@@ -385,6 +574,13 @@
     "sprite_key": "leppa-berry"
   },
   {
+    "id": "life-orb",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "life-orb"
+  },
+  {
     "id": "light-ball",
     "category": "held",
     "mega_target": null,
@@ -392,11 +588,25 @@
     "sprite_key": "light-ball"
   },
   {
+    "id": "light-clay",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "light-clay"
+  },
+  {
     "id": "lopunnite",
     "category": "mega_stone",
     "mega_target": "lopunny-mega",
     "mega_base_form": "lopunny",
     "sprite_key": "lopunnite"
+  },
+  {
+    "id": "lucarionite",
+    "category": "mega_stone",
+    "mega_target": "lucario-mega",
+    "mega_base_form": "lucario",
+    "sprite_key": "lucarionite"
   },
   {
     "id": "lucarionite-z",
@@ -434,6 +644,13 @@
     "sprite_key": "mawilite"
   },
   {
+    "id": "medichamite",
+    "category": "mega_stone",
+    "mega_target": "medicham-mega",
+    "mega_base_form": "medicham",
+    "sprite_key": "medichamite"
+  },
+  {
     "id": "meganiumite",
     "category": "mega_stone",
     "mega_target": "meganium-mega",
@@ -446,6 +663,13 @@
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "mental-herb"
+  },
+  {
+    "id": "meowsticite",
+    "category": "mega_stone",
+    "mega_target": "meowstic-m-mega",
+    "mega_base_form": "meowstic",
+    "sprite_key": "meowsticite"
   },
   {
     "id": "metagrossite",
@@ -462,11 +686,32 @@
     "sprite_key": "metal-coat"
   },
   {
+    "id": "metronome",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "metronome"
+  },
+  {
     "id": "miracle-seed",
     "category": "held",
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "miracle-seed"
+  },
+  {
+    "id": "misty-seed",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "misty-seed"
+  },
+  {
+    "id": "muscle-band",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "muscle-band"
   },
   {
     "id": "mystic-water",
@@ -481,6 +726,13 @@
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "never-melt-ice"
+  },
+  {
+    "id": "normal-gem",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "normal-gem"
   },
   {
     "id": "occa-berry",
@@ -546,6 +798,13 @@
     "sprite_key": "poison-barb"
   },
   {
+    "id": "psychic-seed",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "psychic-seed"
+  },
+  {
     "id": "pyroarite",
     "category": "mega_stone",
     "mega_target": "pyroar-mega",
@@ -574,6 +833,13 @@
     "sprite_key": "rawst-berry"
   },
   {
+    "id": "red-card",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "red-card"
+  },
+  {
     "id": "rindo-berry",
     "category": "berry",
     "mega_target": null,
@@ -581,11 +847,25 @@
     "sprite_key": "rindo-berry"
   },
   {
+    "id": "rocky-helmet",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "rocky-helmet"
+  },
+  {
     "id": "roseli-berry",
     "category": "berry",
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "roseli-berry"
+  },
+  {
+    "id": "sablenite",
+    "category": "mega_stone",
+    "mega_target": "sableye-mega",
+    "mega_base_form": "sableye",
+    "sprite_key": "sablenite"
   },
   {
     "id": "salamencite",
@@ -644,6 +924,20 @@
     "sprite_key": "sharp-beak"
   },
   {
+    "id": "sharpedonite",
+    "category": "mega_stone",
+    "mega_target": "sharpedo-mega",
+    "mega_base_form": "sharpedo",
+    "sprite_key": "sharpedonite"
+  },
+  {
+    "id": "shed-shell",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "shed-shell"
+  },
+  {
     "id": "shell-bell",
     "category": "held",
     "mega_target": null,
@@ -693,6 +987,13 @@
     "sprite_key": "slowbronite"
   },
   {
+    "id": "smooth-rock",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "smooth-rock"
+  },
+  {
     "id": "soft-sand",
     "category": "held",
     "mega_target": null,
@@ -721,6 +1022,13 @@
     "sprite_key": "starminite"
   },
   {
+    "id": "steelixite",
+    "category": "mega_stone",
+    "mega_target": "steelix-mega",
+    "mega_base_form": "steelix",
+    "sprite_key": "steelixite"
+  },
+  {
     "id": "swampertite",
     "category": "mega_stone",
     "mega_target": "swampert-mega",
@@ -733,6 +1041,13 @@
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "tanga-berry"
+  },
+  {
+    "id": "terrain-extender",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "terrain-extender"
   },
   {
     "id": "twisted-spoon",
@@ -770,10 +1085,31 @@
     "sprite_key": "wacan-berry"
   },
   {
+    "id": "wide-lens",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "wide-lens"
+  },
+  {
+    "id": "wise-glasses",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "wise-glasses"
+  },
+  {
     "id": "yache-berry",
     "category": "berry",
     "mega_target": null,
     "mega_base_form": null,
     "sprite_key": "yache-berry"
+  },
+  {
+    "id": "zoom-lens",
+    "category": "held",
+    "mega_target": null,
+    "mega_base_form": null,
+    "sprite_key": "zoom-lens"
   }
 ]
