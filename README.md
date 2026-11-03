@@ -74,6 +74,13 @@ If CAPTCHA protection is on in your Supabase project (Authentication → Attack 
 VITE_TURNSTILE_SITE_KEY=0x4AAAAAAA...                          # Cloudflare → Turnstile → widget site key (needed once CAPTCHA is on in Supabase)
 ```
 
+Ads are off unless you set AdSense ids. The client id alone adds the `google-adsense-account` meta tag, `ads.txt`, the CSP entries and the AdSense script (enough for AdSense's site review) but shows no ads; a display ad unit's slot id turns the units on. A malformed id fails the build:
+
+```bash
+VITE_ADSENSE_CLIENT=ca-pub-1234567890123456                    # AdSense → Account → Account information (add ca- in front of the publisher ID)
+VITE_ADSENSE_SLOT=1234567890                                   # AdSense → Ads → By ad unit → a display unit's id (only after approval)
+```
+
 Then apply the schema in `supabase/migrations/` to your project with `npx supabase link` and `npx supabase db push` (the CLI is pinned in `package.json`, so `npx` uses that version rather than the newest one), and under Authentication → URL Configuration add `http://localhost:5173/**` as a redirect URL. Restart `npm run dev` after editing `.env.local`.
 
 For Google and Discord sign-in, turn each provider on under Authentication → Sign In / Providers and paste in its client ID and secret. In the Google Cloud console (an OAuth client of type Web application) and the Discord Developer Portal (OAuth2), set the redirect URL to `https://your-project-ref.supabase.co/auth/v1/callback`. The buttons always show, so enable both providers before deploying. For the button icons, save Google’s and Discord’s official marks from their brand kits as `public/icons/brands/google.svg` and `public/icons/brands/discord.svg`; without them the buttons show text only.
@@ -121,7 +128,7 @@ The build turns each file into a public page at `/regulations/<id>/`, plus an in
 
 ## Deployment
 
-Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN` and `VITE_TURNSTILE_SITE_KEY` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins into the Content-Security-Policy in `public/_headers`.
+Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN`, `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT` and `VITE_ADSENSE_SLOT` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins, plus AdSense's hosts when it's on, into the Content-Security-Policy in `public/_headers`.
 
 Removed roster entries, teams and items are kept as tombstones for 30 days so every device can sync the removal, then a daily pg_cron job (`purge-soft-deleted`, 04:23 UTC) deletes them for real.
 
@@ -152,8 +159,8 @@ Restore into a scratch project now and then to be sure the backups work.
 
 ## Roadmap
 
-- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, and public regulation pages.
-- **Now:** a public launch, then ads.
+- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, public regulation pages, and ad slots that stay off until AdSense approves the site.
+- **Now:** a public launch and AdSense approval.
 - **Later:** trial reminders, Pokémon HOME tracking, item and team tracking, a Champions news feed, and importing your box from screenshots.
 
 ## Contributing

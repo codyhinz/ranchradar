@@ -6,6 +6,7 @@ import { Dex } from '@pkmn/dex';
 import { DATA_DIR, readGenerated, readJson, readRegulations, type NameMap } from './scripts/lib/data';
 import { megaDisplayName, PAGES_DIR, renderRegulationPages, renderSitemap, type GeneratedPage } from './scripts/lib/regulationPages';
 import { fillHeaders, type HeaderSources } from './scripts/lib/headers';
+import { adsTxt, checkAdSettings } from './scripts/lib/adsense';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
@@ -20,11 +21,32 @@ function securityHeaders(): Plugin {
       outDir = resolve(config.root, config.build.outDir);
       // loadEnv reads .env files and real environment variables (Cloudflare's build settings).
       const env = loadEnv(config.mode, config.root, 'VITE_');
-      sources = { supabaseUrl: env.VITE_SUPABASE_URL || undefined, sentryDsn: env.VITE_SENTRY_DSN || undefined };
+      sources = { supabaseUrl: env.VITE_SUPABASE_URL || undefined, sentryDsn: env.VITE_SENTRY_DSN || undefined, adsenseClient: env.VITE_ADSENSE_CLIENT || undefined };
     },
     writeBundle() {
       const file = join(outDir, '_headers');
       writeFileSync(file, fillHeaders(readFileSync(file, 'utf8'), sources));
+    },
+  };
+}
+
+/**
+ * With VITE_ADSENSE_CLIENT set, every page carries the google-adsense-account meta tag and the site
+ * gets an ads.txt, which is what AdSense checks during review. Without it, neither exists.
+ */
+function adsense(): Plugin {
+  let client: string | undefined;
+  return {
+    name: 'ranchradar-adsense',
+    configResolved(config) {
+      const env = loadEnv(config.mode, config.root, 'VITE_');
+      client = checkAdSettings(env.VITE_ADSENSE_CLIENT, env.VITE_ADSENSE_SLOT).client;
+    },
+    transformIndexHtml() {
+      return client ? [{ tag: 'meta', attrs: { name: 'google-adsense-account', content: client }, injectTo: 'head' }] : [];
+    },
+    generateBundle() {
+      if (client) this.emitFile({ type: 'asset', fileName: 'ads.txt', source: adsTxt(client) });
     },
   };
 }
@@ -105,6 +127,7 @@ export default defineConfig({
   plugins: [
     react(),
     securityHeaders(),
+    adsense(),
     legalPages(),
     sitemap(),
     VitePWA({

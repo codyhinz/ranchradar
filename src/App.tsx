@@ -15,6 +15,8 @@ import { GuestOffer } from './components/GuestOffer';
 import { ConflictPrompt } from './components/ConflictPrompt';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
+import { AdSlot } from './components/AdSlot';
+import { adsEnabled, openAdChoices } from './app/ads';
 import { BulkAddSheet } from './components/BulkAddSheet';
 import { expiresAfter } from './components/EntryFields';
 import { FormSheet } from './components/FormSheet';
@@ -267,6 +269,8 @@ export function App() {
             say(t('expired.cleared', { count: ids.length }), () => { void store.restore(ids); });
           })} onBulkAdd={() => setBulkOpen(true)} boxUsed={boxUsed} boxCapacity={capacity} />
         )}
+        {/* Below the roster only: never in search results, sheets, or an empty ranch with nothing else on screen. */}
+        {entries !== null && !query.trim() && summaries.size > 0 && <AdSlot />}
       </main>
       </>)}
 
@@ -277,6 +281,7 @@ export function App() {
           <a href="/privacy">{t('legal.privacy')}</a>
           <a href="/terms">{t('legal.terms')}</a>
           <a href="https://github.com/codyhinz/ranchradar" target="_blank" rel="noopener noreferrer">{t('legal.source')}</a>
+          {adsEnabled() && <button type="button" className="link-button" onClick={openAdChoices}>{t('ads.choices')}</button>}
         </nav>
         <p>{t('legal.fan')}</p>
       </footer>

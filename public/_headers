@@ -3,8 +3,8 @@
 # (the one script Cloudflare injects; it reports to cloudflareinsights.com or our own /cdn-cgi/rum)
 # and Cloudflare Turnstile, the bot check on the email sign-in forms (its script and its iframe). React's inline style attributes
 # (e.g. --i for the cascade animation) need style-src-attr. The placeholders in connect-src are filled
-# in at build time with this project's Supabase and Sentry origins (scripts/lib/headers.ts); ad networks
-# will need their own entries later.
+# in at build time with this project's Supabase and Sentry origins (scripts/lib/headers.ts). Builds with
+# VITE_ADSENSE_CLIENT also get AdSense's and Google's consent message's hosts (scripts/lib/adsense.ts).
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com/beacon.min.js https://challenges.cloudflare.com; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' {{SUPABASE}} {{SENTRY}} https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
   X-Content-Type-Options: nosniff

@@ -1,4 +1,4 @@
-import { fillHeaders, sentrySources, supabaseSources } from './headers';
+import { addCspSources, fillHeaders, sentrySources, supabaseSources } from './headers';
 
 describe('security headers', () => {
   const line = "connect-src 'self' {{SUPABASE}} {{SENTRY}}; worker-src 'self'";
@@ -19,5 +19,25 @@ describe('security headers', () => {
   it('refuses plain-http origins', () => {
     expect(() => supabaseSources('http://abc123.supabase.co')).toThrow();
     expect(() => sentrySources('http://key@o1.ingest.sentry.io/2')).toThrow();
+  });
+});
+
+describe('AdSense in the CSP', () => {
+  const template = "/*\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' {{SUPABASE}}; frame-ancestors 'none'\n  X-Frame-Options: DENY";
+  it('leaves the policy strict until a client id is set', () => {
+    expect(fillHeaders(template)).not.toContain('googlesyndication');
+    expect(fillHeaders(template, { adsenseClient: 'not-a-client' })).not.toContain('googlesyndication');
+  });
+  it('adds AdSense and the consent message to the right directives', () => {
+    const out = fillHeaders(template, { adsenseClient: 'ca-pub-1234567890123456' });
+    const policy = out.split('\n')[1]!;
+    expect(policy).toMatch(/script-src 'self' https:\/\/pagead2\.googlesyndication\.com /);
+    expect(policy).toMatch(/frame-src https:\/\/\*\.googlesyndication\.com /);
+    expect(policy).toContain("style-src 'self' 'unsafe-inline'");
+    expect(policy).toContain("frame-ancestors 'none'");
+    expect(out).toContain('X-Frame-Options: DENY');
+  });
+  it('never repeats a source', () => {
+    expect(addCspSources("  Content-Security-Policy: img-src 'self' https:", { 'img-src': ['https:'] })).toBe("  Content-Security-Policy: img-src 'self' https:");
   });
 });

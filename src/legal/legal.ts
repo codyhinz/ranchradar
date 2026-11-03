@@ -4,9 +4,13 @@ import '@fontsource/zilla-slab/700.css';
 import '@fontsource-variable/atkinson-hyperlegible-next';
 import '../styles.css';
 import './legal.css';
+import { mountStaticAds } from '../app/ads';
 
 // Follow the Light/Dark choice from the app's Settings; "system" leaves it to the device.
 try {
   const saved = localStorage.getItem('ranchradar:theme');
   if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
 } catch { /* storage blocked: follow the device */ }
+
+// Ads and the "Ad privacy choices" link, only in builds with AdSense settings.
+mountStaticAds();

@@ -109,6 +109,7 @@ function footer(): string {
       <footer class="legal-foot">
         <a class="legal-back" href="/">Open RanchRadar</a>
         <p><a href="/${PAGES_DIR}/">All regulations</a> · <a href="/about">About</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+        <p data-ad-choices hidden><button type="button" class="link-button">Ad privacy choices</button></p>
         <p>RanchRadar is an unofficial fan project and isn’t affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company. Pokémon and all related names are trademarks of their respective owners.</p>
       </footer>`;
 }
@@ -214,6 +215,8 @@ ${changes}
         <p>Every Pokémon the Roster Ranch can offer during ${escapeHtml(reg.id)}, in Pokédex order, as listed on the in-game Recruit → Roster Info screen. Pokémon that only come from gifts or Pokémon HOME may also be allowed in battle.</p>
         ${monGrid(reg.forms)}
       </section>
+
+      <aside class="ad-slot" data-ad hidden aria-label="Advertisement"></aside>
 
       <section aria-labelledby="megas">
         <h2 id="megas">${reg.megas.length} Mega Evolutions</h2>

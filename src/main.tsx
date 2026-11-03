@@ -6,6 +6,7 @@ import '@fontsource-variable/atkinson-hyperlegible-next';
 import './styles.css';
 import { App } from './App';
 import { startErrorTracking } from './app/errorTracking';
+import { startAds } from './app/ads';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 createRoot(document.getElementById('root')!).render(
@@ -19,3 +20,6 @@ createRoot(document.getElementById('root')!).render(
 // Crash reports load after the first paint, and only in builds with a Sentry DSN.
 if ('requestIdleCallback' in window) requestIdleCallback(() => void startErrorTracking(), { timeout: 3000 });
 else setTimeout(() => void startErrorTracking(), 1000);
+
+// The AdSense script (and Google's consent message) loads when the browser is idle, only in builds with a client id.
+startAds();
