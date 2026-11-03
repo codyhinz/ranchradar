@@ -1,4 +1,5 @@
 import { Fragment, useState, type FormEvent } from 'react';
+import { disablePush } from '../app/push';
 import { authErrorKey } from '../app/authErrors';
 import { rememberOAuthChoice } from '../app/signInHint';
 import { useTurnstile } from '../app/turnstile';
@@ -115,6 +116,8 @@ export function AccountSheet({ auth, guestPokemon, onAddGuestPokemon, conflicts,
   };
 
   const signOut = () => void run('email', async () => {
+    // This device stops getting the account's reminders before it signs out (best effort).
+    await disablePush(client).catch(() => undefined);
     // This device only; other signed-in devices stay signed in.
     const { error: err } = await client.auth.signOut({ scope: 'local' });
     if (err) throw err;

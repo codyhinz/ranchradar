@@ -128,7 +128,7 @@ The build turns each file into a public page at `/regulations/<id>/`, plus an in
 
 ## Deployment
 
-Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN`, `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT` and `VITE_ADSENSE_SLOT` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins, plus AdSense's hosts when it's on, into the Content-Security-Policy in `public/_headers`.
+Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN`, `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT` and `VITE_VAPID_PUBLIC_KEY` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins, plus AdSense's hosts when it's on, into the Content-Security-Policy in `public/_headers`.
 
 Removed roster entries, teams and items are kept as tombstones for 30 days so every device can sync the removal, then a daily pg_cron job (`purge-soft-deleted`, 04:23 UTC) deletes them for real.
 
@@ -157,11 +157,29 @@ psql --single-transaction --variable ON_ERROR_STOP=1 \
 
 Restore into a scratch project now and then to be sure the backups work.
 
+### Reminders
+
+Signed-in players can get a push notification when the Roster Ranch refreshes ("I just recruited", or the time left after a Quick Coupon) and before a trial ends (1 hour to 2 days before, 1 day by default). Trial reminders are scheduled by a database trigger from the synced roster; the app never writes them. A pg_cron job (`send-reminders`) calls the `send-reminders` Edge Function every minute while something is due. It claims due reminders once, encrypts each notification for the device (Web Push with VAPID, implemented on WebCrypto in `supabase/functions/_shared/webpush.ts`, no dependencies), only calls the browsers' own push services, and deletes subscriptions those services report as gone. Builds without `VITE_VAPID_PUBLIC_KEY` have no reminders.
+
+To set it up:
+
+1. Run `npm run vapid` once. Keep the private key out of the repo.
+2. In Supabase → **Edge Functions → Secrets**, add `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (`mailto:` plus a contact address) and `REMINDERS_CRON_SECRET` (a long random string, e.g. `openssl rand -hex 32`).
+3. In the Supabase SQL editor, store the function's address and the same secret in Vault, where the cron job reads them:
+   ```sql
+   select vault.create_secret('https://your-project-ref.supabase.co', 'project_url');
+   select vault.create_secret('the same random string', 'reminders_cron_secret');
+   ```
+4. `npx supabase db push`, then `npx supabase functions deploy send-reminders` (JWT checking is off for it in `config.toml`; the shared secret guards it).
+5. Add `VITE_VAPID_PUBLIC_KEY` (the public key) to Cloudflare's build variables and redeploy.
+
+Generating new VAPID keys later means every device has to turn notifications on again. On iPhone and iPad, notifications only work once RanchRadar is added to the Home Screen.
+
 ## Roadmap
 
-- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, public regulation pages, and ad slots that stay off until AdSense approves the site.
+- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, public regulation pages, and ad slots that stay off until AdSense approves the site, and ranch refresh and trial reminders by push notification.
 - **Now:** a public launch and AdSense approval.
-- **Later:** trial reminders, Pokémon HOME tracking, item and team tracking, a Champions news feed, and importing your box from screenshots.
+- **Later:** Pokémon HOME tracking, item and team tracking, a Champions news feed, and importing your box from screenshots.
 
 ## Contributing
 

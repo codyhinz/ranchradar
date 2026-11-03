@@ -1,13 +1,16 @@
 import type { AuthState } from '../app/useAuth';
 import { t } from '../i18n';
 import { initialOf } from './AccountSheet';
+import { RecruitedIcon } from './NotificationSettings';
 
 /**
  * The ranch sign: painted sunset art with the name lettered on as real text, so it stays
  * sharp at any size and reads to screen readers. Phones get a taller crop with the mascot larger.
  */
-export function Header({ auth, onOpenAccount, onOpenSettings, onHome }: {
+export function Header({ auth, onOpenAccount, onOpenSettings, onHome, onRecruited }: {
   auth: AuthState;
+  /** "I just recruited": sets the 22-hour ranch reminder. Only when reminders are available. */
+  onRecruited?: () => void;
   onOpenAccount: () => void;
   onOpenSettings: () => void;
   onHome: () => void;
@@ -30,6 +33,11 @@ export function Header({ auth, onOpenAccount, onOpenSettings, onHome }: {
         </span>
       </button>
       <div className="masthead-actions">
+        {onRecruited && (
+          <button type="button" className="icon-button recruited-button" onClick={onRecruited} aria-label={t('remind.recruitedLong')} title={t('remind.recruitedLong')}>
+            <RecruitedIcon />
+          </button>
+        )}
         {auth.status !== 'unavailable' && (
           <button
             type="button"

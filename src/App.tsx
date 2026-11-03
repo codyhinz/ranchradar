@@ -16,6 +16,9 @@ import { ConflictPrompt } from './components/ConflictPrompt';
 import { AccountSheet } from './components/AccountSheet';
 import { AddSheet } from './components/AddSheet';
 import { AdSlot } from './components/AdSlot';
+import { NotificationSettings, formatReminderTime } from './components/NotificationSettings';
+import { useNotifications } from './app/useNotifications';
+import { disablePush } from './app/push';
 import { adsEnabled, openAdChoices } from './app/ads';
 import { BulkAddSheet } from './components/BulkAddSheet';
 import { expiresAfter } from './components/EntryFields';
@@ -54,6 +57,7 @@ export function App() {
   // "Decide later" on the conflict prompt holds for this visit; Settings → Account reopens it.
   const [conflictsLater, setConflictsLater] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [focusReminders, setFocusReminders] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [tab, setTab] = useTab();
   const [toast, setToast] = useState<ToastMessage | null>(null);
@@ -78,6 +82,20 @@ export function App() {
   const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
   const account = useAccountSync(db, store, auth, (text) => say(text));
   const age = useAgeCheck(auth);
+  const notify = useNotifications(auth, locale);
+
+  /** "I just recruited": the ranch reminder in 22 hours, or set up notifications first. */
+  const recruited = () => guard(async () => {
+    if (notify.loaded && !notify.anyDevice) {
+      setFocusReminders(true);
+      setSettingsOpen(true);
+      say(t('remind.setupFirst'));
+      return;
+    }
+    const previous = notify.ranchAt;
+    const at = await notify.setRanch();
+    say(t('remind.ranchSet', { time: formatReminderTime(at, locale) }), () => void notify.restoreRanch(previous), 'cheer');
+  });
   // Prompts that act on the account wait until it has answered the age question.
   const ageOk = age.status === 'ok';
   const [ageRemoved, setAgeRemoved] = useState(false);
@@ -94,6 +112,8 @@ export function App() {
     if (!supabase || auth.status !== 'signedIn') return;
     const userId = auth.userId;
     await deleteMyAccount(supabase);
+    // The server's copy went with the account; drop the browser's too.
+    await disablePush(null).catch(() => undefined);
     // The user is gone, so the server may refuse the sign-out; the local session is cleared either way.
     await supabase.auth.signOut({ scope: 'local' }).catch(() => undefined);
     forgetAgeAnswer(userId);
@@ -111,7 +131,7 @@ export function App() {
   };
 
   const leaveAgeCheck = () => {
-    void supabase?.auth.signOut({ scope: 'local' }).catch(() => undefined);
+    void disablePush(supabase).catch(() => undefined).then(() => supabase?.auth.signOut({ scope: 'local' })).catch(() => undefined);
     say(t('auth.signedOut'));
   };
 
@@ -198,7 +218,7 @@ export function App() {
 
   return (
     <div className="app">
-      <Header auth={auth} onOpenAccount={() => setAccountOpen(true)} onOpenSettings={() => setSettingsOpen(true)} onHome={goHome} />
+      <Header auth={auth} onOpenAccount={() => setAccountOpen(true)} onOpenSettings={() => setSettingsOpen(true)} onHome={goHome} onRecruited={notify.available && ageOk ? () => void recruited() : undefined} />
 
       {tab === 'roster' && (<>
       <div className="search-bar">
@@ -350,7 +370,18 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)} onClose={() => setSettingsOpen(false)} />
+        <SettingsDialog locale={locale} onLocaleChange={setLocale} theme={theme} onThemeChange={setTheme} box={box} onBoxChange={setBox} boxUsed={boxUsed} onExport={exportRoster} onImport={(file) => void importRoster(file)}
+          focusReminders={focusReminders}
+          reminders={auth.status !== 'unavailable' && notify.support !== 'off-in-build' ? (
+            <NotificationSettings
+              notify={notify}
+              signedIn={notify.available}
+              locale={locale}
+              onSignIn={() => { setSettingsOpen(false); setAccountOpen(true); }}
+              say={(text, onUndo) => say(text, onUndo)}
+            />
+          ) : undefined}
+          onClose={() => { setSettingsOpen(false); setFocusReminders(false); }} />
       )}
 
       {accountOpen && (

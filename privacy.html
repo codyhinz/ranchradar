@@ -31,11 +31,12 @@
         <li><strong>Sign-in details.</strong> Your email address, and a password stored only as a secure hash that we can’t read. If you sign in with Google or Discord, we receive your name, email address, profile picture and account ID from that service. We never see your Google or Discord password.</li>
         <li><strong>Your profile.</strong> Your language setting, and when you agreed to the terms and confirmed you’re 13 or older.</li>
         <li><strong>Your roster.</strong> Once sync is on, the Pokémon you add, their details (status, trial timers, nature) and any notes you write, so they’re the same on every device.</li>
+        <li><strong>Reminders, if you turn them on.</strong> For each device you turn notifications on for, the address your browser’s push service gave it, the keys that encrypt messages to it, and the device’s language. Also when your next Roster Ranch reminder is due and how early you want trial reminders. Trial reminders are worked out from your synced roster.</li>
         <li><strong>Session data.</strong> Your browser keeps a sign-in token so you stay signed in. It’s stored in your browser’s storage, not in a tracking cookie.</li>
       </ul>
 
       <h2>How we use it</h2>
-      <p>Only to run RanchRadar: to sign you in, save and sync your roster, send emails you ask for (confirming your address or resetting your password), keep the service secure, for example by limiting repeated sign-in attempts, fix crashes, and see which pages people use. We don’t use your roster or account details for advertising, and we don’t sell or rent them to anyone.</p>
+      <p>Only to run RanchRadar: to sign you in, save and sync your roster, send emails you ask for (confirming your address or resetting your password), send the reminders you turn on, keep the service secure, for example by limiting repeated sign-in attempts, fix crashes, and see which pages people use. We don’t use your roster or account details for advertising, and we don’t sell or rent them to anyone.</p>
 
       <h2>Services that handle your data for us</h2>
       <ul>
@@ -43,6 +44,7 @@
         <li><strong>Sentry</strong> receives crash reports when something breaks in the app: the error, the app version, your browser and device type, and the last few screens and buttons you used. Reports never include your roster, notes or email address, and links are trimmed of any sign-in codes first.</li>
         <li><strong>Cloudflare</strong> hosts the site. Like any web host, it processes your IP address and browser details to deliver pages and block attacks. It also runs our visit counting (see below), and its Turnstile check runs on the email sign-in, sign-up and password-reset forms to keep bots out, looking at your browser and device signals for that one check. Our encrypted database backups are stored in Cloudflare R2.</li>
         <li><strong>Resend</strong> delivers the emails your account needs, like confirming your address and resetting your password. It receives your email address and the message.</li>
+        <li><strong>Your browser’s push service</strong> (Google for Chrome, Edge and Android, Mozilla for Firefox, Apple for Safari, Microsoft for some Windows browsers) delivers reminders to devices you turn them on for. Each message is encrypted for your device, so the push service can’t read it; it sees only that a message is on its way and when.</li>
         <li><strong>Google and Discord</strong> handle sign-in if you choose them. Their own privacy policies apply to your accounts with them.</li>
       </ul>
       <p>These providers may store data on servers outside your country, including in the United States.</p>
@@ -67,6 +69,7 @@
       <h2>Your choices and rights</h2>
       <ul>
         <li><strong>Export</strong> your roster anytime from Settings. With an account, <strong>Download my data</strong> in the account menu saves everything the account holds as a JSON file, which you can also import later as a backup.</li>
+        <li><strong>Turn reminders off</strong> for a device in Settings → Reminders, or by signing out on it. Either removes that device’s push details from your account.</li>
         <li><strong>Delete your account</strong> anytime with <strong>Delete account</strong> in the account menu. If you can’t sign in, email <a href="mailto:ranchradar.dev@gmail.com">ranchradar.dev@gmail.com</a> from the address on the account and we’ll delete it for you.</li>
         <li><strong>Ask</strong> to see, correct or receive a copy of the data we hold about you. Depending on where you live, you may have further rights under laws like the GDPR or the CCPA. Email us to use any of them.</li>
       </ul>

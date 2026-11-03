@@ -120,7 +120,7 @@ begin
   end;
   begin
     insert into reminders (user_id, kind, fire_at)
-      select '00000000-0000-0000-0000-00000000000a', 'ranch_refresh', now() from generate_series(1, 501);
+      select '00000000-0000-0000-0000-00000000000a', 'ranch_refresh', now() + interval '1 hour' from generate_series(1, 501);
     raise exception 'the reminder cap let 501 rows in';
   exception when raise_exception then
     if sqlerrm not like 'row_cap_reached%' then raise; end if;
@@ -230,5 +230,107 @@ do $$ begin
   end if;
 end $$;
 delete from auth.users where id = '00000000-0000-0000-0000-0000000000f1';
+
+-- Reminders: trial reminders follow the roster, users only set their own ranch refresh
+insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000c1'), ('00000000-0000-0000-0000-0000000000c2');
+set role authenticated;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000c1';
+insert into roster_entries (id, user_id, form_id, status, trial_expires_at)
+  values ('55555555-5555-5555-5555-555555555555', '00000000-0000-0000-0000-0000000000c1', 'garchomp', 'trial', now() + interval '5 days');
+do $$
+declare fire timestamptz;
+begin
+  select fire_at into fire from reminders where kind = 'trial_expiry';
+  assert fire = (select trial_expires_at - interval '1 day' from roster_entries where id = '55555555-5555-5555-5555-555555555555'),
+    'a new trial should get a reminder 1 day before it ends';
+  -- notes don't move it; a new expiry does
+  update roster_entries set notes = 'x' where id = '55555555-5555-5555-5555-555555555555';
+  assert (select count(*) from reminders where kind = 'trial_expiry') = 1, 'editing notes duplicated the reminder';
+  update roster_entries set trial_expires_at = now() + interval '3 days' where id = '55555555-5555-5555-5555-555555555555';
+  assert (select count(*) from reminders where kind = 'trial_expiry') = 1, 'a new expiry should replace the reminder';
+  -- the lead time is the user's choice
+  update profiles set trial_reminder_minutes = 60;
+  assert (select fire_at from reminders where kind = 'trial_expiry')
+       = (select trial_expires_at - interval '1 hour' from roster_entries where id = '55555555-5555-5555-5555-555555555555'),
+    'changing the lead time should reschedule';
+  update profiles set trial_reminder_minutes = null;
+  assert not exists (select 1 from reminders where kind = 'trial_expiry'), 'turning trial reminders off should clear them';
+  update profiles set trial_reminder_minutes = 1440;
+  assert exists (select 1 from reminders where kind = 'trial_expiry'), 'turning them back on should reschedule';
+  begin
+    update profiles set trial_reminder_minutes = 5;
+    raise exception 'an unsupported lead time was accepted';
+  exception when check_violation then null;
+  end;
+  -- a trial that ends sooner than the lead time gets none
+  insert into roster_entries (id, user_id, form_id, status, trial_expires_at)
+    values (gen_random_uuid(), '00000000-0000-0000-0000-0000000000c1', 'torkoal', 'trial', now() + interval '3 hours');
+  assert (select count(*) from reminders where kind = 'trial_expiry') = 1, 'a trial ending within the lead time got a reminder';
+  -- making it permanent or removing it clears the reminder
+  update roster_entries set status = 'permanent', trial_expires_at = null where id = '55555555-5555-5555-5555-555555555555';
+  assert not exists (select 1 from reminders where kind = 'trial_expiry'), 'a permanent Pokémon kept its trial reminder';
+
+  -- ranch refresh: one at a time, within 22 hours
+  perform set_ranch_reminder(now() + interval '22 hours');
+  perform set_ranch_reminder(now() + interval '10 hours');
+  assert (select count(*) from reminders where kind = 'ranch_refresh' and sent_at is null) = 1, 'ranch reminders should replace each other';
+  begin
+    perform set_ranch_reminder(now() + interval '30 hours');
+    raise exception 'a ranch reminder past 22 hours was accepted';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into reminders (user_id, kind, fire_at, roster_entry_id)
+      values ('00000000-0000-0000-0000-0000000000c1', 'trial_expiry', now() + interval '1 hour', '55555555-5555-5555-5555-555555555555');
+    raise exception 'a user wrote a trial reminder';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update reminders set sent_at = now();
+    raise exception 'a user marked a reminder sent';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform claim_due_reminders();
+    raise exception 'a user ran the sender';
+  exception when insufficient_privilege then null;
+  end;
+
+  -- push subscriptions: only real push services, and the signed-in account takes over a shared browser
+  begin
+    perform save_push_subscription('https://evil.example/push/1', 'k', 'a', 'en');
+    raise exception 'an unknown push host was accepted';
+  exception when check_violation then null;
+  end;
+  perform save_push_subscription('https://fcm.googleapis.com/fcm/send/abc', 'k', 'a', 'ja');
+  assert (select locale from push_subscriptions) = 'ja', 'subscription not saved';
+end $$;
+set request.jwt.claim.sub = '00000000-0000-0000-0000-0000000000c2';
+do $$ begin
+  assert not exists (select 1 from reminders), 'C2 can read C1''s reminders';
+  perform save_push_subscription('https://fcm.googleapis.com/fcm/send/abc', 'k2', 'a2', 'en');
+  assert (select count(*) from push_subscriptions) = 1, 'C2 should now own the shared browser';
+end $$;
+reset role;
+
+-- The sender claims what's due once, with names and subscriptions, and skips stale reminders
+update reminders set fire_at = now() - interval '1 minute' where kind = 'ranch_refresh' and user_id = '00000000-0000-0000-0000-0000000000c1';
+insert into roster_entries (id, user_id, form_id, status, trial_expires_at)
+  values ('66666666-6666-6666-6666-666666666666', '00000000-0000-0000-0000-0000000000c2', 'garchomp', 'trial', now() + interval '2 days');
+update reminders set fire_at = now() - interval '2 minutes' where roster_entry_id = '66666666-6666-6666-6666-666666666666';
+insert into reminders (user_id, kind, fire_at) values ('00000000-0000-0000-0000-0000000000c2', 'ranch_refresh', now() - interval '7 hours');
+do $$
+declare claimed jsonb := claim_due_reminders();
+declare c2 jsonb;
+begin
+  assert jsonb_array_length(claimed) = 2, format('expected two accounts, got %s', claimed);
+  select g into c2 from jsonb_array_elements(claimed) g where g->>'user_id' = '00000000-0000-0000-0000-0000000000c2';
+  assert jsonb_array_length(c2->'reminders') = 1, 'the 7-hour-old reminder should be skipped';
+  assert c2->'reminders'->0->'names'->>'ja' = 'ガブリアス', 'trial reminders should carry names';
+  assert c2->'subscriptions'->0->>'endpoint' = 'https://fcm.googleapis.com/fcm/send/abc', 'subscriptions missing';
+  assert claim_due_reminders() = '[]'::jsonb, 'a reminder was claimed twice';
+  assert not exists (select 1 from reminders where fire_at <= now() and sent_at is null), 'stale reminders should be marked sent';
+end $$;
+delete from auth.users where id in ('00000000-0000-0000-0000-0000000000c1', '00000000-0000-0000-0000-0000000000c2');
 
 select 'ALL TESTS PASSED' as result;

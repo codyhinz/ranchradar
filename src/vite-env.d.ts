@@ -13,6 +13,8 @@ interface ImportMetaEnv {
   readonly VITE_ADSENSE_CLIENT?: string;
   /** Numeric id of a display ad unit — AdSense → Ads → By ad unit. Leave unset until approved; no ads show without it. */
   readonly VITE_ADSENSE_SLOT?: string;
+  /** The VAPID public key from `npm run vapid` (the same value as the VAPID_PUBLIC_KEY Supabase secret). Leave unset for no reminders. */
+  readonly VITE_VAPID_PUBLIC_KEY?: string;
 }
 
 /** The build's short commit (Cloudflare or GitHub), or "dev". Set in vite.config.ts. */

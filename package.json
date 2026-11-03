@@ -10,7 +10,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "validate:data": "tsx scripts/validate.ts"
+    "validate:data": "tsx scripts/validate.ts",
+    "vapid": "tsx scripts/vapid.ts"
   },
   "dependencies": {
     "@fontsource-variable/atkinson-hyperlegible-next": "5.3.0",

@@ -3,12 +3,12 @@ import { THEMES, type Theme } from '../app/preferences';
 import { boxCapacity, type BoxSettings } from '../app/box';
 import { currentDiagnostics, feedbackEmailUrl, feedbackIssueUrl } from '../app/feedback';
 import { t } from '../i18n';
-import { useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Dialog } from './Dialog';
 
 const THEME_LABEL = { system: 'settings.theme.system', light: 'settings.theme.light', dark: 'settings.theme.dark' } as const;
 
-export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onExport, onImport, onClose }: {
+export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, box, onBoxChange, boxUsed, onExport, onImport, reminders, focusReminders, onClose }: {
   locale: NameLocale;
   onLocaleChange: (locale: NameLocale) => void;
   theme: Theme;
@@ -20,9 +20,16 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
   onExport: () => void;
   /** Merges a chosen backup file into the roster. */
   onImport: (file: File) => void;
+  /** Settings → Reminders, when this build has them. */
+  reminders?: ReactNode;
+  /** Opened from the "I just recruited" button before notifications were set up. */
+  focusReminders?: boolean;
   onClose: () => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (focusReminders) document.getElementById('reminders')?.scrollIntoView({ block: 'start' });
+  }, [focusReminders]);
   return (
     <Dialog title={t('settings.title')} onClose={onClose}>
       <div className="fields">
@@ -42,6 +49,7 @@ export function SettingsDialog({ locale, onLocaleChange, theme, onThemeChange, b
           </select>
           <small className="hint">{t('settings.languageHint')}</small>
         </label>
+        {reminders}
         <fieldset className="box-space">
           <legend>{t('settings.box')}</legend>
           <small className="hint">{t('settings.box.base')}</small>

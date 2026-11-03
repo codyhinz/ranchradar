@@ -1068,3 +1068,18 @@ body::after {
 .bulk-tally { flex: 1; min-width: 10rem; color: var(--muted); font-size: var(--step--1); }
 .bulk-foot[data-over='true'] .bulk-tally { color: var(--danger); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .bulk-tile button { transition: none; } .bulk-tile button:active { transform: none; } }
+
+/* Settings → Reminders */
+.reminders .reminder-device { display: grid; gap: 0.35rem; }
+.reminder-row {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem; border: 1px solid var(--rail); border-radius: var(--radius-row); background: var(--surface);
+}
+.reminder-group { display: grid; gap: 0.45rem; margin: 0.5rem 0 0; padding: 0; border: 0; min-width: 0; }
+.reminder-group > legend { width: 100%; margin-bottom: 0.35rem; padding: 0; font-weight: 600; font-size: var(--step--1); color: var(--muted); }
+.reminder-group .field-hint { margin: 0; }
+.reminder-custom { display: grid; gap: 0.4rem; }
+.reminder-time { display: flex; flex-wrap: wrap; align-items: end; gap: 0.5rem; }
+.reminder-time .field { width: 6.5rem; }
+.recruited-button svg { stroke-linejoin: round; }
+.reminder-chips { margin-top: 0.5rem; }

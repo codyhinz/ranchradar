@@ -158,6 +158,8 @@ export default defineConfig({
           options: { cacheName: 'sprites', expiration: { maxEntries: 1000 } },
         }],
         navigateFallback: '/index.html',
+        // Shows reminder notifications and opens the app when one is tapped (public/push-sw.js).
+        importScripts: ['push-sw.js'],
         // The legal and regulation pages are real pages, not app routes: never answer them with the app.
         navigateFallbackDenylist: [/^\/(about|privacy|terms)(\.html)?\/?$/, /^\/regulations(\/|$)/],
       },
