@@ -73,7 +73,7 @@ If CAPTCHA protection is on in your Supabase project (Authentication → Attack 
 VITE_TURNSTILE_SITE_KEY=0x4AAAAAAA...                          # Cloudflare → Turnstile → widget site key (needed once CAPTCHA is on in Supabase)
 ```
 
-Then apply the schema in `supabase/migrations/` to your project, and under Authentication → URL Configuration add `http://localhost:5173/**` as a redirect URL. Restart `npm run dev` after editing `.env.local`.
+Then apply the schema in `supabase/migrations/` to your project with `npx supabase link` and `npx supabase db push` (the CLI is pinned in `package.json`, so `npx` uses that version rather than the newest one), and under Authentication → URL Configuration add `http://localhost:5173/**` as a redirect URL. Restart `npm run dev` after editing `.env.local`.
 
 For Google and Discord sign-in, turn each provider on under Authentication → Sign In / Providers and paste in its client ID and secret. In the Google Cloud console (an OAuth client of type Web application) and the Discord Developer Portal (OAuth2), set the redirect URL to `https://your-project-ref.supabase.co/auth/v1/callback`. The buttons always show, so enable both providers before deploying. For the button icons, save Google’s and Discord’s official marks from their brand kits as `public/icons/brands/google.svg` and `public/icons/brands/discord.svg`; without them the buttons show text only.
 
@@ -121,6 +121,8 @@ The build turns each file into a public page at `/regulations/<id>/`, plus an in
 ## Deployment
 
 Cloudflare Workers Builds deploys `main` automatically, with a preview link for each pull request. Set `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN` and `VITE_TURNSTILE_SITE_KEY` under the Worker's **Settings → Builds → Variables and secrets**. They're read at build time, and the build also writes the project's exact Supabase and Sentry origins into the Content-Security-Policy in `public/_headers`.
+
+Removed roster entries, teams and items are kept as tombstones for 30 days so every device can sync the removal, then a daily pg_cron job (`purge-soft-deleted`, 04:23 UTC) deletes them for real.
 
 A scheduled GitHub Action pings Supabase every few days so the free-plan project never pauses. It needs the `SUPABASE_URL` and `SUPABASE_ANON_KEY` repository secrets. GitHub turns off scheduled workflows after 60 days without repository activity, so re-enable them under **Actions** if the repo goes quiet.
 

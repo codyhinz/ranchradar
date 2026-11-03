@@ -215,4 +215,20 @@ do $$ begin
 end $$;
 reset role;
 
+-- The daily purge runs and leaves anything removed less than 30 days ago alone
+insert into auth.users (id) values ('00000000-0000-0000-0000-0000000000f1');
+insert into public.roster_entries (id, user_id, form_id, status, deleted_at)
+  values (gen_random_uuid(), '00000000-0000-0000-0000-0000000000f1', 'torkoal', 'permanent', now() - interval '31 days'),
+         (gen_random_uuid(), '00000000-0000-0000-0000-0000000000f1', 'garchomp', 'permanent', now() - interval '29 days');
+select app.purge_soft_deleted();
+do $$ begin
+  if exists (select 1 from public.roster_entries where user_id = '00000000-0000-0000-0000-0000000000f1' and form_id = 'torkoal') then
+    raise exception 'purge_soft_deleted kept a row removed 31 days ago';
+  end if;
+  if not exists (select 1 from public.roster_entries where user_id = '00000000-0000-0000-0000-0000000000f1' and form_id = 'garchomp') then
+    raise exception 'purge_soft_deleted removed a row deleted 29 days ago';
+  end if;
+end $$;
+delete from auth.users where id = '00000000-0000-0000-0000-0000000000f1';
+
 select 'ALL TESTS PASSED' as result;
