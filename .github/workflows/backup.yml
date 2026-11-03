@@ -1,0 +1,111 @@
+# Weekly backup of the Supabase database to a private Cloudflare R2 bucket.
+#
+# Dumps roles, schema and data with the Supabase CLI (it runs a pg_dump that matches the
+# server's Postgres version), packs them into one archive, encrypts it with a passphrase and
+# uploads it as weekly/ranchradar-YYYY-MM-DD.tar.gz.gpg. The data dump includes auth.users
+# (emails and password hashes), so the archive is encrypted before it leaves the runner and
+# nothing is kept as a workflow artifact.
+#
+# Repository secrets:
+#   SUPABASE_DB_URL       Session pooler connection string (Supabase → Connect → Session pooler),
+#                         with the password percent-encoded. GitHub's runners have no IPv6,
+#                         so the direct connection string won't work.
+#   BACKUP_PASSPHRASE     Long random passphrase. Keep a copy in your password manager:
+#                         without it the backups can't be opened.
+#   R2_ACCOUNT_ID         Cloudflare account ID (R2 overview page).
+#   R2_ACCESS_KEY_ID      From an R2 API token with Object Read & Write on the backup bucket only.
+#   R2_SECRET_ACCESS_KEY
+#   R2_BUCKET             The private bucket's name.
+#
+# Old backups are removed by a lifecycle rule on the bucket, not by this job, so the token
+# never needs delete rights. Restore steps are in the README under Deployment → Backups.
+name: Database backup
+
+on:
+  schedule:
+    - cron: '41 8 * * 0' # Sundays 08:41 UTC; off the hour, when GitHub's queue is quieter
+  workflow_dispatch: # "Run workflow" button, to test it once after adding the secrets
+
+permissions: {}
+
+concurrency:
+  group: database-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_CLI_VERSION: 2.121.0
+    steps:
+      - name: Check secrets
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          missing=""
+          for name in SUPABASE_DB_URL BACKUP_PASSPHRASE R2_ACCOUNT_ID R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET; do
+            [ -n "${!name}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Add these repository secrets:$missing"
+            exit 1
+          fi
+
+      - name: Dump roles, schema and data
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -p dump
+          npx --yes "supabase@${SUPABASE_CLI_VERSION}" db dump --db-url "$SUPABASE_DB_URL" -f dump/roles.sql --role-only
+          npx --yes "supabase@${SUPABASE_CLI_VERSION}" db dump --db-url "$SUPABASE_DB_URL" -f dump/schema.sql
+          npx --yes "supabase@${SUPABASE_CLI_VERSION}" db dump --db-url "$SUPABASE_DB_URL" -f dump/data.sql --use-copy --data-only
+          # A dump that ran but came back without the roster isn't a backup.
+          grep -q 'COPY "public"."roster_entries"' dump/data.sql || { echo "::error::data.sql has no roster_entries data"; exit 1; }
+          grep -q 'CREATE TABLE IF NOT EXISTS "public"."roster_entries"\|CREATE TABLE "public"."roster_entries"' dump/schema.sql || { echo "::error::schema.sql has no roster_entries table"; exit 1; }
+          ls -l dump
+
+      - name: Pack and encrypt
+        env:
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          name="ranchradar-$(date -u +%F).tar.gz.gpg"
+          tar -czf - -C dump roles.sql schema.sql data.sql \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --pinentry-mode loopback \
+                  --passphrase-fd 3 --output "$name" 3<<<"$BACKUP_PASSPHRASE"
+          rm -rf dump
+          echo "BACKUP_FILE=$name" >> "$GITHUB_ENV"
+          ls -l "$name"
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          # Newer AWS CLI checksums aren't all supported by R2; only send them when required.
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
+        run: |
+          set -euo pipefail
+          endpoint="https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
+          key="weekly/${BACKUP_FILE}"
+          aws s3api put-object --endpoint-url "$endpoint" --bucket "$R2_BUCKET" --key "$key" --body "$BACKUP_FILE" > /dev/null
+          local_size=$(stat -c %s "$BACKUP_FILE")
+          remote_size=$(aws s3api head-object --endpoint-url "$endpoint" --bucket "$R2_BUCKET" --key "$key" --query ContentLength --output text)
+          if [ "$local_size" != "$remote_size" ]; then
+            echo "::error::Uploaded size $remote_size doesn't match local size $local_size"
+            exit 1
+          fi
+          echo "Uploaded $key ($remote_size bytes)"
+          rm -f "$BACKUP_FILE"

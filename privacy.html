@@ -15,7 +15,7 @@
     <main class="legal">
       <a class="legal-home" href="/"><img src="/brand/mark-112.webp" width="48" height="48" alt="" /><span>RanchRadar</span></a>
       <h1>Privacy policy</h1>
-      <p class="legal-date">Effective November 1, 2026</p>
+      <p class="legal-date">Effective November 2, 2026</p>
 
       <div class="legal-summary">
         <p><strong>The short version.</strong> Without an account, your roster never leaves your device. With an account, we store your email, your sign-in details and your roster so it can sync. We don’t sell your data. We count visits with cookie-free analytics, and if the app crashes it sends us an error report that never includes your roster. There are no ads today; when they arrive, Google may use cookies to serve them, and where the law requires it we’ll ask first.</p>
@@ -41,7 +41,7 @@
       <ul>
         <li><strong>Supabase</strong> runs our database and sign-in, and sends account emails.</li>
         <li><strong>Sentry</strong> receives crash reports when something breaks in the app: the error, the app version, your browser and device type, and the last few screens and buttons you used. Reports never include your roster, notes or email address, and links are trimmed of any sign-in codes first.</li>
-        <li><strong>Cloudflare</strong> hosts the site. Like any web host, it processes your IP address and browser details to deliver pages and block attacks. It also runs our visit counting (see below), and its Turnstile check runs on the email sign-in, sign-up and password-reset forms to keep bots out, looking at your browser and device signals for that one check.</li>
+        <li><strong>Cloudflare</strong> hosts the site. Like any web host, it processes your IP address and browser details to deliver pages and block attacks. It also runs our visit counting (see below), and its Turnstile check runs on the email sign-in, sign-up and password-reset forms to keep bots out, looking at your browser and device signals for that one check. Our encrypted database backups are stored in Cloudflare R2.</li>
         <li><strong>Resend</strong> delivers the emails your account needs, like confirming your address and resetting your password. It receives your email address and the message.</li>
         <li><strong>Google and Discord</strong> handle sign-in if you choose them. Their own privacy policies apply to your accounts with them.</li>
       </ul>
@@ -62,7 +62,7 @@
       <p>Apart from those ads, RanchRadar doesn’t use cookies. Your sign-in session and settings live in your browser’s own storage, and they aren’t used to track you.</p>
 
       <h2>How long we keep it</h2>
-      <p>We keep your account data until you delete your account. Deleting it removes your sign-in, profile, roster and everything else saved with the account from our database straight away, and the app clears its copy from the device you deleted it on. Other devices still signed in keep their own copy until you clear them or the browser’s site data. Our providers’ backups may hold a copy for a short time before it’s overwritten.</p>
+      <p>We keep your account data until you delete your account. Deleting it removes your sign-in, profile, roster and everything else saved with the account from our database straight away, and the app clears its copy from the device you deleted it on. Other devices still signed in keep their own copy until you clear them or the browser’s site data. Copies can remain in backups for up to 90 days: our own weekly database backups, which are encrypted and kept in private storage, are deleted after 90 days, and our providers’ backups are overwritten on their own schedules.</p>
 
       <h2>Your choices and rights</h2>
       <ul>
