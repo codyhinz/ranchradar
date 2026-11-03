@@ -8,7 +8,7 @@
  * the upload is plain inserts with no id remapping.
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { OutboxItem, RanchDB } from '../local/db';
+import { itemOutboxId, type OutboxItem, type RanchDB } from '../local/db';
 import { StorageError } from '../storage';
 import { MAX_ROSTER_ENTRIES, type RosterEntry } from '../types';
 
@@ -62,12 +62,14 @@ export async function guestCount(db: RanchDB): Promise<number> {
 
 /**
  * Moves every live guest Pokémon into the account and queues it for upload. Guest tombstones
- * were never uploaded, so they're simply dropped. Returns how many moved.
+ * were never uploaded, so they're simply dropped. The guest's bought items come along too, added
+ * to whatever the account already owns. Returns how many Pokémon moved.
  */
 export async function claimGuestRoster(db: RanchDB, userId: string, now: Date = new Date()): Promise<number> {
-  const tx = db.transaction(['roster_entries', 'outbox'], 'readwrite');
+  const tx = db.transaction(['roster_entries', 'owned_items', 'outbox'], 'readwrite');
   const rows = tx.objectStore('roster_entries');
   const outbox = tx.objectStore('outbox');
+  const items = tx.objectStore('owned_items');
   const all = await rows.getAll();
   const guest = all.filter((e) => e.user_id === null);
   const moving = guest.filter((e) => !e.deleted_at);
@@ -82,6 +84,15 @@ export async function claimGuestRoster(db: RanchDB, userId: string, now: Date = 
     if (entry.deleted_at) { await rows.delete(entry.id); continue; }
     await rows.put({ ...entry, user_id: userId });
     await outbox.put({ table: 'roster_entries', rowId: entry.id, isNew: true, queuedAt });
+  }
+  for (const item of await items.getAll()) {
+    if (item.owner !== '') continue;
+    await items.delete(['', item.item_id]);
+    if (item.deleted_at) continue;
+    const theirs = await items.get([userId, item.item_id]);
+    if (theirs && !theirs.deleted_at) continue; // the account already has it
+    await items.put({ ...item, owner: userId, version: theirs?.version ?? 1, updated_at: queuedAt });
+    await outbox.put({ table: 'owned_items', rowId: itemOutboxId(userId, item.item_id), isNew: false, queuedAt });
   }
   await tx.done;
   return moving.length;

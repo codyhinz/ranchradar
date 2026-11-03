@@ -16,6 +16,7 @@ RanchRadar is a mobile-first web app you can install like a native one. It works
 - **Box space.** Every copy counts against your box slots, with settings for Ranked rewards, the Starter Pack, and membership.
 - **Season changes handled.** Pokémon that leave the current regulation stay in your roster, dimmed and tagged, and the next regulation takes over on its start date.
 - **Duplicates and variants.** Every owned Pokémon is its own entry, so duplicates with different natures work naturally. Cosmetic variants like Alcremie flavors and Florges colors are tracked too.
+- **Items.** A checklist of every held item, berry and Mega Stone in the season: one tap marks it bought, search finds a Mega Stone by its Pokémon, and Missing shows what's left to buy. Works without an account and syncs with one.
 - **Undo everywhere.** Every removal, bulk clear, and status change can be undone from the toast.
 - **Backups.** Export your roster to a JSON file and import it on another device.
 - **Accounts and sync.** Sign in with Google, Discord, or email and password from the account button in the header. Your roster syncs across devices, a guest roster can move into the account when you sign in, and when two devices change the same Pokémon you pick which version to keep.
@@ -177,9 +178,9 @@ Generating new VAPID keys later means every device has to turn notifications on 
 
 ## Roadmap
 
-- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, public regulation pages, and ad slots that stay off until AdSense approves the site, and ranch refresh and trial reminders by push notification.
-- **Now:** a public launch and AdSense approval.
-- **Later:** Pokémon HOME tracking, item and team tracking, a Champions news feed, and importing your box from screenshots.
+- **Done:** the local-first app, accounts with Google, Discord and email sign-in, cloud sync with guest merge and a conflict prompt, account deletion and data export, an age check, email delivery, bot protection, crash reporting, and weekly database backups, public regulation pages, and ad slots that stay off until AdSense approves the site, ranch refresh and trial reminders by push notification, and item tracking.
+- **Now:** team building (Pokémon, held items, moves and abilities), alongside the public launch and AdSense approval.
+- **Later:** Pokémon HOME tracking, a Champions news feed, and importing your box from screenshots.
 
 ## Contributing
 

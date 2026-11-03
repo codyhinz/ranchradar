@@ -40,8 +40,22 @@ export type ImportedRosterEntry = Pick<
   'id' | 'form_id' | 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'source' | 'created_at' | 'updated_at'
 >;
 
+/**
+ * An item the player has bought. Buying unlocks it for every Pokémon and team, so this only
+ * records that they have it: one row per item, removed by soft delete like a roster entry.
+ */
+export interface OwnedItem {
+  /** The account's id, or '' for the guest (IndexedDB keys can't hold null). */
+  owner: string;
+  item_id: string;
+  version: number;
+  created_at: ISODate;
+  updated_at: ISODate;
+  deleted_at: ISODate | null;
+}
+
 /** Tables that sync. Later features add their stores here and in a new DB migration. */
-export type SyncTable = 'roster_entries';
+export type SyncTable = 'roster_entries' | 'owned_items';
 
 export const NATURES = [
   'hardy', 'lonely', 'brave', 'adamant', 'naughty',

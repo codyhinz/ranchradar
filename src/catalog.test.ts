@@ -76,7 +76,7 @@ describe('guessLocale', () => {
 });
 
 describe('regulations', () => {
-  const reg = (id: string, starts_at: string) => ({ id, name: id, starts_at, ends_at: '2099-01-01T00:00:00Z', status: 'final' as const, forms: [] });
+  const reg = (id: string, starts_at: string) => ({ id, name: id, starts_at, ends_at: '2099-01-01T00:00:00Z', status: 'final' as const, forms: [], items: [] });
   const list = [reg('M-C', '2026-09-09T02:00:00Z'), reg('M-D', '2026-12-02T02:00:00Z')];
 
   it('switches to a file shipped ahead of time on its start date, not before', () => {

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { currentRegulation, displayName, regulationAt, searchForms } from './catalog';
 import { boxCapacity } from './app/box';
 import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/preferences';
 import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
+import { useItemStore, useOwnedItemIds } from './app/useItems';
 import { useAccountSync } from './app/useAccountSync';
 import { forgetAgeAnswer, useAgeCheck } from './app/useAgeCheck';
 import { deleteMyAccount, downloadJson, exportFileName, fetchAccountExport } from './app/accountData';
@@ -36,6 +37,9 @@ import { summarizeByForm } from './data/ownership';
 import type { RosterStatus } from './data/types';
 import { setUiLocale, t } from './i18n';
 
+// The item list and its names only load once someone opens the Items tab.
+const ItemsTab = lazy(() => import('./components/ItemsTab'));
+
 export function App() {
   const { auth, recovering, endRecovery, returnError, clearReturnError } = useAuth();
   const db = useRanchDB();
@@ -43,6 +47,8 @@ export function App() {
   const owner = auth.status === 'signedIn' ? auth.userId : auth.status === 'loading' ? undefined : null;
   const store = useRosterStore(db, owner);
   const entries = useRosterEntries(store);
+  const itemStore = useItemStore(db, owner);
+  const ownedItems = useOwnedItemIds(itemStore);
   const [locale, setLocale] = useNameLocale();
   setUiLocale(locale); // interface text follows the same language setting as Pokémon names
   const [theme, setTheme] = useTheme();
@@ -80,7 +86,7 @@ export function App() {
   const name = (formId: string) => displayName(formId, locale);
   const dismissToast = useCallback(() => setToast(null), []);
   const say = (text: string, onUndo?: () => void, mood?: Mood) => setToast({ id: Date.now(), text, onUndo, mood });
-  const account = useAccountSync(db, store, auth, (text) => say(text));
+  const account = useAccountSync(db, store, auth, (text) => say(text), itemStore);
   const age = useAgeCheck(auth);
   const notify = useNotifications(auth, locale);
 
@@ -293,6 +299,20 @@ export function App() {
         {entries !== null && !query.trim() && summaries.size > 0 && <AdSlot />}
       </main>
       </>)}
+
+      {tab === 'items' && (
+        <Suspense fallback={<main><p className="loading">{t('items.loading')}</p></main>}>
+          <ItemsTab
+            locale={locale}
+            owned={ownedItems}
+            rosterForms={new Set(summaries.keys())}
+            onToggle={(itemId, owned) => void guard(async () => {
+              await itemStore?.setOwned(itemId, owned);
+              if (owned) requestPersistentStorage();
+            })}
+          />
+        </Suspense>
+      )}
 
       <footer className="app-footer">
         <nav aria-label={t('legal.nav')}>

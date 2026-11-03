@@ -1,4 +1,4 @@
-import type { ImportedRosterEntry, NewRosterEntry, RosterEntry, RosterPatch } from './types';
+import type { ImportedRosterEntry, NewRosterEntry, OwnedItem, RosterEntry, RosterPatch } from './types';
 
 /**
  * The only way the UI touches roster data. Local (device) and cloud implementations
@@ -29,6 +29,20 @@ export interface RosterStore {
    */
   purgeDeleted(before: Date): Promise<number>;
   /** Called after any change; returns an unsubscribe function. */
+  subscribe(listener: () => void): () => void;
+  /** Tells subscribers that rows changed underneath the store, e.g. sync pulled another device's edits. */
+  refresh(): void;
+}
+
+/**
+ * Items the player has bought, for whoever is using the app (an account or the guest). Like
+ * RosterStore, the UI never knows whether the rows also sync.
+ */
+export interface ItemStore {
+  /** Items currently owned. */
+  list(): Promise<OwnedItem[]>;
+  /** Marks an item bought or not. Unmarking is a soft delete so other devices hear about it. */
+  setOwned(itemId: string, owned: boolean): Promise<void>;
   subscribe(listener: () => void): () => void;
   /** Tells subscribers that rows changed underneath the store, e.g. sync pulled another device's edits. */
   refresh(): void;

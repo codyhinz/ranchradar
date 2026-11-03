@@ -1,11 +1,12 @@
 import { openDB, type DBSchema, type IDBPDatabase, type IDBPTransaction, type StoreNames } from 'idb';
-import type { RosterEntry, SyncTable } from '../types';
+import type { OwnedItem, RosterEntry, SyncTable } from '../types';
 
 export const DB_NAME = 'ranchradar';
 
 /** A row waiting to upload. The row itself is read at upload time, so the latest edit wins. */
 export interface OutboxItem {
   table: SyncTable;
+  /** A roster entry's id, or for owned items `${owner}|${item_id}` (see itemOutboxId). */
   rowId: string;
   /** true until the server has seen the row: upload as insert, otherwise as a versioned update. */
   isNew: boolean;
@@ -33,6 +34,7 @@ export interface MetaRecord {
 
 export interface RanchDBSchema extends DBSchema {
   roster_entries: { key: string; value: RosterEntry; indexes: { by_form: string } };
+  owned_items: { key: [string, string]; value: OwnedItem };
   outbox: { key: [string, string]; value: OutboxItem };
   meta: { key: string; value: MetaRecord };
 }
@@ -61,7 +63,14 @@ const migrations: Array<(db: RanchDB, tx: UpgradeTx) => void> = [
       return step(await cursor.continue());
     });
   },
+  // v3: items the player has bought, keyed by [owner, item_id] ('' owner = the guest)
+  (db) => {
+    db.createObjectStore('owned_items', { keyPath: ['owner', 'item_id'] });
+  },
 ];
+
+/** Outbox id for an owned item. The owner is part of it, so two accounts on one device never collide. */
+export const itemOutboxId = (owner: string, itemId: string) => `${owner}|${itemId}`;
 
 export const DB_VERSION = migrations.length;
 

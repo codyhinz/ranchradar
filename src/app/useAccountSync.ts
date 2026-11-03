@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../data/cloud/supabase';
 import type { RanchDB } from '../data/local/db';
-import { StorageError, type RosterStore } from '../data/storage';
+import { StorageError, type ItemStore, type RosterStore } from '../data/storage';
 import { MAX_ROSTER_ENTRIES } from '../data/types';
 import { claimGuestRoster, declineGuestUpload, guestCount, guestUploadDeclined } from '../data/sync/guestUpload';
 import { listConflicts, resolveConflict, supabaseRemote, syncRoster, type Conflict, type SyncResult } from '../data/sync/syncEngine';
+import { supabaseItemRemote, syncOwnedItems } from '../data/sync/itemSync';
 import { t } from '../i18n';
 import type { AuthState } from './useAuth';
 
@@ -14,14 +15,15 @@ const AFTER_CHANGE_MS = 1500;
 const POLL_MS = 60 * 1000;
 
 /**
- * Keeps a signed-in account's roster in sync, and offers once to add the device's guest roster
+ * Keeps a signed-in account's roster and owned items in sync, and offers once to add the device's guest roster
  * to it. Sync runs on sign-in, shortly after each change, when the connection returns, when the
  * app comes back into view, and every minute while it's open. Failures just wait for the next one.
  */
-export function useAccountSync(db: RanchDB | null, store: RosterStore | null, auth: AuthState, say: (text: string) => void) {
+export function useAccountSync(db: RanchDB | null, store: RosterStore | null, auth: AuthState, say: (text: string) => void, items: ItemStore | null = null) {
   const userId = auth.status === 'signedIn' ? auth.userId : null;
-  // The account's own store, never the guest one from before sign-in finished switching over
+  // The account's own stores, never the guest ones from before sign-in finished switching over
   const accountStore = userId && store ? store : null;
+  const itemStore = userId && items ? items : null;
   const [guestPokemon, setGuestPokemon] = useState(0);
   const [offerOpen, setOfferOpen] = useState(false);
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
@@ -53,11 +55,20 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
         setConflicts(result.conflicts > 0 ? await listConflicts(db, userId) : []);
         if (result.status === 'full' && lastStatus.current !== 'full') full(); // say it once, not every minute
         lastStatus.current = result.status;
+        // Items have their own little sync; a roster that's offline or full doesn't hold them back.
+        if (itemStore && result.status !== 'offline') {
+          const itemResult = await syncOwnedItems(db, supabaseItemRemote(supabase), userId);
+          if (itemResult.received > 0) {
+            ourRefresh.current = true;
+            itemStore.refresh();
+            ourRefresh.current = false;
+          }
+        }
       } while (again.current);
     } finally {
       busy.current = false;
     }
-  }, [db, userId, accountStore]);
+  }, [db, userId, accountStore, itemStore]);
 
   // On sign-in: catch up, then make the offer if there's a guest roster.
   useEffect(() => {
@@ -78,13 +89,15 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
   useEffect(() => {
     if (!accountStore) return;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    const unsubscribe = accountStore.subscribe(() => {
+    const changed = () => {
       if (ourRefresh.current) return;
       clearTimeout(timer);
       timer = setTimeout(() => void sync(), AFTER_CHANGE_MS);
-    });
-    return () => { clearTimeout(timer); unsubscribe(); };
-  }, [accountStore, sync]);
+    };
+    const unsubscribe = accountStore.subscribe(changed);
+    const unsubscribeItems = itemStore?.subscribe(changed);
+    return () => { clearTimeout(timer); unsubscribe(); unsubscribeItems?.(); };
+  }, [accountStore, itemStore, sync]);
 
   // When the connection comes back, the app is reopened, and every minute while it's in view.
   useEffect(() => {
@@ -107,12 +120,13 @@ export function useAccountSync(db: RanchDB | null, store: RosterStore | null, au
       const moved = await claimGuestRoster(db, userId);
       setGuestPokemon(0);
       accountStore?.refresh(); // show them now; the change listener sends them shortly
+      itemStore?.refresh(); // the guest's bought items came along
       sayRef.current(t('guest.added', { count: moved }));
     } catch (error) {
       if (error instanceof StorageError && error.code === 'row_cap_reached') full();
       else throw error;
     }
-  }, [db, userId, accountStore]);
+  }, [db, userId, accountStore, itemStore]);
 
   const keepSeparate = useCallback(async () => {
     setOfferOpen(false);

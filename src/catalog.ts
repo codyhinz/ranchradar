@@ -27,6 +27,8 @@ export interface Regulation {
   ends_at: string;
   status: 'draft' | 'final';
   forms: string[];
+  /** Legal held items, berries and Mega Stones. */
+  items: string[];
 }
 
 /**

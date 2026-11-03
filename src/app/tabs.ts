@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
  * The app's top-level screens, in tab-bar order. Roster is first and the default. Teams, Items
  * and News join this list as they ship; the tab bar appears on its own once there are two.
  */
-export const TABS = ['roster'] as const;
+export const TABS = ['roster', 'items'] as const;
 export type Tab = (typeof TABS)[number];
 export const DEFAULT_TAB: Tab = 'roster';
 
