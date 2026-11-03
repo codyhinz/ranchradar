@@ -90,7 +90,10 @@ function head(title: string, description: string, path: string): string {
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${url}" />
-    <meta property="og:image" content="${SITE_ORIGIN}/icons/icon-512.png" />
+    <meta property="og:image" content="${SITE_ORIGIN}/brand/og-1200x630.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#e9e6e3" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1f1b19" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.ico" sizes="any" />

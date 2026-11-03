@@ -147,6 +147,7 @@ export default defineConfig({
         about: fileURLToPath(new URL('./about.html', import.meta.url)),
         privacy: fileURLToPath(new URL('./privacy.html', import.meta.url)),
         terms: fileURLToPath(new URL('./terms.html', import.meta.url)),
+        notFound: fileURLToPath(new URL('./404.html', import.meta.url)),
         ...Object.fromEntries(regulationPages.map((page) => [
           page.file.replace(/\/index\.html$/, '').replace(/\//g, '-'),
           fileURLToPath(new URL(`./${page.file}`, import.meta.url)),
