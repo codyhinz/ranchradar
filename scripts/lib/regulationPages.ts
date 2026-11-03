@@ -105,7 +105,7 @@ function footer(): string {
   return `
       <footer class="legal-foot">
         <a class="legal-back" href="/">Open RanchRadar</a>
-        <p><a href="/${PAGES_DIR}/">All regulations</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+        <p><a href="/${PAGES_DIR}/">All regulations</a> · <a href="/about">About</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
         <p>RanchRadar is an unofficial fan project and isn’t affiliated with Nintendo, Creatures, GAME FREAK or The Pokémon Company. Pokémon and all related names are trademarks of their respective owners.</p>
       </footer>`;
 }

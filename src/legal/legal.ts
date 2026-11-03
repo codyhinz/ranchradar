@@ -1,4 +1,4 @@
-// Shared by the privacy policy and terms pages: same fonts, tokens and sunset background as the app.
+// Shared by the about, privacy policy and terms pages: same fonts, tokens and sunset background as the app.
 import '@fontsource/zilla-slab/600.css';
 import '@fontsource/zilla-slab/700.css';
 import '@fontsource-variable/atkinson-hyperlegible-next';

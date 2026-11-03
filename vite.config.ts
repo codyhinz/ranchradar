@@ -29,9 +29,9 @@ function securityHeaders(): Plugin {
   };
 }
 
-/** /privacy and /terms are their own pages. Cloudflare serves them without the .html; this does
+/** /about, /privacy and /terms are their own pages. Cloudflare serves them without the .html; this does
  *  the same for the dev and preview servers, which would otherwise hand back the app instead. */
-const LEGAL_PAGES = /^\/(privacy|terms)\/?(\?.*)?$/;
+const LEGAL_PAGES = /^\/(about|privacy|terms)\/?(\?.*)?$/;
 function legalPages(): Plugin {
   const rewrite = (req: { url?: string }, _res: unknown, next: () => void) => {
     const match = req.url?.match(LEGAL_PAGES);
@@ -84,7 +84,7 @@ function sitemap(): Plugin {
     name: 'ranchradar-sitemap',
     apply: 'build',
     generateBundle() {
-      const paths = ['/', ...regulationPages.map((page) => page.path).sort(), '/privacy', '/terms'];
+      const paths = ['/', ...regulationPages.map((page) => page.path).sort(), '/about', '/privacy', '/terms'];
       this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: renderSitemap(paths) });
     },
   };
@@ -136,7 +136,7 @@ export default defineConfig({
         }],
         navigateFallback: '/index.html',
         // The legal and regulation pages are real pages, not app routes: never answer them with the app.
-        navigateFallbackDenylist: [/^\/(privacy|terms)(\.html)?\/?$/, /^\/regulations(\/|$)/],
+        navigateFallbackDenylist: [/^\/(about|privacy|terms)(\.html)?\/?$/, /^\/regulations(\/|$)/],
       },
     }),
   ],
@@ -144,6 +144,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        about: fileURLToPath(new URL('./about.html', import.meta.url)),
         privacy: fileURLToPath(new URL('./privacy.html', import.meta.url)),
         terms: fileURLToPath(new URL('./terms.html', import.meta.url)),
         ...Object.fromEntries(regulationPages.map((page) => [

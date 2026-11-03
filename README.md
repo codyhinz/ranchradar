@@ -20,6 +20,7 @@ RanchRadar is a mobile-first web app you can install like a native one. It works
 - **Backups.** Export your roster to a JSON file and import it on another device.
 - **Accounts and sync.** Sign in with Google, Discord, or email and password from the account button in the header. Your roster syncs across devices, a guest roster can move into the account when you sign in, and when two devices change the same Pokémon you pick which version to keep.
 - **Your data, your call.** Download everything an account stores, or delete the account and all of it, from the account sheet.
+- **About and FAQ.** A page at `/about` explaining what RanchRadar is, how it works with the game, and answers to common questions.
 - **Regulation pages.** Public pages for every season at `/regulations/`, listing its Roster Ranch Pokémon, Mega Evolutions and held items and what it added. Visitors who use the app see which ones they own.
 - **Nine languages.** Interface text, Pokémon names, and search in English, Japanese, Korean, Traditional and Simplified Chinese, French, German, Spanish, and Italian.
 
