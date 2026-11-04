@@ -35,5 +35,6 @@
   font: 600 var(--step-0) / 1 var(--font-body); text-decoration: none;
   box-shadow: 0 4px 14px var(--glow);
 }
-.legal .legal-back:hover { filter: brightness(1.08); }
 .legal .legal-back:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+/* clear the fixed tab bar at the bottom */
+:root:has(.tab-bar) .legal { padding-bottom: calc(3rem + var(--bottom-chrome)); }

@@ -5,6 +5,7 @@ import '@fontsource-variable/atkinson-hyperlegible-next';
 import '../styles.css';
 import './legal.css';
 import { mountStaticAds } from '../app/ads';
+import { mountTabBar } from './tabBar';
 
 // Follow the Light/Dark choice from the app's Settings; "system" leaves it to the device.
 try {
@@ -14,3 +15,6 @@ try {
 
 // Ads and the "Ad privacy choices" link, only in builds with AdSense settings.
 mountStaticAds();
+
+// The app's tab bar, so every page has the same way around.
+mountTabBar();

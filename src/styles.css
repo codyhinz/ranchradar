@@ -1186,3 +1186,43 @@ body::after {
 @media (prefers-reduced-motion: reduce) {
   .item-check { transition: none; }
 }
+
+/* Hover: on a mouse or trackpad, everything you can click answers before you click it — a warmer
+   border, a lit background, or a small lift. Touch screens skip all of this (no sticky hovers). */
+.chip > span, .picker-list li, .link-button, .tool-button, .provider-button, .toast-action, .tab-icon img,
+.search-bar input, .field select, .field textarea, .time-unit input, .switch-track, .check, .legal a, .legal .legal-back, .legal .reg-card {
+  transition: transform 120ms ease, background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+    box-shadow 160ms ease, text-decoration-color 160ms ease, filter 160ms ease, opacity 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .button-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--coal) 80%, var(--ember)); box-shadow: 0 4px 14px var(--glow); }
+  .button-quiet:hover:not(:disabled) { border-color: var(--wood); background: color-mix(in srgb, var(--rail) 55%, transparent); }
+  .button-danger:hover:not(:disabled), .account-delete-submit:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 10%, transparent); }
+  .add:hover { transform: translateY(-1px); }
+  .add-permanent:hover { background: color-mix(in srgb, var(--ember-strong) 88%, var(--coal)); box-shadow: 0 4px 12px var(--glow); }
+  .add-trial:hover { background: color-mix(in srgb, var(--hay) 85%, var(--coal)); box-shadow: 0 4px 12px var(--glow); }
+  .add-more:hover { border-color: var(--wood); background: var(--rail); }
+  .tile button:hover { box-shadow: var(--shadow); }
+  .view-toggle button:hover:not([aria-pressed='true']) { background: var(--rail); }
+  .tool-button:hover, .provider-button:hover:not(:disabled) { background: color-mix(in srgb, var(--rail) 55%, transparent); }
+  .picker-button:hover:not([aria-expanded='true']) { border-color: var(--wood); }
+  .picker-list li[role='option'] { cursor: pointer; }
+  .picker-list li[role='option']:hover { background: var(--rail); }
+  .copy-edit:hover:not([aria-expanded='true']) { border-color: var(--wood); background: color-mix(in srgb, var(--rail) 55%, transparent); }
+  .segment:hover input:not(:checked) + span { border-color: var(--wood); background: color-mix(in srgb, var(--rail) 45%, transparent); }
+  .chip:hover input:not(:checked) + span { border-color: var(--wood); background: color-mix(in srgb, var(--rail) 45%, transparent); }
+  .link-button:hover { color: var(--ember-strong); text-decoration-color: var(--ember-strong); }
+  .toast-action:hover { color: color-mix(in srgb, var(--hay) 75%, #fff); text-decoration: underline 2px; text-underline-offset: 0.2em; }
+  .search-bar input:hover:not(:focus) { box-shadow: 0 0 0 3px var(--glow); }
+  .field select:hover:not(:focus), .field textarea:hover:not(:focus), .time-unit input:hover:not(:focus, :disabled) { border-color: var(--wood); }
+  .switch:hover .switch-track, .check:hover input { box-shadow: 0 0 0 3px var(--glow); }
+  .check:hover { color: var(--coal); }
+  .tab:hover:not([aria-current='page']) { color: var(--coal); }
+  .tab:hover .tab-icon img { filter: grayscale(0.3); opacity: 1; transform: scale(1.06); }
+  .legal a:not(.legal-back, .legal-home, .reg-card, .tab):hover { text-decoration-thickness: 2px; }
+  .legal .legal-back:hover { background: color-mix(in srgb, var(--ember-strong) 88%, var(--coal)); transform: translateY(-1px); box-shadow: 0 6px 18px var(--glow); }
+  .legal .reg-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .add:hover, .tab:hover .tab-icon img, .legal .legal-back:hover, .legal .reg-card:hover, .tile button:hover { transform: none; }
+}

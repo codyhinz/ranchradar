@@ -97,7 +97,7 @@ docs/                    this file
 | Component | Role |
 | --- | --- |
 | `Header` | Ranch-sign masthead (sunset art + real text), account button |
-| `TabBar` | Game-art icons (Torkoal for Roster, Focus Sash for Items), plus a Miltank link to the static `/regulations/` pages; full-width bar on phones, floating dock from 48rem |
+| `TabBar` | Game-art icons (Torkoal for Roster, Focus Sash for Items), plus a Miltank link to the static `/regulations/` pages; full-width bar on phones, floating dock from 48rem. The static pages mount the same bar from `src/legal/tabBar.ts` (all links, English labels) |
 | `ResultRow` | Search result: ownership summary, season legality, three add buttons |
 | `RosterList` | Grid/list of owned forms, filters/sorts, box usage, bulk select, expired-trial actions |
 | `FormSheet` | One form's copies: edit, make permanent, return to Ranch, remove (with undo) |
@@ -362,6 +362,7 @@ GitHub disables scheduled workflows after 60 days of repo inactivity.
 - **Reference data** only changes through `data/` + `npm run seed`. Never hand-edit `data/generated/` or reference migrations. `id-registry.json` is append-only; ids are never renamed.
 - **New UI text** = new i18n keys in all 9 languages, English first.
 - **New colors** = CSS variables with light and dark values.
+- **Hover states** live in one `@media (hover: hover) and (pointer: fine)` block at the end of `styles.css`, so touch screens never get sticky hovers; new clickable pieces get a rule there.
 - **Tests** sit beside the file (`*.test.ts`) or in `src/data/__tests__/`.
 - **Privacy:** Sentry and feedback never include roster data, notes or typed text; URLs lose query and hash.
 - **Before shipping:** `npm run typecheck && npm test && npm run validate:data`.
