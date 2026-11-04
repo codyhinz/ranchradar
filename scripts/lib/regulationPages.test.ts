@@ -1,4 +1,5 @@
 import { readJson, readGenerated, readRegulations, DATA_DIR, type NameMap, type RegulationFile } from './data';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { Dex } from '@pkmn/dex';
 import { dateRange, escapeHtml, megaDisplayName, renderRegulationPages, renderSitemap, seasonStatus, type RegulationPageData } from './regulationPages';
@@ -45,7 +46,8 @@ describe('regulation pages', () => {
     expect(html).toContain('1 new Pokémon');
     expect(html).toContain('data-form="absol"');
     expect(html).toContain('Mega Absol');
-    expect(html).toContain('Leftovers');
+    expect(html).toContain('<img src="/sprites/items/leftovers.webp" width="28" height="28" alt=""');
+    expect(html).toContain('<span>Leftovers</span>');
     expect(html).toContain('href="/regulations/m-a/"');
     expect(html).toContain('<link rel="canonical" href="https://ranchradar.dev/regulations/m-b/" />');
     expect(page('/regulations/m-a/').html).not.toContain('New since');
@@ -99,6 +101,10 @@ describe('regulation pages', () => {
       // every Mega resolved to a display name, every form and item has an English name
       expect(html, path).not.toMatch(/<strong>[a-z][a-z0-9-]*<\/strong>/);
       expect(html, path).not.toMatch(/reg-mon-name">[a-z][a-z0-9-]*</);
+      // every item icon the page links to has been downloaded
+      for (const [, id] of html.matchAll(/src="\/sprites\/items\/([^"]+)\.webp"/g)) {
+        expect(existsSync(join('public', 'sprites', 'items', `${id}.webp`)), `${path}: ${id}`).toBe(true);
+      }
     }
   });
 });

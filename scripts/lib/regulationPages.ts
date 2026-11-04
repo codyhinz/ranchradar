@@ -149,8 +149,10 @@ export function renderRegulationPages(data: RegulationPageData, now: Date = new 
   const megaName = (stone: string) => data.megaName(itemsById.get(stone)?.mega_target ?? stone);
   const megaList = (stones: string[], reg: RegulationFile) =>
     `<ul class="reg-megas">${[...stones].sort(byName(megaName)).map((s) => megaRow(s, reg)).join('')}</ul>`;
-  const itemList = (ids: string[]) =>
-    `<ul class="reg-items">${[...ids].sort(byName(itemName)).map((id) => `<li>${escapeHtml(itemName(id))}</li>`).join('')}</ul>`;
+  // Same picture path as the app's itemSpriteUrl (src/components/Sprite.tsx).
+  const itemChip = (id: string) =>
+    `<li><img src="/sprites/items/${id}.webp" width="28" height="28" alt="" loading="lazy" decoding="async" /><span>${escapeHtml(itemName(id))}</span></li>`;
+  const itemList = (ids: string[]) => `<ul class="reg-items">${[...ids].sort(byName(itemName)).map(itemChip).join('')}</ul>`;
   const heldOnly = (ids: string[]) => ids.filter((id) => itemsById.get(id)?.category !== 'mega_stone');
 
   const list = seasons(data.regulations);
