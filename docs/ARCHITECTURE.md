@@ -106,7 +106,7 @@ docs/                    this file
 | `StatPoints` | Folding stat points editor: summary + used/66, six −/+ rows (hold to fill or empty, or type), meter and Lv 50 stat per row with nature ▲/▼; `spreadSummary()` for cards and the conflict prompt |
 | `BulkAddSheet` | First-time setup grid: tap = chosen status, long-press = the other; nothing saves until Add |
 | `NaturePicker`, `VariantPicker` | Downward lists; natures sortable by stat or A–Z |
-| `ItemsTab` | Item checklist: picture cards (default) or list, All/Missing/Bought, sort by category / A–Z / recently bought, category counts, Mega Stones show and search by their Pokémon |
+| `ItemsTab` | Item checklist: picture cards (default) or list, All/Missing/Bought plus held item / berry / Mega Stone filter chips, sort by category / A–Z / recently bought, category counts, Mega Stones show and search by their Pokémon |
 | `ItemBulkSheet` | Mark several bought: this season's items grouped by category, tap to pick, one save and one Undo |
 | `SettingsDialog` | Language, theme, box space, backup, reminders, report a problem |
 | `NotificationSettings` | Per-device push toggle, ranch refresh ("I just recruited" / time left), trial lead time |
@@ -335,7 +335,7 @@ Current data: 3 regulations (M-A 213 forms / 110 items / 59 megas, M-B 235 / 141
 - **securityHeaders** — fills `{{SUPABASE}}`, `{{SENTRY}}` and AdSense hosts into the CSP in `dist/_headers` at build time.
 - **adsense** — with `VITE_ADSENSE_CLIENT`: meta tag + `ads.txt`; malformed ids fail the build. Units only render with `VITE_ADSENSE_SLOT`, never in search results or sheets.
 - **legalPages** — dev/preview rewrite of `/about`, `/privacy`, `/terms` to their `.html` (Cloudflare does this in production).
-- **Regulation pages** — static HTML for `/regulations/` and `/regulations/<id>/` written to the gitignored `regulations/` folder at config load (restart dev after editing `data/`); each bundles `src/regulations/page.ts`, which marks what the visitor owns from their local roster. Held items and berries are chips with their icon from `/sprites/items/` (same path as `itemSpriteUrl`); a test checks every linked icon exists.
+- **Regulation pages** — static HTML for `/regulations/` and `/regulations/<id>/` written to the gitignored `regulations/` folder at config load (restart dev after editing `data/`); each has a sticky jump-link strip to its sections and bundles `src/regulations/page.ts`, which marks what the visitor owns from their local roster and lights the jump link for the section on screen. Held items and berries are chips with their icon from `/sprites/items/` (same path as `itemSpriteUrl`); a test checks every linked icon exists.
 - **sitemap** — `/`, every regulation page, legal pages.
 - **VitePWA** — precaches app, fonts and every sprite that has ever been in a regulation; pool-only sprites are runtime-cached (`CacheFirst`, 1,000 max). `navigateFallback` to `index.html`, with legal and regulation pages denylisted. `__APP_VERSION__` = 7-char commit SHA or `dev`.
 

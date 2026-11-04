@@ -52,6 +52,34 @@
 }
 .reg-items img { width: 28px; height: 28px; object-fit: contain; flex: none; }
 
+/* Jump links: a strip that sticks under the notch while you scroll, so any section is one tap away.
+   It scrolls sideways inside itself on narrow screens rather than wrapping into a tall block. The
+   link for the section on screen is lit, like the open tab in the app's tab bar. */
+.reg-jump {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  margin: 0 -1.25rem 0.5rem; padding: 0.55rem 0;
+  background: color-mix(in srgb, var(--smoke) 22%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
+}
+.legal .reg-jump ul {
+  display: flex; gap: 0.4rem; margin: 0; padding: 0 1.25rem; list-style: none;
+  overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none;
+}
+.reg-jump ul::-webkit-scrollbar { display: none; }
+.legal .reg-jump li { margin: 0; flex: none; }
+.legal .reg-jump-link {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 36px; padding: 0 0.85rem;
+  border: 2px solid var(--rail); border-radius: 999px; background: var(--surface);
+  color: var(--coal); font-weight: 600; font-size: var(--step--1); text-decoration: none; white-space: nowrap;
+}
+.legal .reg-jump-link:hover { border-color: var(--wood); }
+.legal .reg-jump-link[aria-current='location'] { background: var(--coal); border-color: var(--coal); color: var(--smoke); }
+.reg-jump-count { color: var(--muted); font-weight: 400; }
+.reg-jump-link[aria-current='location'] .reg-jump-count { color: inherit; opacity: 0.75; }
+/* Headings land just below the strip, not under it */
+html:has(.reg-jump) { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 4.25rem); }
+@media (prefers-reduced-motion: no-preference) { html:has(.reg-jump) { scroll-behavior: smooth; } }
+
 .reg-neighbours { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; }
 
 .legal .reg-cards { display: grid; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }

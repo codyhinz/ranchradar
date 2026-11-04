@@ -53,6 +53,17 @@ describe('regulation pages', () => {
     expect(page('/regulations/m-a/').html).not.toContain('New since');
   });
 
+  it('links to every section from a jump strip, each link landing on a real heading', () => {
+    const html = page('/regulations/m-b/').html;
+    const nav = html.match(/<nav class="reg-jump"[\s\S]*?<\/nav>/)![0];
+    const targets = [...nav.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+    expect(targets).toEqual(['new', 'pokemon', 'megas', 'items', 'berries']);
+    for (const id of targets) expect(html).toContain(`id="${id}"`);
+    expect(nav).toContain('Pokémon <span class="reg-jump-count">2</span>');
+    // The first season has nothing to compare with, so no "What’s new" link
+    expect(page('/regulations/m-a/').html).not.toContain('href="#new"');
+  });
+
   it('marks the current season the same way the app picks it', () => {
     expect(page('/regulations/m-b/').html).toContain('data-status="current"');
     expect(page('/regulations/m-a/').html).toContain('data-status="past"');

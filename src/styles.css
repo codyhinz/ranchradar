@@ -1172,7 +1172,18 @@ body::after {
 
 /* Items: a shopping checklist. Picture cards by default, a compact list on request. Bought items
    get the ember edge and a filled brand-mark stamp, like a stamped tally card. */
-.item-filters { margin: -0.25rem 0 0.75rem; }
+.item-filters { display: flex; flex-wrap: wrap; gap: 0.5rem 1.1rem; margin: -0.25rem 0 0.75rem; }
+/* Category chips carry a picture of their kind, so they read apart from the bought / missing chips */
+.chip-category > span { gap: 0.3rem; padding-left: 0.35rem; }
+.chip-category img { width: 22px; height: 22px; object-fit: contain; flex: none; }
+.chip-category input:not(:checked) + span img { filter: grayscale(0.6); opacity: 0.8; }
+/* Phones: a little tighter so the three categories fit on one row */
+@media (max-width: 30rem) {
+  .item-filters { gap: 0.4rem 0.6rem; }
+  .item-filters .chip > span { padding: 0 0.6rem; }
+  .item-filters .chip-category > span { gap: 0.2rem; padding-left: 0.25rem; }
+  .chip-category img { width: 20px; height: 20px; }
+}
 .item-hint { margin: 0 0 0.75rem; }
 .item-group + .item-group, .item-bulk-wrap { margin-top: 1.25rem; }
 .item-group h3, .item-bulk-group h3 {
@@ -1285,7 +1296,7 @@ body::after {
   .check:hover { color: var(--coal); }
   .tab:hover:not([aria-current='page']) { color: var(--coal); }
   .tab:hover .tab-icon img { filter: grayscale(0.3); opacity: 1; transform: scale(1.06); }
-  .legal a:not(.legal-back, .legal-home, .reg-card, .tab):hover { text-decoration-thickness: 2px; }
+  .legal a:not(.legal-back, .legal-home, .reg-card, .tab, .reg-jump-link):hover { text-decoration-thickness: 2px; }
   .legal .legal-back:hover { background: color-mix(in srgb, var(--ember-strong) 88%, var(--coal)); transform: translateY(-1px); box-shadow: 0 6px 18px var(--glow); }
   .legal .reg-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
 }

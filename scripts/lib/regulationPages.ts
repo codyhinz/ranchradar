@@ -187,6 +187,18 @@ export function renderRegulationPages(data: RegulationPageData, now: Date = new 
       }
     }
 
+    // Jump links: one per section, in page order, each with its count so the strip doubles as a summary.
+    const jumps: Array<[id: string, label: string, count: number]> = [
+      ...(changes ? [['new', 'What’s new', 0] as [string, string, number]] : []),
+      ['pokemon', 'Pokémon', reg.forms.length],
+      ['megas', 'Mega Evolutions', reg.megas.length],
+      ['items', 'Held items', held.length],
+      ['berries', 'Berries', berries.length],
+    ];
+    const jumpNav = `<nav class="reg-jump" aria-label="Jump to section"><ul>${jumps
+      .map(([id, label, count]) => `<li><a class="reg-jump-link" href="#${id}">${escapeHtml(label)}${count ? ` <span class="reg-jump-count">${count}</span>` : ''}</a></li>`)
+      .join('')}</ul></nav>`;
+
     const neighbours = [
       previous ? `<a href="${regulationPath(previous.id)}">← ${escapeHtml(previous.name)}</a>` : '',
       next ? `<a href="${regulationPath(next.id)}">${escapeHtml(next.name)} →</a>` : '',
@@ -211,6 +223,8 @@ export function renderRegulationPages(data: RegulationPageData, now: Date = new 
         <progress class="reg-mine-bar" max="${reg.forms.length}" value="0" hidden></progress>
         <p class="reg-mine-text">Track which of these you own with <a href="/">RanchRadar</a>: tab over from the game, search, and know at a glance whether today’s recruit is new to your box. It works without an account.</p>
       </div>
+
+      ${jumpNav}
 ${changes}
       <section aria-labelledby="pokemon">
         <h2 id="pokemon">All ${reg.forms.length} Pokémon</h2>
@@ -230,7 +244,7 @@ ${changes}
         <h2 id="items">${heldOnly(reg.items).length} held items</h2>
         <h3>Items</h3>
         ${itemList(held)}
-        <h3>Berries</h3>
+        <h3 id="berries">Berries</h3>
         ${itemList(berries)}
       </section>
 

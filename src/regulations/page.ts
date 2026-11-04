@@ -69,5 +69,50 @@ async function markOwned(): Promise<void> {
   text.replaceChildren('Owned Pokémon are marked below. ', link, ' to update your roster.');
 }
 
+/**
+ * Lights the jump link for the section on screen, and keeps that link in view inside the strip.
+ * Only the strip scrolls sideways, never the page.
+ */
+function trackSections(): void {
+  const strip = document.querySelector<HTMLElement>('.reg-jump ul');
+  if (!strip) return;
+  const links = Array.from(strip.querySelectorAll<HTMLAnchorElement>('a[href^="#"]'));
+  // A section heading stands for its whole section, so the link stays lit until the next one starts.
+  const targets = links.map((link) => {
+    const el = document.getElementById(link.hash.slice(1));
+    return el?.tagName === 'H2' ? el.closest('section') ?? el : el;
+  });
+  let lit: HTMLAnchorElement | null = null;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    // The last section whose heading has reached the strip (plus a little slack) is the one being read.
+    const line = strip.getBoundingClientRect().bottom + 48;
+    // At the very bottom the last sections can't scroll up to the strip, so the lowest heading on screen wins.
+    const atEnd = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+    const reach = atEnd ? window.innerHeight * 0.6 : line;
+    let index = -1;
+    targets.forEach((el, i) => { if (el && el.getBoundingClientRect().top <= reach) index = i; });
+    const next = links[index] ?? null;
+    if (next === lit) return;
+    lit?.removeAttribute('aria-current');
+    next?.setAttribute('aria-current', 'location');
+    lit = next;
+    const li = next?.parentElement;
+    if (!li) return;
+    const left = li.offsetLeft - strip.offsetLeft;
+    if (left < strip.scrollLeft || left + li.offsetWidth > strip.scrollLeft + strip.clientWidth) {
+      strip.scrollTo({ left: Math.max(0, left - 16) });
+    }
+  };
+  const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('scrollend', schedule); // a smooth jump's last scroll event can land before it settles
+  window.addEventListener('hashchange', schedule);
+  window.addEventListener('resize', schedule);
+  update();
+}
+
 refreshStatus();
+trackSections();
 markOwned().catch(() => undefined); // storage blocked or unavailable: the page works without it

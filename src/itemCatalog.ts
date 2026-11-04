@@ -48,6 +48,23 @@ export function itemsToShow(owned: ReadonlySet<string>): CatalogItem[] {
   return itemCatalog.filter((item) => legalItems.has(item.id) || owned.has(item.id));
 }
 
+export type ItemStatusFilter = 'all' | 'missing' | 'owned';
+
+export interface ItemFilters {
+  status: ItemStatusFilter;
+  /** Categories to show; empty shows every category. */
+  categories: ReadonlySet<ItemCategory>;
+  query: string;
+}
+
+/** What the Items tab shows: bought / missing, any picked categories, and the search text, all at once. */
+export function filterItems(items: readonly CatalogItem[], filters: ItemFilters, owned: { has(id: string): boolean }, locale: NameLocale): CatalogItem[] {
+  return items.filter((item) =>
+    (filters.status === 'all' || (filters.status === 'owned') === owned.has(item.id))
+    && (filters.categories.size === 0 || filters.categories.has(item.category))
+    && matchesItem(item, filters.query, locale));
+}
+
 /**
  * Matches like Pokémon search: the name starting with the query, or a word in it starting with
  * it, and from 3 letters anywhere inside. A Mega Stone also matches its Pokémon's name, so

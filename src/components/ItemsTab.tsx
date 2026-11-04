@@ -3,17 +3,20 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ITEM_SORTS, useItemSort, useItemView } from '../app/preferences';
 import { currentRegulation, displayName, type NameLocale } from '../catalog';
 import {
-  ITEM_CATEGORIES, isItemInSeason, itemName, itemsToShow, matchesItem, sortItems, sortItemsByRecent,
-  type CatalogItem, type ItemCategory,
+  ITEM_CATEGORIES, filterItems, isItemInSeason, itemName, itemsToShow, sortItems, sortItemsByRecent,
+  type CatalogItem, type ItemCategory, type ItemStatusFilter,
 } from '../itemCatalog';
 import { t, type MessageKey } from '../i18n';
 import { ItemBulkSheet } from './ItemBulkSheet';
 import { Mascot } from './Mascot';
-import { ItemSprite, Sprite } from './Sprite';
+import { ItemSprite, Sprite, itemSpriteUrl } from './Sprite';
 import { StopSign } from './StopSign';
 
-export const ITEM_FILTERS = ['all', 'missing', 'owned'] as const;
-export type ItemFilter = (typeof ITEM_FILTERS)[number];
+export const ITEM_FILTERS: readonly ItemStatusFilter[] = ['all', 'missing', 'owned'];
+export type ItemFilter = ItemStatusFilter;
+
+/** A picture from each category for its filter chip, so the kinds read apart from All / Missing / Bought. */
+const CATEGORY_ICON: Record<ItemCategory, string> = { held: 'leftovers', berry: 'sitrus-berry', mega_stone: 'charizardite-x' };
 
 interface ItemsTabProps {
   locale: NameLocale;
@@ -36,6 +39,12 @@ const NONE: ReadonlyMap<string, string> = new Map();
 export default function ItemsTab({ locale, owned, rosterForms, onToggle, onMarkMany }: ItemsTabProps) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<ItemFilter>('all');
+  const [categories, setCategories] = useState<ReadonlySet<ItemCategory>>(() => new Set());
+  const toggleCategory = (category: ItemCategory) => setCategories((current) => {
+    const next = new Set(current);
+    if (!next.delete(category)) next.add(category);
+    return next;
+  });
   const [view, setView] = useItemView();
   const [sort, setSort] = useItemSort();
   const [bulkOpen, setBulkOpen] = useState(false);
@@ -45,8 +54,7 @@ export default function ItemsTab({ locale, owned, rosterForms, onToggle, onMarkM
   const all = useMemo(() => itemsToShow(new Set(mine.keys())), [mine]);
   const inSeason = all.filter((item) => isItemInSeason(item.id));
   const boughtInSeason = inSeason.filter((item) => mine.has(item.id)).length;
-  const shown = all.filter((item) =>
-    (filter === 'all' || (filter === 'owned') === mine.has(item.id)) && matchesItem(item, query, locale));
+  const shown = filterItems(all, { status: filter, categories, query }, mine, locale);
   const ordered = (list: CatalogItem[]) => (sort === 'recent' ? sortItemsByRecent(list, mine, locale) : sortItems(list, locale));
   // Shop order keeps the category headings; the other sorts run as one list.
   const groups: Array<{ category: ItemCategory | null; items: CatalogItem[]; total: number; bought: number }> = sort === 'category'
@@ -61,7 +69,7 @@ export default function ItemsTab({ locale, owned, rosterForms, onToggle, onMarkM
 
   const empty = query.trim()
     ? t('items.none', { query: query.trim() })
-    : filter === 'missing' ? t('items.allBought') : t('items.noneBought');
+    : filter === 'missing' ? t(categories.size > 0 ? 'items.allBoughtHere' : 'items.allBought') : t('items.noneBought');
 
   const renderItem = (item: CatalogItem, index: number) => {
     const props = {
@@ -121,16 +129,28 @@ export default function ItemsTab({ locale, owned, rosterForms, onToggle, onMarkM
                 </div>
               </div>
             </div>
-            <fieldset className="chips item-filters">
-              <legend className="visually-hidden">{t('items.filter')}</legend>
-              {ITEM_FILTERS.map((id) => (
-                <label key={id} className="chip">
-                  <input type="radio" name="item-filter" checked={filter === id} onChange={() => setFilter(id)} />
-                  <span>{t(`items.filter.${id}` as MessageKey)}</span>
-                </label>
-              ))}
-            </fieldset>
-            {boughtInSeason === 0 && filter === 'all' && !query.trim() && <p className="hint item-hint">{t('items.hint')}</p>}
+            <div className="item-filters">
+              <fieldset className="chips">
+                <legend className="visually-hidden">{t('items.filter')}</legend>
+                {ITEM_FILTERS.map((id) => (
+                  <label key={id} className="chip">
+                    <input type="radio" name="item-filter" checked={filter === id} onChange={() => setFilter(id)} />
+                    <span>{t(`items.filter.${id}` as MessageKey)}</span>
+                  </label>
+                ))}
+              </fieldset>
+              {/* None picked shows every category, like the roster's type filter */}
+              <fieldset className="chips">
+                <legend className="visually-hidden">{t('items.catFilter')}</legend>
+                {ITEM_CATEGORIES.map((category) => (
+                  <label key={category} className="chip chip-category">
+                    <input type="checkbox" checked={categories.has(category)} onChange={() => toggleCategory(category)} />
+                    <span><img src={itemSpriteUrl(CATEGORY_ICON[category])} width={22} height={22} alt="" decoding="async" />{t(`items.cat.${category}` as MessageKey)}</span>
+                  </label>
+                ))}
+              </fieldset>
+            </div>
+            {boughtInSeason === 0 && filter === 'all' && categories.size === 0 && !query.trim() && <p className="hint item-hint">{t('items.hint')}</p>}
 
             {groups.length === 0 ? (
               <div className="no-results">

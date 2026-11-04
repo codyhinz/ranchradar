@@ -19,8 +19,8 @@
 .legal h3 { margin: 1.6rem 0 0.35rem; font: 600 var(--step-0) / 1.35 var(--font-body); }
 .legal li { margin-bottom: 0.35rem; }
 .legal a { color: var(--ember-strong); text-underline-offset: 0.15em; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .legal a:not(.legal-back, .legal-home) { color: var(--ember); } }
-:root[data-theme='dark'] .legal a:not(.legal-back, .legal-home) { color: var(--ember); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme='light']) .legal a:not(.legal-back, .legal-home, .reg-jump-link) { color: var(--ember); } }
+:root[data-theme='dark'] .legal a:not(.legal-back, .legal-home, .reg-jump-link) { color: var(--ember); }
 .legal-summary {
   margin: 0 0 2rem; padding: 1rem 1.15rem; border-radius: var(--radius-row);
   background: color-mix(in srgb, var(--surface) 75%, transparent); border: 1px solid var(--rail);
