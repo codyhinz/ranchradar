@@ -26,7 +26,7 @@
   background: color-mix(in srgb, var(--surface) 75%, transparent); border: 1px solid var(--rail);
 }
 .legal-summary p:last-child { margin-bottom: 0; }
-.legal-foot { margin-top: 3rem; padding-top: 1.25rem; border-top: 2px solid var(--rail); color: var(--muted); font-size: var(--step--1); }
+.legal-foot { margin-top: 3rem; padding-top: 1.25rem; border-top: 2px solid var(--rail); color: var(--muted); font-size: var(--step--1); text-align: center; }
 .legal-foot p { margin: 1rem 0 0; }
 /* the way home: a full-size button, not a footnote link */
 .legal .legal-back {

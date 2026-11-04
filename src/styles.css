@@ -141,7 +141,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   position: relative; flex: 1; max-width: 9rem; height: var(--tab-bar-h);
   display: grid; place-items: center; align-content: center; gap: 0.1rem;
   border: 0; background: transparent; color: var(--muted); cursor: pointer;
-  font-size: 0.78rem; font-weight: 600;
+  font-size: 0.78rem; font-weight: 600; text-decoration: none;
   -webkit-tap-highlight-color: transparent;
 }
 .tab-icon {

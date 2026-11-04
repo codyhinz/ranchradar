@@ -97,7 +97,7 @@ docs/                    this file
 | Component | Role |
 | --- | --- |
 | `Header` | Ranch-sign masthead (sunset art + real text), account button |
-| `TabBar` | Game-art icons (Torkoal for Roster, Focus Sash for Items); full-width bar on phones, floating dock from 48rem |
+| `TabBar` | Game-art icons (Torkoal for Roster, Focus Sash for Items), plus a Miltank link to the static `/regulations/` pages; full-width bar on phones, floating dock from 48rem |
 | `ResultRow` | Search result: ownership summary, season legality, three add buttons |
 | `RosterList` | Grid/list of owned forms, filters/sorts, box usage, bulk select, expired-trial actions |
 | `FormSheet` | One form's copies: edit, make permanent, return to Ranch, remove (with undo) |
