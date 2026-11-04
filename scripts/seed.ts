@@ -113,6 +113,9 @@ async function downloadItemSprites(ids: string[]): Promise<string[]> {
   return missing;
 }
 
+/** Base stats are written in this order: HP, Attack, Defense, Sp. Atk, Sp. Def, Speed. */
+const STAT_ORDER = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'] as const;
+
 /** Sprites the app shows outside the roster (header and empty state). */
 const BRAND_SPRITES = ['torkoal'];
 
@@ -284,6 +287,7 @@ async function main() {
       dex_number: species.num,
       types: species.types.map((type) => type.toLowerCase()),
       sprite_key: id,
+      stats: STAT_ORDER.map((stat) => species.baseStats[stat]),
     });
   }
   forms.sort((a, b) => a.dex_number - b.dex_number || a.id.localeCompare(b.id));

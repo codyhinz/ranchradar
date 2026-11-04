@@ -7,6 +7,8 @@ import { t, uiLocale } from '../i18n';
 import { Dialog } from './Dialog';
 import { EntryFields, expiresAfter, newDraft, type EntryDraft } from './EntryFields';
 import { Sprite } from './Sprite';
+import { spreadSummary } from './StatPoints';
+import { compactSpread, sameSpread } from '../data/spread';
 import { currentRegulation, isInSeason, variantName } from '../catalog';
 
 interface FormSheetProps {
@@ -147,15 +149,16 @@ function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSav
   // React 18's types don't know `inert` yet, so set it directly: collapsed fields can't be tabbed into.
   const drawerRef = useRef<HTMLDivElement>(null);
   useEffect(() => { drawerRef.current?.toggleAttribute('inert', !editing); }, [editing]);
-  const initial: EntryDraft = newDraft(entry.status, { nature: entry.nature, variant: entry.variant, notes: entry.notes, trialExpiresAt: entry.trial_expires_at });
+  const initial: EntryDraft = newDraft(entry.status, { nature: entry.nature, variant: entry.variant, spread: entry.spread, notes: entry.notes, trialExpiresAt: entry.trial_expires_at });
   const [draft, setDraft] = useState(initial);
   // Opening the editor starts from the trial's current time left.
   useEffect(() => { if (editing) setDraft(initial); }, [editing]); // eslint-disable-line react-hooks/exhaustive-deps
   const dirty = draft.status !== initial.status || draft.nature !== initial.nature || draft.variant !== initial.variant || draft.notes !== initial.notes
+    || !sameSpread(draft.spread, initial.spread)
     || (draft.status === 'trial' && draft.trialTouched);
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    const patch: RosterPatch = { status: draft.status, nature: draft.nature, variant: draft.variant, notes: draft.notes.trim() || null };
+    const patch: RosterPatch = { status: draft.status, nature: draft.nature, variant: draft.variant, spread: compactSpread(draft.spread), notes: draft.notes.trim() || null };
     if (draft.status === 'trial' && draft.trialTouched) patch.trial_expires_at = expiresAfter(draft.trialDays, draft.trialHours);
     await onSave(patch);
   };
@@ -187,6 +190,7 @@ function EntryCard({ entry, formId, name, label, editing, index, onToggle, onSav
           <span className="copy-meta">
             {entry.variant && <span className="copy-variant">{variantName(entry.variant, uiLocale())} · </span>}
             {t('nature.label')}: {natureLabel(entry.nature)}
+            {entry.spread && <span className="copy-spread">{spreadSummary(entry.spread)}</span>}
             {entry.notes && <span className="copy-notes">{entry.notes}</span>}
           </span>
           </div>

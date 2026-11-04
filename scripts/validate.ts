@@ -128,6 +128,10 @@ export function validateData(dataDir: string = DATA_DIR): ValidationResult {
   // Every generated record has English and stays consistent
   for (const form of generated.forms) {
     if (!generated.formNames[form.id]?.en) errors.push(`generated: form "${form.id}" has no English name`);
+    // Six positive base stats, for the stat points editor (run "npm run seed" if they're missing)
+    if (!Array.isArray(form.stats) || form.stats.length !== 6 || !form.stats.every((n) => Number.isInteger(n) && n > 0)) {
+      errors.push(`generated: form "${form.id}" needs six base stats (run "npm run seed")`);
+    }
   }
   for (const item of generated.items) {
     if (!generated.itemNames[item.id]?.en) errors.push(`generated: item "${item.id}" has no English name`);

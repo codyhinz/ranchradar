@@ -1,4 +1,4 @@
-import { addableCatalog, catalog, guessLocale, isInSeason, isKnownForm, normalize, regulationAt, regulations, searchForms } from './catalog';
+import { addableCatalog, baseStatsOf, catalog, guessLocale, isInSeason, isKnownForm, normalize, regulationAt, regulations, searchForms } from './catalog';
 
 describe('normalize', () => {
   it('folds accents, width and hiragana', () => {
@@ -94,5 +94,13 @@ describe('regulations', () => {
     expect(isInSeason('bouffalant')).toBe(false); // known from data, not in M-C
     expect(isKnownForm('bouffalant')).toBe(true);
     expect(isKnownForm('missingno')).toBe(false);
+  });
+});
+
+describe('baseStatsOf', () => {
+  it('gives HP, Atk, Def, SpA, SpD, Spe for every form', () => {
+    expect(baseStatsOf('torkoal')).toEqual([70, 85, 140, 85, 70, 20]);
+    expect(addableCatalog.every((f) => baseStatsOf(f.id)?.length === 6)).toBe(true);
+    expect(baseStatsOf('missingno')).toBeNull();
   });
 });

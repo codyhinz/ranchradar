@@ -5,6 +5,7 @@ import { t, uiLocale } from '../i18n';
 import { Dialog } from './Dialog';
 import { natureLabel, statusLine } from './FormSheet';
 import { Sprite } from './Sprite';
+import { spreadSummary } from './StatPoints';
 
 /**
  * A Pokémon changed on two sides (another device, or a restored backup the account already has):
@@ -43,13 +44,14 @@ export function ConflictPrompt({ conflicts, name, onKeep, onLater }: {
   );
 }
 
-interface Fields { status: string; variant: string; nature: string; notes: string }
+interface Fields { status: string; variant: string; nature: string; spread: string; notes: string }
 
 function fields(entry: RosterEntry): Fields {
   return {
     status: entry.deleted_at ? t('conflict.removed') : statusLine(entry),
     variant: entry.variant ? variantName(entry.variant, uiLocale()) : '',
     nature: natureLabel(entry.nature),
+    spread: spreadSummary(entry.spread),
     notes: entry.notes ?? '',
   };
 }
@@ -77,6 +79,7 @@ function Side({ label, entry, shown, differs, onKeep }: {
           <>
             {shown.variant && row('variant', shown.variant)}
             {row('nature', `${t('nature.label')}: ${shown.nature}`)}
+            {(shown.spread || differs('spread')) && row('spread', `${t('spread.label')}: ${shown.spread || t('spread.none')}`)}
             {shown.notes ? row('notes', shown.notes) : differs('notes') && row('notes', t('conflict.noNotes'))}
           </>
         )}

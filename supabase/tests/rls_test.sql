@@ -106,7 +106,43 @@ begin
     raise exception 'an oversized spread was accepted';
   exception when check_violation then null;
   end;
-  update roster_entries set spread = '{"hp": 252, "atk": 252}' where form_id = 'garchomp';  -- a real spread fits
+  update roster_entries set spread = '{"hp": 2, "atk": 32, "def": 0, "spa": 0, "spd": 0, "spe": 32}' where form_id = 'garchomp';  -- a real spread fits
+  -- Stat points: six stats, whole numbers, 32 per stat, 1–66 in total
+  begin
+    update roster_entries set spread = '{"hp": 252, "atk": 252}' where form_id = 'garchomp';
+    raise exception 'an EV-style spread was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '{"hp": 32, "atk": 32, "def": 32, "spa": 0, "spd": 0, "spe": 0}' where form_id = 'garchomp';
+    raise exception 'a 96-point spread was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '{"hp": 0, "atk": 0, "def": 0, "spa": 0, "spd": 0, "spe": 0}' where form_id = 'garchomp';
+    raise exception 'an empty spread was stored instead of null';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '{"hp": 2.5, "atk": 32, "def": 0, "spa": 0, "spd": 0, "spe": 31}' where form_id = 'garchomp';
+    raise exception 'a fractional spread was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '{"hp": "2", "atk": 32, "def": 0, "spa": 0, "spd": 0, "spe": 32}' where form_id = 'garchomp';
+    raise exception 'a spread with text points was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '{"hp": 2, "atk": 32, "def": 0, "spa": 0, "spd": 0, "spe": 32, "x": 1}' where form_id = 'garchomp';
+    raise exception 'a spread with an extra key was accepted';
+  exception when check_violation then null;
+  end;
+  begin
+    update roster_entries set spread = '[2, 32, 0, 0, 0, 32]' where form_id = 'garchomp';
+    raise exception 'an array spread was accepted';
+  exception when check_violation then null;
+  end;
   begin
     update profiles set locale = repeat('B', 100);
     raise exception 'an oversized locale was accepted';

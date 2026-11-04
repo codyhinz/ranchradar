@@ -41,6 +41,8 @@ export interface FormRecord {
   dex_number: number;
   types: string[];
   sprite_key: string;
+  /** Base stats: HP, Attack, Defense, Sp. Atk, Sp. Def, Speed. App-only; not in the database. */
+  stats: number[];
 }
 
 export interface ItemRecord {

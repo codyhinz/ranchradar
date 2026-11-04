@@ -3,20 +3,12 @@ import natureNames from '../../data/generated/nature-names.json';
 import { useNatureSort } from '../app/preferences';
 import type { NameLocale } from '../catalog';
 import { NATURES, type Nature } from '../data/types';
+import { NATURE_EFFECTS as EFFECTS } from '../data/spread';
 import { revealWithin } from './reveal';
 import { t, uiLocale, type MessageKey } from '../i18n';
 
 type Stat = 'atk' | 'def' | 'spa' | 'spd' | 'spe';
 const STATS: Stat[] = ['atk', 'def', 'spa', 'spd', 'spe'];
-
-/** Raised and lowered stat for each nature; neutral natures have none. */
-const EFFECTS: Partial<Record<Nature, [Stat, Stat]>> = {
-  lonely: ['atk', 'def'], brave: ['atk', 'spe'], adamant: ['atk', 'spa'], naughty: ['atk', 'spd'],
-  bold: ['def', 'atk'], relaxed: ['def', 'spe'], impish: ['def', 'spa'], lax: ['def', 'spd'],
-  timid: ['spe', 'atk'], hasty: ['spe', 'def'], jolly: ['spe', 'spa'], naive: ['spe', 'spd'],
-  modest: ['spa', 'atk'], mild: ['spa', 'def'], quiet: ['spa', 'spe'], rash: ['spa', 'spd'],
-  calm: ['spd', 'atk'], gentle: ['spd', 'def'], sassy: ['spd', 'spe'], careful: ['spd', 'spa'],
-};
 
 const names = natureNames as Record<string, Partial<Record<NameLocale, string>>>;
 const statLabel = (stat: Stat) => t(`stat.${stat}` as MessageKey);

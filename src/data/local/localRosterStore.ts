@@ -11,6 +11,7 @@ import {
   type RosterPatch,
 } from '../types';
 import type { RanchDB } from './db';
+import { compactSpread, isValidSpread } from '../spread';
 
 export interface LocalRosterStoreOptions {
   db: RanchDB;
@@ -117,7 +118,7 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
             : null,
         nature: input.nature ?? null,
         variant: input.variant ?? null,
-        spread: null,
+        spread: input.spread ?? null,
         notes: input.notes ?? null,
         source: input.source ?? 'manual',
         version: 1,
@@ -179,13 +180,14 @@ export function createLocalRosterStore(options: LocalRosterStoreOptions): Roster
           trial_expires_at: row.status === 'permanent' ? null : row.trial_expires_at,
           nature: row.nature,
           variant: row.variant,
+          spread: row.spread ?? null,
           notes: row.notes,
           source: row.source,
           created_at: row.created_at,
           updated_at: row.updated_at,
         };
         if (!current) {
-          toWrite.push({ entry: validate({ ...imported, id: row.id, user_id: userId, spread: null, version: 1, deleted_at: null }), isNew: true });
+          toWrite.push({ entry: validate({ ...imported, id: row.id, user_id: userId, version: 1, deleted_at: null }), isNew: true });
           result.added++;
         } else if (row.updated_at > current.updated_at) {
           // Keeps this device's server version (the conflict base) and owner; revives a deleted copy.
@@ -266,6 +268,11 @@ function validate(entry: RosterEntry): RosterEntry {
   }
   if (entry.variant !== null && (typeof entry.variant !== 'string' || entry.variant.length > MAX_VARIANT_LENGTH)) {
     throw new StorageError('invalid', 'Invalid variant');
+  }
+  // Six zeros mean nothing recorded, stored as null; anything over the caps is refused.
+  entry.spread = compactSpread(entry.spread);
+  if (entry.spread !== null && !isValidSpread(entry.spread)) {
+    throw new StorageError('invalid', 'Stat points are limited to 32 per stat and 66 in total');
   }
   if (entry.notes !== null && entry.notes.length > MAX_NOTES_LENGTH) {
     throw new StorageError('invalid', `Notes are limited to ${MAX_NOTES_LENGTH} characters`);

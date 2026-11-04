@@ -15,6 +15,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { OutboxItem, RanchDB } from '../local/db';
 import type { RosterEntry } from '../types';
+import { readSpread } from '../spread';
 import { supabaseInserter, uploadPendingInserts, type RosterInserter } from './guestUpload';
 
 /** A roster row as the server stores and returns it. */
@@ -100,7 +101,8 @@ function fromServer(row: ServerRow): RosterEntry {
   return {
     id: row.id, user_id: row.user_id, form_id: row.form_id, status: row.status,
     trial_expires_at: iso(row.trial_expires_at), nature: row.nature, variant: row.variant ?? null,
-    spread: row.spread ?? null, notes: row.notes, source: row.source, version: row.version,
+    // Canonical, so the same points compare equal however the server ordered or wrote them.
+    spread: readSpread(row.spread), notes: row.notes, source: row.source, version: row.version,
     created_at: iso(row.created_at)!, updated_at: iso(row.updated_at)!, deleted_at: iso(row.deleted_at),
   };
 }

@@ -674,6 +674,49 @@ body::after {
 .time-unit input:disabled { opacity: 0.5; }
 .field-hint { margin: 0; color: var(--muted); font-size: var(--step--1); font-weight: 400; }
 
+/* Stat points: a summary that folds open into six −/+ rows, each with its Level 50 stat */
+.stat-points .spread-summary { font-variant-numeric: tabular-nums; }
+.spread-used { color: var(--muted); font-size: var(--step--1); font-weight: 700; font-variant-numeric: tabular-nums; }
+.spread-used[data-full='true'] { color: var(--ember-strong); }
+.spread-panel { padding: 0.5rem 0.6rem 0.6rem; }
+.spread-head { margin: 0 0 0.15rem; text-align: right; font-size: 0.75rem; font-weight: 700; color: var(--wood); letter-spacing: 0.02em; }
+.spread-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+.spread-row { display: grid; grid-template-columns: 4.25rem auto minmax(0, 1fr) 2.75rem; align-items: center; gap: 0.5rem; }
+.spread-stat { font-weight: 700; white-space: nowrap; }
+.spread-mark { margin-left: 0.2rem; font-size: 0.6rem; vertical-align: 0.15em; }
+.spread-row[data-nature='up'] .spread-stat, .spread-row[data-nature='up'] .spread-final { color: var(--ember-strong); }
+.spread-row[data-nature='down'] .spread-stat, .spread-row[data-nature='down'] .spread-final { color: var(--muted); }
+.spread-stepper { display: inline-flex; align-items: center; gap: 0.25rem; }
+.spread-step {
+  width: 40px; height: 40px; border: 2px solid var(--rail); border-radius: 50%; background: var(--smoke);
+  font-size: 1.2rem; font-weight: 700; line-height: 1; cursor: pointer;
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  transition: transform 90ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+.spread-step:active:not(:disabled) { transform: scale(0.9); }
+.spread-step:disabled { opacity: 0.4; cursor: default; }
+.spread-stepper input {
+  width: 3rem; min-height: 40px; padding: 0.3rem 0.25rem; text-align: center; font-weight: 700;
+  border: 2px solid var(--rail); border-radius: 10px; background: var(--smoke);
+  font-variant-numeric: tabular-nums; -moz-appearance: textfield; appearance: textfield;
+}
+.spread-stepper input::-webkit-inner-spin-button, .spread-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.spread-stepper input:focus-visible { border-color: var(--hay); }
+.spread-meter { height: 6px; border-radius: 999px; background: var(--rail); overflow: hidden; }
+.spread-meter > span { display: block; height: 100%; border-radius: inherit; background: var(--ember); transition: width 160ms ease; }
+.spread-final { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.spread-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--rail); font-weight: 600; font-size: var(--step--1);
+}
+.spread-hint { margin-top: 0.4rem; }
+.copy-spread { color: var(--coal); font-variant-numeric: tabular-nums; }
+/* Narrow phones: the meter goes, the numbers stay */
+@media (max-width: 22rem) {
+  .spread-row { grid-template-columns: 3.5rem auto minmax(0, 1fr); }
+  .spread-meter { display: none; }
+}
+
 /* Variant picker: a small picture of each version beside its name */
 .variant-value, .variant-option { display: inline-flex; align-items: center; gap: 0.5rem; }
 .variant-value .sprite, .variant-option .sprite { width: 32px; height: 32px; margin: -4px 0; }
@@ -1206,6 +1249,7 @@ body::after {
   .view-toggle button:hover:not([aria-pressed='true']) { background: var(--rail); }
   .tool-button:hover, .provider-button:hover:not(:disabled) { background: color-mix(in srgb, var(--rail) 55%, transparent); }
   .picker-button:hover:not([aria-expanded='true']) { border-color: var(--wood); }
+  .spread-step:hover:not(:disabled), .spread-stepper input:hover:not(:focus) { border-color: var(--wood); }
   .picker-list li[role='option'] { cursor: pointer; }
   .picker-list li[role='option']:hover { background: var(--rail); }
   .copy-edit:hover:not([aria-expanded='true']) { border-color: var(--wood); background: color-mix(in srgb, var(--rail) 55%, transparent); }

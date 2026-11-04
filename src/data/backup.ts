@@ -1,5 +1,6 @@
 import { isKnownForm, variantsOf } from '../catalog';
 import { MAX_NOTES_LENGTH, NATURES, type ImportedRosterEntry, type RosterEntry } from './types';
+import { readSpread } from './spread';
 
 /**
  * Roster backup files: a guest's only copy lives in this browser, so Settings can save it
@@ -30,7 +31,7 @@ export function toBackup(entries: RosterEntry[], now: Date = new Date()): Roster
     exported_at: now.toISOString(),
     entries: entries.filter((e) => !e.deleted_at).map((e) => ({
       id: e.id, form_id: e.form_id, status: e.status, trial_expires_at: e.trial_expires_at,
-      nature: e.nature, variant: e.variant, notes: e.notes, source: e.source,
+      nature: e.nature, variant: e.variant, spread: e.spread, notes: e.notes, source: e.source,
       created_at: e.created_at, updated_at: e.updated_at,
     })),
   };
@@ -89,7 +90,8 @@ function readRow(raw: unknown): ImportedRosterEntry | null {
   return {
     id: id.toLowerCase(), form_id, status,
     trial_expires_at: status === 'trial' && isDate(raw.trial_expires_at) ? new Date(raw.trial_expires_at).toISOString() : null,
-    nature, variant, notes, source,
+    // Files from before stat points have none; a spread that doesn't add up is dropped, not the row.
+    nature, variant, spread: readSpread(raw.spread), notes, source,
     created_at: new Date(raw.created_at).toISOString(),
     updated_at: new Date(raw.updated_at).toISOString(),
   };

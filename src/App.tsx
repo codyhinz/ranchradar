@@ -35,6 +35,7 @@ import { UpdatePrompt } from './components/UpdatePrompt';
 import { BackupError, MAX_BACKUP_BYTES, backupFileName, parseBackup, toBackup } from './data/backup';
 import { summarizeByForm } from './data/ownership';
 import type { RosterStatus } from './data/types';
+import { compactSpread, type StatSpread } from './data/spread';
 import { setUiLocale, t } from './i18n';
 
 // The item list and its names only load once someone opens the Items tab.
@@ -170,14 +171,14 @@ export function App() {
     catch (error) { say(t('error.generic', { message: error instanceof Error ? error.message : String(error) }), undefined, 'confused'); }
   };
 
-  const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; variant?: string | null; notes?: string | null; trial_expires_at?: string } = {}) =>
+  const add = (formId: string, status: RosterStatus, extra: { nature?: string | null; variant?: string | null; spread?: StatSpread | null; notes?: string | null; trial_expires_at?: string } = {}) =>
     guard(async () => {
       if (!store) return;
       if (boxUsed >= capacity) {
         setToast({ id: Date.now(), text: t('box.full', { capacity }), action: { label: t('settings.box'), run: () => setSettingsOpen(true) } });
         return;
       }
-      const entry = await store.add({ form_id: formId, status, nature: extra.nature as never, variant: extra.variant ?? null, notes: extra.notes ?? null, ...(extra.trial_expires_at ? { trial_expires_at: extra.trial_expires_at } : {}) });
+      const entry = await store.add({ form_id: formId, status, nature: extra.nature as never, variant: extra.variant ?? null, spread: compactSpread(extra.spread ?? null), notes: extra.notes ?? null, ...(extra.trial_expires_at ? { trial_expires_at: extra.trial_expires_at } : {}) });
       requestPersistentStorage();
       say(t(status === 'permanent' ? 'added.permanent' : 'added.trial', { name: name(formId) }), () => {
         void store.remove(entry.id);
@@ -340,6 +341,7 @@ export function App() {
             await add(addingFormId, draft.status, {
               nature: draft.nature,
               variant: draft.variant,
+              spread: draft.spread,
               notes: draft.notes.trim() || null,
               ...(draft.status === 'trial' && draft.trialTouched ? { trial_expires_at: expiresAfter(draft.trialDays, draft.trialHours) } : {}),
             });

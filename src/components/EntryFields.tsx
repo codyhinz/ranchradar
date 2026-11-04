@@ -1,6 +1,8 @@
 import { MAX_NOTES_LENGTH, TRIAL_DAYS, type Nature, type RosterStatus } from '../data/types';
 import { NaturePicker } from './NaturePicker';
 import { VariantPicker } from './VariantPicker';
+import { StatPoints } from './StatPoints';
+import type { StatSpread } from '../data/spread';
 import { variantsOf } from '../catalog';
 import { t } from '../i18n';
 
@@ -10,6 +12,8 @@ export interface EntryDraft {
   status: RosterStatus;
   nature: Nature | null;
   variant: string | null;
+  /** May hold six zeros while editing; saved as null then. */
+  spread: StatSpread | null;
   notes: string;
   /** Time left on a trial, as the game shows it. Only saved when `trialTouched`. */
   trialDays: number;
@@ -30,14 +34,14 @@ export function expiresAfter(days: number, hours: number, now = new Date()): str
 }
 
 /** A fresh draft; pass the entry's expiry to start from its current time left. */
-export function newDraft(status: RosterStatus, extra: { nature?: Nature | null; variant?: string | null; notes?: string | null; trialExpiresAt?: string | null } = {}): EntryDraft {
+export function newDraft(status: RosterStatus, extra: { nature?: Nature | null; variant?: string | null; spread?: StatSpread | null; notes?: string | null; trialExpiresAt?: string | null } = {}): EntryDraft {
   const left = splitTimeLeft(status === 'trial' ? extra.trialExpiresAt ?? null : null);
-  return { status, nature: extra.nature ?? null, variant: extra.variant ?? null, notes: extra.notes ?? '', trialDays: left.days, trialHours: left.hours, trialTouched: false };
+  return { status, nature: extra.nature ?? null, variant: extra.variant ?? null, spread: extra.spread ?? null, notes: extra.notes ?? '', trialDays: left.days, trialHours: left.hours, trialTouched: false };
 }
 
 const clamp = (value: number, max: number) => (Number.isFinite(value) ? Math.min(max, Math.max(0, Math.floor(value))) : 0);
 
-/** Status, time left, variant, nature and notes: shared by the add sheet and the entry editor. */
+/** Status, time left, variant, nature, stat points and notes: shared by the add sheet and the entry editor. */
 export function EntryFields({ formId, draft, onChange, idPrefix }: {
   formId: string;
   draft: EntryDraft;
@@ -102,6 +106,7 @@ export function EntryFields({ formId, draft, onChange, idPrefix }: {
         <VariantPicker formId={formId} value={draft.variant} onChange={(variant) => onChange({ ...draft, variant })} />
       )}
       <NaturePicker value={draft.nature} onChange={(nature) => onChange({ ...draft, nature })} />
+      <StatPoints formId={formId} nature={draft.nature} value={draft.spread} onChange={(spread) => onChange({ ...draft, spread })} />
       <label className="field">
         <span>{t('notes.label')}</span>
         <textarea

@@ -2,7 +2,7 @@
 
 How RanchRadar is built, as of the commit noted below. The [README](../README.md) covers setup, deployment and secrets; this file covers how the pieces fit together and the rules that keep them working. Update it in the same commit as any change it describes.
 
-**Current as of:** Nov 3, 2026 — Housekeeping: `.env.example` added, dead code and `desktop.ini` removed, translations type-checked for completeness. 25 test files / 174 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings).
+**Current as of:** Nov 4, 2026 — Stat spreads shipped. 27 test files / 192 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings); RLS tests pass on Postgres 16.
 
 ---
 
@@ -18,6 +18,7 @@ Live at `ranchradar.dev`. Public repo `codyhinz/ranchradar`, AGPL-3.0-only, © c
 | --- | --- |
 | Roster (search, add, grid/list, filters, sorts, trials, box space, undo, backups) | Shipped |
 | Cosmetic variants (Alcremie, Florges, Furfrou, Squawkabilly, Maushold, Polteageist) | Shipped |
+| Stat spreads (stat points per copy, Lv 50 stats under the copy's nature; guest + synced) | Shipped |
 | Season handling (dormant files, auto switch-over, out-of-season dimming) | Shipped |
 | Accounts + roster sync, guest merge, conflict prompt | Shipped |
 | Account export / deletion, age check (13+) | Shipped |
@@ -101,7 +102,8 @@ docs/                    this file
 | `ResultRow` | Search result: ownership summary, season legality, three add buttons |
 | `RosterList` | Grid/list of owned forms, filters/sorts, box usage, bulk select, expired-trial actions |
 | `FormSheet` | One form's copies: edit, make permanent, return to Ranch, remove (with undo) |
-| `AddSheet` / `EntryFields` | Add with nature, variant, notes, exact trial time left |
+| `AddSheet` / `EntryFields` | Add with nature, variant, stat points, notes, exact trial time left |
+| `StatPoints` | Folding stat points editor: summary + used/66, six −/+ rows (hold to fill or empty, or type), meter and Lv 50 stat per row with nature ▲/▼; `spreadSummary()` for cards and the conflict prompt |
 | `BulkAddSheet` | First-time setup grid: tap = chosen status, long-press = the other; nothing saves until Add |
 | `NaturePicker`, `VariantPicker` | Downward lists; natures sortable by stat or A–Z |
 | `ItemsTab` | Item checklist: picture cards (default) or list, All/Missing/Bought, sort by category / A–Z / recently bought, category counts, Mega Stones show and search by their Pokémon |
@@ -141,6 +143,7 @@ docs/                    this file
 - `catalog` — forms legal in the current regulation (what search offers by default).
 - `addableCatalog` — legal forms plus the out-of-season pool (`available.json`: fully evolved / non-evolving, battle-only and cosmetic forms excluded).
 - `currentRegulation = regulationAt(now)` — latest regulation whose `starts_at` has passed.
+- `baseStatsOf(formId)` — base HP/Atk/Def/SpA/SpD/Spe from `forms.json` (`stats`), for the Lv 50 numbers in the stat points editor.
 
 Search normalizes text (case, accents, kana) per locale. Sprites are Pokémon HOME renders served from `/sprites/<id>.webp` and `/sprites/variants/`; `Sprite.tsx` is the only place URLs are built, falling back variant → form → plain tile. Item pictures live at `/sprites/items/<id>.webp` (`itemSpriteUrl` / `ItemSprite`, plain tile if missing).
 
@@ -168,7 +171,7 @@ Both are implemented only by local stores (`local/localRosterStore.ts`, `local/l
 
 ### Types (types.ts)
 
-Shapes mirror the Supabase tables so rows move unchanged. `SyncFields` = `version`, `created_at`, `updated_at`, `deleted_at`. `RosterEntry`: `id` (device UUID), `user_id` (null = guest), `form_id`, `status` (`trial` | `permanent`), `trial_expires_at`, `nature`, `variant`, `spread` (reserved), `notes` (≤500), `source` (`manual` | `import` | `home`). `OwnedItem` uses `owner` (`''` for guest, since IndexedDB keys can't be null) + `item_id`. `SyncTable = 'roster_entries' | 'owned_items'`. Constants: `TRIAL_DAYS = 7`, `MAX_ROSTER_ENTRIES = 2000`.
+Shapes mirror the Supabase tables so rows move unchanged. `SyncFields` = `version`, `created_at`, `updated_at`, `deleted_at`. `RosterEntry`: `id` (device UUID), `user_id` (null = guest), `form_id`, `status` (`trial` | `permanent`), `trial_expires_at`, `nature`, `variant`, `spread` (`StatSpread | null`, see below), `notes` (≤500), `source` (`manual` | `import` | `home`). `OwnedItem` uses `owner` (`''` for guest, since IndexedDB keys can't be null) + `item_id`. `SyncTable = 'roster_entries' | 'owned_items'`. Constants: `TRIAL_DAYS = 7`, `MAX_ROSTER_ENTRIES = 2000`.
 
 ### IndexedDB schema (local/db.ts)
 
@@ -185,9 +188,18 @@ Outbox items carry `isNew` (insert vs. versioned update), and optionally `held: 
 
 `blocking()` closes the connection when another tab opens a newer DB version; the update prompt then reloads.
 
+### Stat spreads (spread.ts)
+
+Pokémon Champions replaces EVs with stat points (SP): up to 32 per stat and 66 in total, each point +1 to the Level 50 stat; IVs don't exist (every stat acts as 31). `spread` is `{hp, atk, def, spa, spd, spe}`, always all six keys in that order (Postgres's own jsonb key order, so device and server copies compare equal). No points recorded is `null`, never six zeros.
+
+- `readSpread(value)` — reads untrusted input (server rows, backup files) into the canonical form; anything unreadable becomes `null`. `fromServer` in the sync engine runs every pulled spread through it.
+- `compactSpread` / `isValidSpread` — the store compacts six zeros to `null` and refuses anything over the caps (`StorageError('invalid')`).
+- `battleStats(base, spread, nature)` — HP = base + SP + 75 (Shedinja stays 1); others = ⌊(base + SP + 20) × nature⌋, computed in integers.
+- `NATURE_EFFECTS` lives here and is shared with `NaturePicker`.
+
 ### Backups (backup.ts)
 
-Versioned JSON (`app: 'ranchradar'`, `format: 1`), max 2 MB, live entries only, no `user_id` or server version. Import merges by id: new rows added, existing rows keep whichever `updated_at` is newer, nothing deleted. Account export (`accountData.ts`) wraps the same format plus the server's `export_my_data()` result, so it also imports as a backup.
+Versioned JSON (`app: 'ranchradar'`, `format: 1`), max 2 MB, live entries only, no `user_id` or server version. Rows carry `spread`; files from before stat points simply lack it (read as `null`), and a spread that doesn't add up is dropped without skipping the row. Import merges by id: new rows added, existing rows keep whichever `updated_at` is newer, nothing deleted. Account export (`accountData.ts`) wraps the same format plus the server's `export_my_data()` result, so it also imports as a backup.
 
 ### Ownership (ownership.ts)
 
@@ -256,7 +268,7 @@ Signing out switches to the guest roster; the account's copy stays on the device
 | Table | Key | Client rights | Cap | Status |
 | --- | --- | --- | --- | --- |
 | `profiles` | `user_id` | select; update `locale`, `terms_accepted_at`, `age_confirmed_at`, `trial_reminder_minutes` | — | In use |
-| `roster_entries` | `id` (+ unique `id,user_id`) | select/insert/update | 2,000 live | In use |
+| `roster_entries` | `id` (+ unique `id,user_id`); `spread` checked by `app.is_stat_spread()` | select/insert/update | 2,000 live | In use |
 | `owned_items` | `(user_id, item_id)` | select/insert/update | — | In use |
 | `teams` | `id` | select/insert/update | 200 | Schema only |
 | `team_slots` | `id`; unique live `(team_id, position)` 1–6 | select/insert/update | 1,200 | Schema only |
@@ -266,6 +278,8 @@ Signing out switches to the guest roster; the account's copy stays on the device
 | `discord_webhooks` (+ `private.discord_webhook_secrets`) | `id` | select/delete; update `label`, `enabled` | 5 | Reserved |
 
 All synced tables get the `touch` trigger and a `(user_id, updated_at)` index. No client `DELETE` on synced tables; hard deletes happen only in the purge job and account deletion. `team_slots` uses composite FKs `(team_id, user_id)` and `(roster_entry_id, user_id)` so a slot can only reference the same user's team and Pokémon. Legality, duplicate held items and unowned items are app warnings, not constraints, so drafts save.
+
+**Stat spreads (`20261105000000_stat_spreads.sql`):** `app.is_stat_spread(jsonb)` (immutable, CASE-ordered so no cast runs on the wrong type) requires exactly the six keys, whole numbers 0–32, total 1–66. Added as `roster_entries_spread_shape` `NOT VALID`, so a stray old row can't block the deploy; the app's next write to such a row fixes it.
 
 **Teams note:** `team_slots` currently has `held_item_id` but no move or ability columns. Shipping Teams (with optional moves/abilities) needs a new migration adding them, plus a new `SyncTable`, IndexedDB step and sync module.
 
@@ -304,8 +318,8 @@ Supabase Auth with Google, Discord, and email + password (implicit flow, so conf
 ## 8. Reference data pipeline
 
 1. **Hand-edit** `data/regulations/<id>.json`: `id`, `name`, `starts_at`/`ends_at` (UTC), `status` (`draft` → `final`), `expected_forms`, `forms` (Roster Ranch list), `items` (every allowed held item, including Mega Stones), `megas` (allowed Mega Stones, also in `items`). Ids are Showdown names lowercased with dashes.
-2. **`npm run seed`** resolves ids through `@pkmn/dex` and PokeAPI CSVs (pinned commit `2ee1c42…`), writes `data/generated/*` (`forms`, `form-names`, `items`, `item-names`, `nature-names`, `type-names`, `variants`, `available`), builds sprites with `sharp` (Pokémon: HOME renders; items: PokeAPI sprites pinned at `1b3b7c0…`, Scarlet/Violet render → Dream World art → classic 30px icon scaled by a whole number, into `public/sprites/items/`), appends new ids to `id-registry.json`, and writes a new `supabase/migrations/<ts>_reference_data.sql` if anything changed. Any unresolved id stops the run.
-3. **`npm run validate:data`** (offline, in CI): schema/date/slug checks, final counts match `expected_forms`, no registry id disappears (no renames), newest reference migration exactly matches `data/`. Megas whose base form isn't recruitable (Floettite / Eternal Floette) are warnings, not errors.
+2. **`npm run seed`** resolves ids through `@pkmn/dex` and PokeAPI CSVs (pinned commit `2ee1c42…`), writes `data/generated/*` (`forms` with base `stats`, `form-names`, `items`, `item-names`, `nature-names`, `type-names`, `variants`, `available`), builds sprites with `sharp` (Pokémon: HOME renders; items: PokeAPI sprites pinned at `1b3b7c0…`, Scarlet/Violet render → Dream World art → classic 30px icon scaled by a whole number, into `public/sprites/items/`), appends new ids to `id-registry.json`, and writes a new `supabase/migrations/<ts>_reference_data.sql` if anything changed. Any unresolved id stops the run.
+3. **`npm run validate:data`** (offline, in CI): schema/date/slug checks, final counts match `expected_forms`, no registry id disappears (no renames), newest reference migration exactly matches `data/`, every form has six base stats. Megas whose base form isn't recruitable (Floettite / Eternal Floette) are warnings, not errors.
 4. Commit everything together; after merge, `npx supabase db push` so the DB knows new forms before anyone syncs them.
 
 Current data: 3 regulations (M-A 213 forms / 110 items / 59 megas, M-B 235 / 141 / 75, M-C 261 / 159 / 81; M-C ends Dec 2, 2026 01:59:59 UTC), 672 forms in the catalog, 670 in the addable pool, 159 items.
@@ -345,9 +359,9 @@ Edge Function secrets: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`,
 
 GitHub disables scheduled workflows after 60 days of repo inactivity.
 
-**RLS tests** cover: insert/update versioning and stale writes, cross-user read/insert/update/link attempts, client writes to reference data, hard deletes, private schema access, variant FK, size limits, caps, column grants, TRUNCATE, anon access, export/delete isolation, and reminders.
+**RLS tests** cover: insert/update versioning and stale writes, cross-user read/insert/update/link attempts, client writes to reference data, hard deletes, private schema access, variant FK, size limits, stat spread shape, caps, column grants, TRUNCATE, anon access, export/delete isolation, and reminders.
 
-**Unit tests** (Vitest, node env, fake-indexeddb): local stores, sync engine, guest upload, owned items, backups, forget account, catalog/item catalog, filters, tabs, i18n placeholders (every key), auth errors, sign-in method, feedback scrubbing, entry fields, and build helpers (headers, adsense, regulation pages, reference SQL, webpush, push SW, validate).
+**Unit tests** (Vitest, node env, fake-indexeddb): local stores, sync engine, guest upload, stat spreads (caps, canonical order, Lv 50 math), spread summaries, owned items, backups, forget account, catalog/item catalog, filters, tabs, i18n placeholders (every key), auth errors, sign-in method, feedback scrubbing, entry fields, and build helpers (headers, adsense, regulation pages, reference SQL, webpush, push SW, validate).
 
 ---
 
@@ -381,5 +395,5 @@ GitHub disables scheduled workflows after 60 days of repo inactivity.
 ## 12. Known gaps and housekeeping
 
 - **Teams schema lacks moves/abilities** (see §7).
-- **Reserved, unused:** `home_forms`, `discord_webhooks` + `private.*`, `news_items`, `roster_entries.spread`, `source: 'home' | 'import'`.
+- **Reserved, unused:** `home_forms`, `discord_webhooks` + `private.*`, `news_items`, `source: 'home' | 'import'`.
 - **M-C ends Dec 2, 2026** — the next regulation file (M-D) should ship as soon as it's announced.

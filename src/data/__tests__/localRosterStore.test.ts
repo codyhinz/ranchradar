@@ -201,10 +201,40 @@ describe('bulk remove and undo', () => {
   });
 });
 
+describe('stat points', () => {
+  const spread = { hp: 2, atk: 32, def: 0, spa: 0, spd: 0, spe: 32 };
+
+  it('saves a spread on add and edit, and six zeros as none', async () => {
+    const s = store();
+    const added = await s.add({ form_id: 'garchomp', status: 'permanent', spread });
+    expect(added.spread).toEqual(spread);
+    const cleared = await s.update(added.id, { spread: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } });
+    expect(cleared.spread).toBeNull();
+    const reordered = await s.update(added.id, { spread: { spe: 32, atk: 32, hp: 2, def: 0, spa: 0, spd: 0 } });
+    expect(Object.keys(reordered.spread!)).toEqual(['hp', 'atk', 'def', 'spa', 'spd', 'spe']);
+  });
+
+  it('refuses points over the caps', async () => {
+    const s = store();
+    await expect(s.add({ form_id: 'garchomp', status: 'permanent', spread: { ...spread, def: 32 } }))
+      .rejects.toBeInstanceOf(StorageError);
+    await expect(s.add({ form_id: 'garchomp', status: 'permanent', spread: { ...spread, atk: 33, spe: 0 } }))
+      .rejects.toBeInstanceOf(StorageError);
+  });
+
+  it('queues a spread change for upload like any edit', async () => {
+    const s = store(true);
+    const added = await s.add({ form_id: 'garchomp', status: 'permanent' });
+    await db.clear('outbox');
+    await s.update(added.id, { spread });
+    expect(await db.getAll('outbox')).toHaveLength(1);
+  });
+});
+
 describe('importing a backup', () => {
   const row = (over: Partial<ImportedRosterEntry> = {}): ImportedRosterEntry => ({
     id: crypto.randomUUID(), form_id: 'garchomp', status: 'permanent', trial_expires_at: null,
-    nature: null, variant: null, notes: null, source: 'manual',
+    nature: null, variant: null, spread: null, notes: null, source: 'manual',
     created_at: '2026-10-10T00:00:00.000Z', updated_at: '2026-10-10T00:00:00.000Z', ...over,
   });
 

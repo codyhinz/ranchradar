@@ -6,8 +6,8 @@ import { slug } from './lib/data';
 import { validateData } from './validate';
 
 const forms: FormRecord[] = [
-  { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp' },
-  { id: 'ninetales-alola', species_id: 'ninetales', dex_number: 38, types: ['ice', 'fairy'], sprite_key: 'ninetales-alola' },
+  { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp', stats: [108, 130, 95, 80, 85, 102] },
+  { id: 'ninetales-alola', species_id: 'ninetales', dex_number: 38, types: ['ice', 'fairy'], sprite_key: 'ninetales-alola', stats: [73, 67, 75, 81, 100, 109] },
 ];
 const items: ItemRecord[] = [
   { id: 'focus-sash', category: 'held', mega_target: null, mega_base_form: null, sprite_key: 'focus-sash' },
@@ -98,6 +98,11 @@ describe('validateData', () => {
   it('requires an English name for every form', () => {
     const dir = setup({ formNames: { garchomp: { en: 'Garchomp' }, 'ninetales-alola': { ja: 'キュウコン' } } });
     expect(validateData(dir).errors.join()).toMatch(/ninetales-alola" has no English name/);
+  });
+
+  it('requires six base stats for every form', () => {
+    const dir = setup({ forms: [forms[0]!, { ...forms[1]!, stats: [73, 67, 75] }] });
+    expect(validateData(dir).errors.join()).toMatch(/ninetales-alola" needs six base stats/);
   });
 });
 

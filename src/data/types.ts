@@ -1,4 +1,5 @@
 // Shapes mirror the Supabase tables so rows move between device and server unchanged.
+import type { StatSpread } from './spread';
 
 export type ISODate = string;
 
@@ -22,13 +23,14 @@ export interface RosterEntry extends SyncFields {
   nature: Nature | null;
   /** Cosmetic version (Alcremie flavor, Florges color, ...); null when not set or not applicable. */
   variant: string | null;
-  spread: unknown | null; // reserved for stat spreads
+  /** Stat points in each stat (see spread.ts); null when none are recorded. */
+  spread: StatSpread | null;
   notes: string | null;
   source: EntrySource;
 }
 
 export type NewRosterEntry = Pick<RosterEntry, 'form_id' | 'status'> &
-  Partial<Pick<RosterEntry, 'nature' | 'variant' | 'notes' | 'source' | 'trial_expires_at'>>;
+  Partial<Pick<RosterEntry, 'nature' | 'variant' | 'spread' | 'notes' | 'source' | 'trial_expires_at'>>;
 
 export type RosterPatch = Partial<
   Pick<RosterEntry, 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'spread'>
@@ -37,7 +39,7 @@ export type RosterPatch = Partial<
 /** A row as it travels in a backup file: no user, server version or tombstone. */
 export type ImportedRosterEntry = Pick<
   RosterEntry,
-  'id' | 'form_id' | 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'notes' | 'source' | 'created_at' | 'updated_at'
+  'id' | 'form_id' | 'status' | 'trial_expires_at' | 'nature' | 'variant' | 'spread' | 'notes' | 'source' | 'created_at' | 'updated_at'
 >;
 
 /**

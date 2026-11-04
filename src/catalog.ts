@@ -89,6 +89,11 @@ export function dexNumberOf(formId: string): number {
 export function typesOf(formId: string): string[] {
   return allFormsById.get(formId)?.types ?? [];
 }
+/** Base stats (HP, Atk, Def, SpA, SpD, Spe), or null for a form the catalog doesn't know. */
+export function baseStatsOf(formId: string): readonly number[] | null {
+  const stats = allFormsById.get(formId)?.stats;
+  return stats && stats.length === 6 ? stats : null;
+}
 
 export interface CatalogVariant {
   id: string;

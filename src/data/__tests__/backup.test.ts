@@ -17,6 +17,20 @@ describe('backup files', () => {
     expect(rows[0]).not.toHaveProperty('user_id');
   });
 
+  it('carries stat points, reads old files without them, and drops a spread that does not add up', () => {
+    const spread = { hp: 2, atk: 32, def: 0, spa: 0, spd: 0, spe: 32 };
+    const file = JSON.parse(JSON.stringify(toBackup([entry({ spread })])));
+    expect(parseBackup(JSON.stringify(file)).rows[0]!.spread).toEqual(spread);
+
+    delete file.entries[0].spread; // a file saved before stat points
+    expect(parseBackup(JSON.stringify(file)).rows[0]!.spread).toBeNull();
+
+    file.entries[0].spread = { hp: 252, atk: 252 };
+    const { rows, skipped } = parseBackup(JSON.stringify(file));
+    expect(skipped).toBe(0);
+    expect(rows[0]).toMatchObject({ spread: null, nature: 'jolly' });
+  });
+
   it('rejects files that are not backups, or from a newer format', () => {
     expect(() => parseBackup('not json')).toThrow(BackupError);
     expect(() => parseBackup(JSON.stringify({ hello: 'world' }))).toThrow(BackupError);

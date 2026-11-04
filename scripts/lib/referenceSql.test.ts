@@ -6,8 +6,8 @@ import { latestReferenceMigration, lit, nextMigrationName, referenceSql, type Re
 const data: ReferenceData = {
   regulations: [{ id: 'M-C', name: 'Regulation Set M-C', starts_at: '2026-09-09T02:00:00Z', ends_at: '2026-12-02T01:59:59Z', status: 'final', expected_forms: 2, forms: ['sirfetchd', 'garchomp'], items: ['garchompite', 'focus-sash'], megas: ['garchompite'] }],
   forms: [
-    { id: 'sirfetchd', species_id: 'sirfetchd', dex_number: 865, types: ['fighting'], sprite_key: 'sirfetchd' },
-    { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp' },
+    { id: 'sirfetchd', species_id: 'sirfetchd', dex_number: 865, types: ['fighting'], sprite_key: 'sirfetchd', stats: [62, 135, 95, 68, 82, 65] },
+    { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp', stats: [108, 130, 95, 80, 85, 102] },
   ],
   formNames: { garchomp: { en: 'Garchomp', ja: 'ガブリアス' }, sirfetchd: { en: 'Sirfetch’d', fr: "Palarticho's" } },
   items: [

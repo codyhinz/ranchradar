@@ -15,9 +15,9 @@ const small: RegulationPageData = {
     reg('M-A', '2026-04-08T02:00:00Z', '2026-06-17T01:59:59Z', ['garchomp']),
   ],
   forms: [
-    { id: 'absol', species_id: 'absol', dex_number: 359, types: ['dark'], sprite_key: 'absol' },
-    { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp' },
-    { id: 'floette-eternal', species_id: 'floette', dex_number: 670, types: ['fairy'], sprite_key: 'floette-eternal' },
+    { id: 'absol', species_id: 'absol', dex_number: 359, types: ['dark'], sprite_key: 'absol', stats: [65, 130, 60, 75, 60, 75] },
+    { id: 'garchomp', species_id: 'garchomp', dex_number: 445, types: ['dragon', 'ground'], sprite_key: 'garchomp', stats: [108, 130, 95, 80, 85, 102] },
+    { id: 'floette-eternal', species_id: 'floette', dex_number: 670, types: ['fairy'], sprite_key: 'floette-eternal', stats: [74, 65, 67, 125, 128, 92] },
   ],
   items: [
     { id: 'leftovers', category: 'held', mega_target: null, mega_base_form: null, sprite_key: 'leftovers' },

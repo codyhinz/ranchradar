@@ -212,6 +212,19 @@ describe('conflicts', () => {
     expect(await queue()).toEqual([]);
   });
 
+  it('doesn’t ask when both devices set the same stat points, whatever order the server keeps them in', async () => {
+    const spread = { hp: 2, atk: 32, def: 0, spa: 0, spd: 0, spe: 32 };
+    const theirs = { spe: 32, atk: 32, hp: 2, def: 0, spa: 0, spd: 0 }; // as Postgres or another client might send it
+    const { server, entry } = await bothEdited({ spread: theirs }, { spread });
+    expect(await sync(server)).toMatchObject({ conflicts: 0 });
+    expect((await mine().get(entry.id))?.spread).toEqual(spread);
+  });
+
+  it('holds differing stat points for the prompt', async () => {
+    const { server } = await bothEdited({ spread: { hp: 0, atk: 32, def: 0, spa: 0, spd: 2, spe: 32 } }, { spread: { hp: 2, atk: 32, def: 0, spa: 0, spd: 0, spe: 32 } });
+    expect(await sync(server)).toMatchObject({ conflicts: 1 });
+  });
+
   it('doesn’t ask when both devices removed it', async () => {
     const { server } = await bothEdited({ deleted_at: new Date().toISOString() }, 'remove');
     expect(await sync(server)).toMatchObject({ conflicts: 0 });
