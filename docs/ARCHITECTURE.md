@@ -111,7 +111,7 @@ docs/                    this file
 | `AccountSheet` | Google / Discord / email + password, reset, export, delete account |
 | `GuestOffer`, `ConflictPrompt`, `AgeCheck` | Sign-in flows (see §6) |
 | `Toast` | Undo, mascot moods |
-| `UpdatePrompt` | New build ready → Refresh; checks hourly and on visibility |
+| `UpdatePrompt` | New build ready → Refresh (always reloads, via `app/swUpdate.ts`); checks hourly and on visibility |
 | `Dialog` | Native `<dialog>` modal with slide animation |
 | `ErrorBoundary` | Reports to Sentry, offers reload |
 | `AdSlot`, `Sprite`, `TypeTags`, `StopSign`, `Mascot` | Small pieces |
