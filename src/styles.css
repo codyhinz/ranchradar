@@ -613,10 +613,14 @@ body::after {
 .toast-close:hover { background: rgb(241 236 232 / 0.12); color: #f1ece8; }
 .toast-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
 .update {
-  position: fixed; left: 50%; transform: translateX(-50%); z-index: 21;
-  bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); width: calc(100% - 2rem);
+  /* sized to its content (capped on small screens) and centred with margins, not a transform,
+     so the slide-in animation doesn't knock it off-centre */
+  position: fixed; left: 0; right: 0; margin-inline: auto; z-index: 21;
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  width: max-content; max-width: min(36rem, calc(100% - 2rem));
 }
-.update .button-primary { background: var(--ember-strong); color: #fff; }
+.update > span { flex: 1; min-width: 0; }
+.update .button-primary { flex: none; white-space: nowrap; background: var(--ember-strong); color: #fff; }
 
 /* ---------- Motion: quick and small, so taps feel answered ---------- */
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
