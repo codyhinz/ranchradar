@@ -115,7 +115,10 @@ supabase/
   tests/        SQL tests proving users can't touch each other's rows
 scripts/        seed, validation, and build helpers
 public/         sprites, icons, and security headers (_headers)
+docs/           technical reference (ARCHITECTURE.md)
 ```
+
+For how the pieces fit together (storage, sync, schema, reminders, data pipeline), see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Updating for a new regulation
 
