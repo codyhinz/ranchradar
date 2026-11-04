@@ -2,7 +2,7 @@
 
 How RanchRadar is built, as of the commit noted below. The [README](../README.md) covers setup, deployment and secrets; this file covers how the pieces fit together and the rules that keep them working. Update it in the same commit as any change it describes.
 
-**Current as of:** Nov 3, 2026 — Regulation pages show item icons beside every held item and berry. 25 test files / 174 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings).
+**Current as of:** Nov 3, 2026 — Housekeeping: `.env.example` added, dead code and `desktop.ini` removed, translations type-checked for completeness. 25 test files / 174 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings).
 
 ---
 
@@ -125,7 +125,6 @@ docs/                    this file
 | `useItems.ts` | Owner's `ItemStore` and owned items (`item_id → updated_at`, for "recently bought") |
 | `useAuth.ts` | `AuthState` (`unavailable` / `loading` / `signedOut` / `signedIn`), password-recovery flag, OAuth redirect errors |
 | `useAccountSync.ts` | When to sync, guest offer, conflict list (§6) |
-| `useAccountUpload.ts` | Older upload-only hook, superseded by `useAccountSync`; not imported anywhere (see §12) |
 | `useAgeCheck.ts` | One-time 13+ question per account (`profiles.age_confirmed_at`) |
 | `useNotifications.ts` / `push.ts` | Push support detection, subscribe/unsubscribe, ranch + trial reminder settings |
 | `preferences.ts` | `localStorage` prefs with in-memory fallback |
@@ -147,7 +146,7 @@ Search normalizes text (case, accents, kana) per locale. Sprites are Pokémon HO
 
 ### i18n
 
-All UI text goes through `t(key, vars)` in `i18n.ts`. English (`en`) is the full dictionary and defines `MessageKey`; the other eight (`ja`, `ko`, `zh-Hant`, `zh-Hans`, `fr`, `de`, `es`, `it`) are `Partial`, so a missing key **silently falls back to English**. The test only checks placeholders on a sample of keys, so completeness is a review responsibility. One language setting drives UI text, Pokémon/item/nature/type names and search.
+All UI text goes through `t(key, vars)` in `i18n.ts`. English (`en`) is the full dictionary and defines `MessageKey`; the other eight (`ja`, `ko`, `zh-Hant`, `zh-Hans`, `fr`, `de`, `es`, `it`) are typed `Record<MessageKey, string>`, so a missing key in any language fails `typecheck`. `t()` still falls back to English at runtime as a safety net. `MESSAGE_KEYS` lists every key; the test checks placeholders match English for every key in every language. One language setting drives UI text, Pokémon/item/nature/type names and search.
 
 ### Styling
 
@@ -330,7 +329,7 @@ Current data: 3 regulations (M-A 213 forms / 110 items / 59 megas, M-B 235 / 141
 
 ### Build-time environment
 
-`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN`, `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT`, `VITE_VAPID_PUBLIC_KEY` — all optional; each feature turns itself off when its variable is missing (no Supabase = guest-only build). Typed in `src/vite-env.d.ts`. Set in Cloudflare → Worker → Settings → Builds → Variables.
+`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`, `VITE_SENTRY_DSN`, `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT`, `VITE_VAPID_PUBLIC_KEY` — all optional; each feature turns itself off when its variable is missing (no Supabase = guest-only build). Typed in `src/vite-env.d.ts`; `.env.example` lists them all for local `.env.local` setup (keep the two in sync). Set in Cloudflare → Worker → Settings → Builds → Variables.
 
 Edge Function secrets: `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `REMINDERS_CRON_SECRET`. Vault: `project_url`, `reminders_cron_secret`. GitHub secrets: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (keep-alive); `SUPABASE_DB_URL`, `BACKUP_PASSPHRASE`, `R2_*` (backup).
 
@@ -348,7 +347,7 @@ GitHub disables scheduled workflows after 60 days of repo inactivity.
 
 **RLS tests** cover: insert/update versioning and stale writes, cross-user read/insert/update/link attempts, client writes to reference data, hard deletes, private schema access, variant FK, size limits, caps, column grants, TRUNCATE, anon access, export/delete isolation, and reminders.
 
-**Unit tests** (Vitest, node env, fake-indexeddb): local stores, sync engine, guest upload, owned items, backups, forget account, catalog/item catalog, filters, tabs, i18n placeholders, auth errors, sign-in method, feedback scrubbing, entry fields, and build helpers (headers, adsense, regulation pages, reference SQL, webpush, push SW, validate).
+**Unit tests** (Vitest, node env, fake-indexeddb): local stores, sync engine, guest upload, owned items, backups, forget account, catalog/item catalog, filters, tabs, i18n placeholders (every key), auth errors, sign-in method, feedback scrubbing, entry fields, and build helpers (headers, adsense, regulation pages, reference SQL, webpush, push SW, validate).
 
 ---
 
@@ -360,7 +359,7 @@ GitHub disables scheduled workflows after 60 days of repo inactivity.
 - **IndexedDB migrations** are append-only steps in `db.ts`; never edit a shipped step.
 - **SQL migrations** are new timestamped files; never edit an old one. Grant privileges explicitly. Add RLS tests for new tables.
 - **Reference data** only changes through `data/` + `npm run seed`. Never hand-edit `data/generated/` or reference migrations. `id-registry.json` is append-only; ids are never renamed.
-- **New UI text** = new i18n keys in all 9 languages, English first.
+- **New UI text** = new i18n keys in all 9 languages, English first (typecheck fails if one is missing).
 - **New colors** = CSS variables with light and dark values.
 - **Hover states** live in one `@media (hover: hover) and (pointer: fine)` block at the end of `styles.css`, so touch screens never get sticky hovers; new clickable pieces get a rule there.
 - **Tests** sit beside the file (`*.test.ts`) or in `src/data/__tests__/`.
@@ -381,10 +380,6 @@ GitHub disables scheduled workflows after 60 days of repo inactivity.
 
 ## 12. Known gaps and housekeeping
 
-- **`.env.example` is missing** from the repo, though the README tells people to copy it and `.gitignore` explicitly allows it. The variable list in `src/vite-env.d.ts` is the source to create it from.
-- **`desktop.ini`** (a Windows Explorer file) is committed at the repo root; it can be removed and added to `.gitignore`.
-- **`src/app/useAccountUpload.ts` is dead code:** nothing imports it since `useAccountSync` took over the guest offer and uploads. Safe to delete.
-- **i18n completeness isn't enforced:** non-English dictionaries are partial and fall back to English silently.
 - **Teams schema lacks moves/abilities** (see §7).
 - **Reserved, unused:** `home_forms`, `discord_webhooks` + `private.*`, `news_items`, `roster_entries.spread`, `source: 'home' | 'import'`.
 - **M-C ends Dec 2, 2026** — the next regulation file (M-D) should ship as soon as it's announced.

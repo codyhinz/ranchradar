@@ -95,7 +95,11 @@ const en = {
 };
 
 export type MessageKey = keyof typeof en;
-type Messages = Partial<Record<MessageKey, string>>;
+/** Every language must have every key; a missing one is a type error, not a silent English fallback. */
+type Messages = Record<MessageKey, string>;
+
+/** All message keys, for tests that check every string. */
+export const MESSAGE_KEYS = Object.keys(en) as MessageKey[];
 
 const ja: Messages = {
   'tab.items': "どうぐ", 'items.heading': "持っているどうぐ", 'items.count': "{total}個中{owned}個を購入済み", 'items.search': "どうぐを検索", 'items.filter': "表示", 'items.filter.all': "すべて", 'items.filter.missing': "未購入", 'items.filter.owned': "購入済み", 'items.cat.held': "持ち物", 'items.cat.berry': "きのみ", 'items.cat.mega_stone': "メガストーン", 'items.catCount': "{owned}/{total}", 'items.hint': "ゲームで購入したどうぐをタップしてください。1回の購入で、すべてのポケモンとチームで使えます。", 'items.inBox': "ボックスにいる", 'items.none': "「{query}」に一致するどうぐはありません。", 'items.allBought': "今シーズンのどうぐをすべて購入しました。", 'items.noneBought': "まだ購入済みのどうぐはありません。", 'items.loading': "どうぐを読み込み中…",

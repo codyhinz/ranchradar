@@ -6,3 +6,7 @@ dist
 
 # Built from data/ by vite.config.ts
 /regulations/
+
+# Windows Explorer
+desktop.ini
+Thumbs.db
