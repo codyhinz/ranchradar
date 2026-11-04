@@ -16,14 +16,17 @@ export function useItemStore(db: RanchDB | null, owner: string | null | undefine
   return store;
 }
 
-/** The ids of every item owned right now; re-reads after every change. null while loading. */
-export function useOwnedItemIds(store: ItemStore | null): Set<string> | null {
-  const [owned, setOwned] = useState<Set<string> | null>(null);
+/**
+ * Every item owned right now, mapped to when it was last marked bought (for "recently bought").
+ * Re-reads after every change. null while loading.
+ */
+export function useOwnedItems(store: ItemStore | null): ReadonlyMap<string, string> | null {
+  const [owned, setOwned] = useState<ReadonlyMap<string, string> | null>(null);
   useEffect(() => {
     setOwned(null);
     if (!store) return;
     let alive = true;
-    const load = () => void store.list().then((rows) => { if (alive) setOwned(new Set(rows.map((r) => r.item_id))); });
+    const load = () => void store.list().then((rows) => { if (alive) setOwned(new Map(rows.map((r) => [r.item_id, r.updated_at]))); });
     load();
     const unsubscribe = store.subscribe(load);
     return () => { alive = false; unsubscribe(); };

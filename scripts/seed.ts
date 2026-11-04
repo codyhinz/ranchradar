@@ -70,6 +70,49 @@ const POKEAPI_ALIASES: Record<string, string> = {
 };
 const pokeapiIdentifier = (id: string) => POKEAPI_ALIASES[id] ?? id;
 
+/**
+ * Item pictures from the same repository, pinned separately (the newest Mega Stones landed later).
+ * Scarlet/Violet-era renders first, then Dream World art, then the classic 30px icon scaled up
+ * by a whole number with hard edges so its pixels stay square.
+ */
+const ITEM_SPRITES_COMMIT = '1b3b7c0a538dd2226ae08d0d2f8955125075bbd4';
+const ITEM_SPRITES_URL = `https://raw.githubusercontent.com/PokeAPI/sprites/${ITEM_SPRITES_COMMIT}/sprites/items`;
+const ITEM_SPRITES_DIR = join(SPRITES_DIR, 'items');
+/** Where our item ids differ from PokeAPI's file names. */
+const ITEM_SPRITE_ALIASES: Record<string, string> = { leek: 'stick' };
+/** Stored size: sharp at 2x for the largest the app shows (the 64px item card). */
+const ITEM_SPRITE_PX = 128;
+
+async function downloadItemSprites(ids: string[]): Promise<string[]> {
+  mkdirSync(ITEM_SPRITES_DIR, { recursive: true });
+  const missing: string[] = [];
+  const transparent = { r: 0, g: 0, b: 0, alpha: 0 };
+  for (const id of ids) {
+    const target = join(ITEM_SPRITES_DIR, `${id}.webp`);
+    if (existsSync(target)) continue;
+    const name = ITEM_SPRITE_ALIASES[id] ?? id;
+    let source = await fetch(`${ITEM_SPRITES_URL}/gen9/${name}.png`);
+    if (!source.ok) source = await fetch(`${ITEM_SPRITES_URL}/dream-world/${name}.png`);
+    let smooth = source.ok;
+    if (!source.ok) source = await fetch(`${ITEM_SPRITES_URL}/${name}.png`);
+    if (!source.ok) { missing.push(id); continue; }
+    const trimmed = await sharp(Buffer.from(await source.arrayBuffer())).ensureAlpha().trim().png().toBuffer({ resolveWithObject: true });
+    const { width, height } = trimmed.info;
+    if (Math.max(width, height) * 2 > ITEM_SPRITE_PX) smooth = true; // big enough to scale smoothly anyway
+    const image = smooth
+      ? sharp(trimmed.data).resize(ITEM_SPRITE_PX, ITEM_SPRITE_PX, { fit: 'contain', background: transparent, kernel: 'lanczos3' })
+      : await (async () => {
+        const scale = Math.max(1, Math.floor(ITEM_SPRITE_PX / Math.max(width, height)));
+        const w = width * scale, h = height * scale;
+        const scaled = await sharp(trimmed.data).resize(w, h, { kernel: 'nearest' }).toBuffer();
+        const left = Math.floor((ITEM_SPRITE_PX - w) / 2), top = Math.floor((ITEM_SPRITE_PX - h) / 2);
+        return sharp(scaled).extend({ left, right: ITEM_SPRITE_PX - w - left, top, bottom: ITEM_SPRITE_PX - h - top, background: transparent });
+      })();
+    await image.webp({ quality: 85, alphaQuality: 90, effort: 6, lossless: !smooth }).toFile(target);
+  }
+  return missing;
+}
+
 /** Sprites the app shows outside the roster (header and empty state). */
 const BRAND_SPRITES = ['torkoal'];
 
@@ -399,6 +442,7 @@ async function main() {
   }
   console.log('Downloading sprites…');
   const missingSprites = await downloadSprites([...forms.map((f) => f.id), ...BRAND_SPRITES], pokemonIdByForm);
+  missingSprites.push(...await downloadItemSprites(items.map((i) => i.id)));
   mkdirSync(join(SPRITES_DIR, 'variants'), { recursive: true });
   for (const { id, path } of variantSprites) {
     if (!(await downloadSpriteAt(join(SPRITES_DIR, 'variants', `${id}.webp`), path))) missingSprites.push(id);

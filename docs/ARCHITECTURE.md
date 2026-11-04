@@ -2,7 +2,7 @@
 
 How RanchRadar is built, as of the commit noted below. The [README](../README.md) covers setup, deployment and secrets; this file covers how the pieces fit together and the rules that keep them working. Update it in the same commit as any change it describes.
 
-**Current as of:** `7ec1cfc` (Nov 3, 2026) — Items tab shipped. 23 test files / 163 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings).
+**Current as of:** Nov 3, 2026 — Items tab gets item pictures, card/list views, sorting and Mark several bought; tab bar uses game art and becomes a floating dock on wide screens. 23 test files / 166 tests passing; typecheck and `validate:data` clean (3 expected Floettite warnings).
 
 ---
 
@@ -23,7 +23,7 @@ Live at `ranchradar.dev`. Public repo `codyhinz/ranchradar`, AGPL-3.0-only, © c
 | Account export / deletion, age check (13+) | Shipped |
 | Public regulation pages, `/about`, `/privacy`, `/terms`, sitemap | Shipped |
 | Push reminders (ranch refresh, trial ending) | Shipped |
-| Items tab (held items, berries, Mega Stones; guest + synced) | Shipped |
+| Items tab (held items, berries, Mega Stones with pictures; cards/list, sorts, Mark several bought; guest + synced) | Shipped |
 | Ads (AdSense) | Wired, off until approval (`VITE_ADSENSE_SLOT`) |
 | Teams (Pokémon, held item, optional moves/abilities; account-only) | **Next** — tables exist, no client yet |
 | Pokémon HOME tracking, news feed, Discord delivery, screenshot import | Later — some tables reserved |
@@ -97,14 +97,15 @@ docs/                    this file
 | Component | Role |
 | --- | --- |
 | `Header` | Ranch-sign masthead (sunset art + real text), account button |
-| `TabBar` | Fence (Roster) / saddlebag (Items) icons |
+| `TabBar` | Game-art icons (Torkoal for Roster, Focus Sash for Items); full-width bar on phones, floating dock from 48rem |
 | `ResultRow` | Search result: ownership summary, season legality, three add buttons |
 | `RosterList` | Grid/list of owned forms, filters/sorts, box usage, bulk select, expired-trial actions |
 | `FormSheet` | One form's copies: edit, make permanent, return to Ranch, remove (with undo) |
 | `AddSheet` / `EntryFields` | Add with nature, variant, notes, exact trial time left |
 | `BulkAddSheet` | First-time setup grid: tap = chosen status, long-press = the other; nothing saves until Add |
 | `NaturePicker`, `VariantPicker` | Downward lists; natures sortable by stat or A–Z |
-| `ItemsTab` | Item checklist, category counts, All/Missing/Bought, Mega Stones searchable by Pokémon |
+| `ItemsTab` | Item checklist: picture cards (default) or list, All/Missing/Bought, sort by category / A–Z / recently bought, category counts, Mega Stones show and search by their Pokémon |
+| `ItemBulkSheet` | Mark several bought: this season's items grouped by category, tap to pick, one save and one Undo |
 | `SettingsDialog` | Language, theme, box space, backup, reminders, report a problem |
 | `NotificationSettings` | Per-device push toggle, ranch refresh ("I just recruited" / time left), trial lead time |
 | `AccountSheet` | Google / Discord / email + password, reset, export, delete account |
@@ -121,7 +122,7 @@ docs/                    this file
 | File | Role |
 | --- | --- |
 | `useRoster.ts` | Opens IndexedDB, builds the owner's `RosterStore`, live entry list; purges local tombstones older than 24h on launch; requests persistent storage |
-| `useItems.ts` | Owner's `ItemStore` and owned-id set |
+| `useItems.ts` | Owner's `ItemStore` and owned items (`item_id → updated_at`, for "recently bought") |
 | `useAuth.ts` | `AuthState` (`unavailable` / `loading` / `signedOut` / `signedIn`), password-recovery flag, OAuth redirect errors |
 | `useAccountSync.ts` | When to sync, guest offer, conflict list (§6) |
 | `useAccountUpload.ts` | Older upload-only hook, superseded by `useAccountSync`; not imported anywhere (see §12) |
@@ -132,7 +133,7 @@ docs/                    this file
 | `box.ts` | Box capacity: 30 base, 50 with Ranked rewards, +50 Starter Pack, +1,000 membership |
 | `ads.ts`, `turnstile.ts`, `errorTracking.ts`, `feedback.ts`, `accountData.ts`, `authErrors.ts`, `signInMethod.ts`, `signInHint.ts` | Integrations and helpers |
 
-`localStorage` keys (all prefixed `ranchradar:`): `name-locale`, `theme`, `roster-view`, `roster-sort`, `nature-sort`, `box`, `sign-in-method`.
+`localStorage` keys (all prefixed `ranchradar:`): `name-locale`, `theme`, `roster-view`, `roster-sort`, `item-view`, `item-sort`, `nature-sort`, `box`, `sign-in-method`.
 
 ### Catalog and search
 
@@ -142,7 +143,7 @@ docs/                    this file
 - `addableCatalog` — legal forms plus the out-of-season pool (`available.json`: fully evolved / non-evolving, battle-only and cosmetic forms excluded).
 - `currentRegulation = regulationAt(now)` — latest regulation whose `starts_at` has passed.
 
-Search normalizes text (case, accents, kana) per locale. Sprites are Pokémon HOME renders served from `/sprites/<id>.webp` and `/sprites/variants/`; `Sprite.tsx` is the only place URLs are built, falling back variant → form → plain tile.
+Search normalizes text (case, accents, kana) per locale. Sprites are Pokémon HOME renders served from `/sprites/<id>.webp` and `/sprites/variants/`; `Sprite.tsx` is the only place URLs are built, falling back variant → form → plain tile. Item pictures live at `/sprites/items/<id>.webp` (`itemSpriteUrl` / `ItemSprite`, plain tile if missing).
 
 ### i18n
 
@@ -161,7 +162,7 @@ Single `styles.css` (~1,100 lines). Torkoal theme tokens on `:root`: `--smoke`, 
 `storage.ts` is the only interface the UI uses:
 
 - **`RosterStore`** — `list`, `get`, `add`, `addMany`, `update`, `remove`, `removeMany`, `restore`, `importEntries`, `purgeDeleted`, `subscribe`, `refresh`.
-- **`ItemStore`** — `list`, `setOwned(itemId, owned)`, `subscribe`, `refresh`.
+- **`ItemStore`** — `list`, `setOwned(itemId, owned)`, `setOwnedMany(itemIds, owned)` (one transaction, one notification, returns how many changed), `subscribe`, `refresh`.
 - **`StorageError`** codes: `not_found`, `invalid`, `row_cap_reached`.
 
 Both are implemented only by local stores (`local/localRosterStore.ts`, `local/localItemStore.ts`). There is no "cloud store": signed-in stores are the same local stores with `syncEnabled: true`, which also queues every write into the outbox. Sync runs separately. This is what keeps screens unaware of where data lives.
@@ -304,7 +305,7 @@ Supabase Auth with Google, Discord, and email + password (implicit flow, so conf
 ## 8. Reference data pipeline
 
 1. **Hand-edit** `data/regulations/<id>.json`: `id`, `name`, `starts_at`/`ends_at` (UTC), `status` (`draft` → `final`), `expected_forms`, `forms` (Roster Ranch list), `items` (every allowed held item, including Mega Stones), `megas` (allowed Mega Stones, also in `items`). Ids are Showdown names lowercased with dashes.
-2. **`npm run seed`** resolves ids through `@pkmn/dex` and PokeAPI CSVs (pinned commit `2ee1c42…`), writes `data/generated/*` (`forms`, `form-names`, `items`, `item-names`, `nature-names`, `type-names`, `variants`, `available`), builds sprites with `sharp`, appends new ids to `id-registry.json`, and writes a new `supabase/migrations/<ts>_reference_data.sql` if anything changed. Any unresolved id stops the run.
+2. **`npm run seed`** resolves ids through `@pkmn/dex` and PokeAPI CSVs (pinned commit `2ee1c42…`), writes `data/generated/*` (`forms`, `form-names`, `items`, `item-names`, `nature-names`, `type-names`, `variants`, `available`), builds sprites with `sharp` (Pokémon: HOME renders; items: PokeAPI sprites pinned at `1b3b7c0…`, Scarlet/Violet render → Dream World art → classic 30px icon scaled by a whole number, into `public/sprites/items/`), appends new ids to `id-registry.json`, and writes a new `supabase/migrations/<ts>_reference_data.sql` if anything changed. Any unresolved id stops the run.
 3. **`npm run validate:data`** (offline, in CI): schema/date/slug checks, final counts match `expected_forms`, no registry id disappears (no renames), newest reference migration exactly matches `data/`. Megas whose base form isn't recruitable (Floettite / Eternal Floette) are warnings, not errors.
 4. Commit everything together; after merge, `npx supabase db push` so the DB knows new forms before anyone syncs them.
 

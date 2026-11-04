@@ -31,3 +31,27 @@ export function Sprite({ id, variant = null, size = 48, className = '' }: Sprite
     />
   );
 }
+
+/** Where an item's picture lives; built here like spriteUrl so the paths stay in one file. */
+export function itemSpriteUrl(itemId: string): string {
+  return `/sprites/items/${itemId}.webp`;
+}
+
+/** An item's picture, or a plain tile if it hasn't been downloaded yet. */
+export function ItemSprite({ id, size = 48, className = '' }: { id: string; size?: number; className?: string }) {
+  const [missing, setMissing] = useState(false);
+  useEffect(() => setMissing(false), [id]);
+  if (missing) return <span className={`sprite item-sprite sprite-missing ${className}`} style={{ width: size, height: size }} aria-hidden="true" />;
+  return (
+    <img
+      className={`sprite item-sprite ${className}`}
+      src={itemSpriteUrl(id)}
+      width={size}
+      height={size}
+      alt=""
+      loading="lazy"
+      decoding="async"
+      onError={() => setMissing(true)}
+    />
+  );
+}

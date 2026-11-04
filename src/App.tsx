@@ -5,7 +5,7 @@ import { useBoxSettings, useNameLocale, useRosterView, useTheme } from './app/pr
 import { DEFAULT_TAB, useTab } from './app/tabs';
 import { useAuth } from './app/useAuth';
 import { requestPersistentStorage, useRanchDB, useRosterEntries, useRosterStore } from './app/useRoster';
-import { useItemStore, useOwnedItemIds } from './app/useItems';
+import { useItemStore, useOwnedItems } from './app/useItems';
 import { useAccountSync } from './app/useAccountSync';
 import { forgetAgeAnswer, useAgeCheck } from './app/useAgeCheck';
 import { deleteMyAccount, downloadJson, exportFileName, fetchAccountExport } from './app/accountData';
@@ -48,7 +48,7 @@ export function App() {
   const store = useRosterStore(db, owner);
   const entries = useRosterEntries(store);
   const itemStore = useItemStore(db, owner);
-  const ownedItems = useOwnedItemIds(itemStore);
+  const ownedItems = useOwnedItems(itemStore);
   const [locale, setLocale] = useNameLocale();
   setUiLocale(locale); // interface text follows the same language setting as Pokémon names
   const [theme, setTheme] = useTheme();
@@ -309,6 +309,12 @@ export function App() {
             onToggle={(itemId, owned) => void guard(async () => {
               await itemStore?.setOwned(itemId, owned);
               if (owned) requestPersistentStorage();
+            })}
+            onMarkMany={(itemIds) => guard(async () => {
+              if (!itemStore) return;
+              const marked = await itemStore.setOwnedMany(itemIds, true);
+              requestPersistentStorage();
+              say(t('items.bulk.done', { count: marked }), () => { void itemStore.setOwnedMany(itemIds, false); }, 'cheer');
             })}
           />
         </Suspense>

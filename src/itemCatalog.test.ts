@@ -1,5 +1,5 @@
 import { currentRegulation } from './catalog';
-import { isItemInSeason, itemById, itemName, itemsToShow, matchesItem, sortItems } from './itemCatalog';
+import { isItemInSeason, itemById, itemName, itemsToShow, matchesItem, sortItems, sortItemsByRecent } from './itemCatalog';
 
 describe('item catalog', () => {
   it('lists this season’s items, plus bought ones that left it', () => {
@@ -20,5 +20,11 @@ describe('item catalog', () => {
     expect(itemName('focus-sash', 'ja')).not.toBe(itemName('focus-sash', 'en'));
     const sorted = sortItems([itemById('leftovers')!, itemById('focus-sash')!], 'en').map((i) => i.id);
     expect(sorted).toEqual(['focus-sash', 'leftovers']);
+  });
+
+  it('puts the most recently bought first, then the rest by name', () => {
+    const list = ['leftovers', 'focus-sash', 'life-orb', 'sitrus-berry'].map((id) => itemById(id)!);
+    const ownedAt = new Map([['leftovers', '2026-11-01T00:00:00Z'], ['sitrus-berry', '2026-11-02T00:00:00Z']]);
+    expect(sortItemsByRecent(list, ownedAt, 'en').map((i) => i.id)).toEqual(['sitrus-berry', 'leftovers', 'focus-sash', 'life-orb']);
   });
 });

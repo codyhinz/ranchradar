@@ -93,6 +93,30 @@ describe('marking items bought on this device', () => {
   });
 });
 
+describe('marking several items bought at once', () => {
+  it('saves them in one go with one notification, and counts only real changes', async () => {
+    const store = mine();
+    await store.setOwned('leftovers', true);
+    let calls = 0;
+    store.subscribe(() => { calls += 1; });
+    expect(await store.setOwnedMany(['focus-sash', 'leftovers', 'life-orb', 'focus-sash'], true)).toBe(2);
+    expect(calls).toBe(1);
+    expect(await ids(store)).toEqual(['focus-sash', 'leftovers', 'life-orb']);
+    const queued = (await db.getAll('outbox')).filter((o) => o.table === 'owned_items').map((o) => o.rowId).sort();
+    expect(queued).toEqual([`${ME}|focus-sash`, `${ME}|leftovers`, `${ME}|life-orb`]);
+  });
+
+  it('undoes as a batch, and leaves everything as it was when one id is bad', async () => {
+    const store = guest();
+    await store.setOwnedMany(['focus-sash', 'life-orb'], true);
+    expect(await store.setOwnedMany(['focus-sash', 'life-orb'], false)).toBe(2);
+    expect(await ids(store)).toEqual([]);
+    await expect(store.setOwnedMany(['focus-sash', 'Not An Item'], true)).rejects.toThrow();
+    expect(await ids(store)).toEqual([]);
+    expect(await store.setOwnedMany([], true)).toBe(0);
+  });
+});
+
 describe('syncing owned items', () => {
   it('sends this device’s marks and settles them with the server’s version', async () => {
     const server = fakeServer();

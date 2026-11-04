@@ -43,6 +43,8 @@ export interface ItemStore {
   list(): Promise<OwnedItem[]>;
   /** Marks an item bought or not. Unmarking is a soft delete so other devices hear about it. */
   setOwned(itemId: string, owned: boolean): Promise<void>;
+  /** Marks several items bought (or not) in one go, with one notification. Returns how many changed. */
+  setOwnedMany(itemIds: readonly string[], owned: boolean): Promise<number>;
   subscribe(listener: () => void): () => void;
   /** Tells subscribers that rows changed underneath the store, e.g. sync pulled another device's edits. */
   refresh(): void;

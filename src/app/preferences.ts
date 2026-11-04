@@ -47,6 +47,19 @@ export function useRosterView() {
   return usePreference<RosterView>('ranchradar:roster-view', ROSTER_VIEWS, () => 'grid');
 }
 
+/** Items show as picture cards or a compact list, like the roster; cards unless changed. */
+export function useItemView() {
+  return usePreference<RosterView>('ranchradar:item-view', ROSTER_VIEWS, () => 'grid');
+}
+
+export const ITEM_SORTS = ['category', 'az', 'recent'] as const;
+export type ItemSort = (typeof ITEM_SORTS)[number];
+
+/** How the Items tab is ordered: shop categories, one A–Z list, or most recently bought first. */
+export function useItemSort() {
+  return usePreference<ItemSort>('ranchradar:item-sort', ITEM_SORTS, () => 'category');
+}
+
 export const NATURE_SORTS = ['stat', 'az'] as const;
 export type NatureSort = (typeof NATURE_SORTS)[number];
 

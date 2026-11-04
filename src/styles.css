@@ -126,26 +126,62 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .app:has(.tab-bar) { padding-bottom: calc(1rem + var(--tab-bar-h)); }
 .app:has(.tab-bar):has(.roster-select-bar) { padding-bottom: calc(6rem + var(--tab-bar-h)); }
 
-/* Tab bar: one fence rail across the bottom, the open tab lit in ember */
-:root { --tab-bar-h: 3.75rem; }
+/* Tab bar: one fence rail across the bottom on phones, a floating dock on wider screens. Each tab
+   is a picture from the game; the open one is in full color on an ember-lit pill, the other rests
+   in greyscale so the difference reads at a glance. */
+:root { --tab-bar-h: 4rem; }
 :root:has(.tab-bar) { --bottom-chrome: calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px)); }
 .tab-bar {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 15;
-  display: flex; justify-content: center;
+  display: flex; justify-content: center; gap: 0.25rem;
   padding: 0 0.5rem env(safe-area-inset-bottom, 0px);
   background: var(--surface); border-top: 2px solid var(--rail); box-shadow: var(--lift);
 }
 .tab {
-  position: relative; flex: 1; max-width: 8rem; height: var(--tab-bar-h);
-  display: grid; place-items: center; align-content: center; gap: 0.15rem;
+  position: relative; flex: 1; max-width: 9rem; height: var(--tab-bar-h);
+  display: grid; place-items: center; align-content: center; gap: 0.1rem;
   border: 0; background: transparent; color: var(--muted); cursor: pointer;
-  font-size: 0.75rem; font-weight: 600;
+  font-size: 0.78rem; font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
 }
-.tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.tab[aria-current='page'] { color: var(--coal); }
-.tab[aria-current='page'] svg { stroke: var(--ember); }
-.tab[aria-current='page']::before {
-  content: ""; position: absolute; top: -2px; left: 25%; right: 25%; height: 3px; border-radius: 0 0 3px 3px; background: var(--ember);
+.tab-icon {
+  display: grid; place-items: center; width: 3.5rem; height: 2.1rem; border-radius: 999px;
+  transition: background-color 160ms ease;
+}
+.tab-icon img {
+  display: block; width: 30px; height: 30px; object-fit: contain;
+  filter: grayscale(1); opacity: 0.72;
+  transition: filter 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+.tab:hover .tab-icon img { opacity: 0.85; }
+.tab[aria-current='page'] { color: var(--coal); font-weight: 700; }
+.tab[aria-current='page'] .tab-icon { background: var(--tab-lit); }
+.tab[aria-current='page'] .tab-icon img { filter: none; opacity: 1; transform: scale(1.08); }
+.tab:active .tab-icon img { transform: scale(0.9); }
+:root { --tab-lit: color-mix(in srgb, var(--ember) 18%, var(--surface)); }
+
+/* Wider screens: a compact dock floating over the page, icon beside its label */
+@media (min-width: 48rem) {
+  :root { --tab-bar-h: 5rem; }
+  .tab-bar {
+    left: 50%; right: auto; bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+    padding: 0.3rem; gap: 0.3rem;
+    border: 2px solid var(--rail); border-radius: 999px; box-shadow: var(--shadow);
+  }
+  .tab {
+    flex: none; max-width: none; height: 3.1rem;
+    display: flex; align-items: center; gap: 0.5rem; padding: 0 1.2rem 0 0.45rem;
+    border-radius: 999px; font-size: var(--step-0);
+    transition: background-color 160ms ease;
+  }
+  .tab-icon { width: 2.4rem; height: 2.4rem; }
+  .tab:hover { background: var(--rail); }
+  .tab[aria-current='page'] { background: var(--tab-lit); }
+  .tab[aria-current='page'] .tab-icon { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab, .tab-icon, .tab-icon img { transition: none; }
+  .tab[aria-current='page'] .tab-icon img, .tab:active .tab-icon img { transform: none; }
 }
 
 /* Masthead: the one loud moment. Painted sunset art with the name lettered on as live text. */
@@ -1084,33 +1120,69 @@ body::after {
 .recruited-button svg { stroke-linejoin: round; }
 .reminder-chips { margin-top: 0.5rem; }
 
-/* Items: a shopping checklist. Each row is one button; bought items get the ember edge and a
-   filled brand-mark box on the right, like a stamped tally card. */
+/* Items: a shopping checklist. Picture cards by default, a compact list on request. Bought items
+   get the ember edge and a filled brand-mark stamp, like a stamped tally card. */
 .item-filters { margin: -0.25rem 0 0.75rem; }
 .item-hint { margin: 0 0 0.75rem; }
-.item-group + .item-group { margin-top: 1.25rem; }
-.item-group h3 {
-  display: flex; align-items: baseline; gap: 0.6rem; margin: 0 0 0.35rem;
+.item-group + .item-group, .item-bulk-wrap { margin-top: 1.25rem; }
+.item-group h3, .item-bulk-group h3 {
+  display: flex; align-items: baseline; gap: 0.6rem; margin: 0 0 0.5rem;
   font: 600 var(--step-1) / 1.2 var(--font-sign);
 }
 .item-group h3 .count { font-family: var(--font-body); font-weight: 400; }
+
+/* Cards */
+.item-tiles { grid-template-columns: repeat(auto-fill, minmax(6.75rem, 1fr)); gap: 0.55rem; }
+.item-tile button { grid-template-rows: auto 1fr auto; padding: 0.7rem 0.35rem 0.6rem; gap: 0.35rem; }
+.item-tile .item-sprite { width: 64px; height: 64px; }
+.item-tile[data-own='permanent'] button:hover { border-bottom-color: var(--ember); }
+.item-art { position: relative; display: grid; place-items: center; width: 76px; height: 70px; }
+/* Mega Stones: the Pokémon that holds it, tucked into the stone's corner */
+.item-holder {
+  position: absolute; right: -4px; bottom: -4px; width: 34px; height: 34px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--surface); border: 2px solid var(--rail);
+}
+.item-holder .sprite { width: 30px; height: 30px; }
+.item-holder[data-in-box] { border-color: var(--ember); box-shadow: 0 0 0 2px var(--glow); }
+.item-tile .tile-name { font-size: 0.82rem; }
+.item-tile .item-check { position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; margin: 0; border-radius: 7px; }
+.item-tile .item-check svg { width: 16px; height: 16px; }
+.item-tile[data-own='none'] .item-check { opacity: 0.55; }
+.item-tile button:active .item-check { transform: scale(0.88); }
+.item-tile[data-season='out'] .item-sprite { filter: grayscale(0.85); opacity: 0.55; }
+
+/* List */
 .item-row .row-main { min-height: 52px; }
 .item-row .row-name { font-size: var(--step-0); font-family: var(--font-body); font-weight: 600; }
 .item-row .row-text { flex: 1; }
-.item-row .sprite { width: 40px; height: 40px; margin: -4px 0; }
+.item-row .row-main .item-sprite { width: 40px; height: 40px; margin: -4px 0; }
 .item-row .row-meta { flex-direction: row; flex-wrap: wrap; gap: 0.1rem 0.6rem; }
+.item-for { display: inline-flex; align-items: center; gap: 0.2rem; }
+.item-row .row-main .item-for .sprite { width: 24px; height: 24px; margin: -4px 0; }
 .item-box { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--coal); font-weight: 600; }
 .item-box::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ember); }
+.item-row[data-season='out'] .row-main { opacity: 0.8; }
+
 .item-check {
   flex: none; display: grid; place-items: center; width: 30px; height: 30px; margin-right: 0.25rem;
   border: 2px solid var(--wood); border-radius: 8px; background: var(--surface);
-  transition: background-color 140ms ease, border-color 140ms ease, transform 90ms ease;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 90ms ease, opacity 140ms ease;
 }
 .item-row .row-main:active .item-check { transform: scale(0.88); }
 .item-check svg { width: 20px; height: 20px; fill: none; stroke: transparent; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.item-row[data-own='permanent'] .item-check { background: var(--ember-strong); border-color: var(--ember-strong); }
-.item-row[data-own='permanent'] .item-check svg { stroke: #fff; }
-.item-row[data-season='out'] .row-main { opacity: 0.8; }
+[data-own='permanent'] > button .item-check { background: var(--ember-strong); border-color: var(--ember-strong); }
+[data-own='permanent'] > button .item-check svg { stroke: #fff; }
+.item-bulk-wrap .tile-bulk button { min-height: 9rem; }
+
+/* Mark several bought */
+.item-bulk-controls { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.item-bulk-group { margin-top: 1rem; }
+.item-bulk-group h3 { font-size: var(--step-0); margin-bottom: 0.4rem; }
+.item-bulk-grid { margin-top: 0; }
+.bulk-tile .item-sprite { width: 48px; height: 48px; margin-top: 0.2rem; pointer-events: none; }
+.bulk-tile[data-bought] button { cursor: default; opacity: 0.6; }
+.bulk-tile[data-bought] .bulk-owned { background: var(--ember-strong); color: #fff; }
+.bulk-tile button:disabled:active { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .item-check { transition: none; }
 }

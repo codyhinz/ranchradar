@@ -67,3 +67,13 @@ export function sortItems(list: CatalogItem[], locale: NameLocale): CatalogItem[
   const byName = (a: CatalogItem, b: CatalogItem) => key(a).localeCompare(key(b), locale);
   return [...list.filter((i) => legalItems.has(i.id)).sort(byName), ...list.filter((i) => !legalItems.has(i.id)).sort(byName)];
 }
+
+/**
+ * Most recently bought first (by when each was marked bought), then everything not bought in
+ * the usual name order.
+ */
+export function sortItemsByRecent(list: CatalogItem[], ownedAt: ReadonlyMap<string, string>, locale: NameLocale): CatalogItem[] {
+  const bought = list.filter((item) => ownedAt.has(item.id))
+    .sort((a, b) => Date.parse(ownedAt.get(b.id)!) - Date.parse(ownedAt.get(a.id)!) || itemName(a.id, locale).localeCompare(itemName(b.id, locale), locale));
+  return [...bought, ...sortItems(list.filter((item) => !ownedAt.has(item.id)), locale)];
+}
